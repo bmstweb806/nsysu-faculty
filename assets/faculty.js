@@ -102,7 +102,30 @@
     parent.append(row);
   }
 
-  function renderList(teachers) {
+  function orderedCategories(json) {
+    return (Array.isArray(json.categories) ? json.categories : [])
+      .filter(c => c && c.is_active !== false)
+      .sort((a,b) => Number(a.order||0) - Number(b.order||0));
+  }
+
+  function renderList(teachers, json) {
+    const categories = orderedCategories(json);
+    if (!categories.length) { renderListGroup(teachers); return; }
+    const keys = new Set(categories.map(c => c.key));
+    categories.forEach(cat => {
+      const members = teachers.filter(t => t.category_key === cat.key);
+      if (!members.length) return;
+      const group = make('section', 'faculty-category');
+      group.append(make('h2', 'faculty-category-heading', local(cat)));
+      root.append(group);
+      renderListGroup(members, group);
+    });
+    const uncategorized = teachers.filter(t => !keys.has(t.category_key));
+    if (uncategorized.length) renderListGroup(uncategorized);
+    if (!teachers.length) status(text.empty);
+  }
+
+  function renderListGroup(teachers, parent = root) {
     if (!teachers.length) { status(text.empty); return; }
     const grid = make('div', 'faculty-list');
     teachers.forEach((t) => {
@@ -130,10 +153,26 @@
       card.append(photoLink, info);
       grid.append(card);
     });
-    root.append(grid);
+    parent.append(grid);
   }
 
-  function renderEntry(entry, area) {
+  function renderEntry(entry, area, fieldDefs = []) {
+    const structured = entry.fields && typeof entry.fields === 'object' ? entry.fields : {};
+    const activeFields = fieldDefs
+      .filter(def => def.is_active !== false && def.show_public !== false)
+      .sort((a,b) => Number(a.order||0) - Number(b.order||0))
+      .map(def => ({ label: local(def), value: local(structured[def.key]) }))
+      .filter(item => item.label && item.value);
+    if (activeFields.length) {
+      const block = make('dl', 'structured-entry');
+      activeFields.forEach(f => {
+        block.append(make('dt', 'structured-label', f.label));
+        block.append(make('dd', 'structured-value', f.value));
+      });
+      area.append(block);
+      if (entry.url) addExternal(block, entry.url, text.link, 'entry-link');
+      return;
+    }
     const c = local(entry.content);
     const t = local(entry.title);
     if (entry.type === 'list_item') {
@@ -156,7 +195,7 @@
     }
   }
 
-  function renderDetail(teacher, tabDefs) {
+  function renderDetail(teacher, tabDefs, fieldDefs = []) {
     const back = make('a', 'profile-back', (lang === 'en' ? '← ' : '← ') + text.back);
     back.href = listHref();
     root.append(back);
@@ -186,7 +225,7 @@
       .map((def) => {
         const section = sections.find((s) => String(s.key) === String(def.key));
         const entries = (section && Array.isArray(section.entries) ? section.entries : [])
-          .filter((e) => e && e.visible && e.visible[lang] === true && (local(e.content) || local(e.title)))
+          .filter((e) => e && e.visible && e.visible[lang] === true && (local(e.content) || local(e.title) || Object.values(e.fields || {}).some(v => local(v))))
           .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
         return { key: def.key, title: local({ zh: def.zh, en: def.en }), entries };
       })
@@ -214,12 +253,13 @@
       panel.hidden = i !== 0;
       let list = null;
       tab.entries.forEach((e) => {
-        if (e.type === 'list_item') {
+        const hasFields = e.fields && typeof e.fields === 'object' && Object.keys(e.fields).length > 0;
+        if (e.type === 'list_item' && !hasFields) {
           if (!list) { list = make('ul', 'entry-list'); panel.append(list); }
           renderEntry(e, list);
         } else {
           list = null;
-          renderEntry(e, panel);
+          renderEntry(e, panel, fieldDefs.filter(f=>f.section_key===tab.key));
         }
       });
       buttons.push(btn);
@@ -297,12 +337,12 @@
       const teachers = json.teachers.filter(available).sort((a, b) =>
         Number(a.display_order || 0) - Number(b.display_order || 0));
       if (view === 'list') {
-        renderList(teachers);
+        renderList(teachers, json);
       } else {
         const id = String(params.get('teacher') || '').trim();
         const teacher = teachers.find((t) => String(t.id) === id);
         if (!teacher) status(text.notFound);
-        else renderDetail(teacher, json.tabs);
+        else renderDetail(teacher, json.tabs, Array.isArray(json.fields) ? json.fields : []);
       }
     } catch (error) {
       root.replaceChildren();
