@@ -117,7 +117,7 @@
       a.href = profileHref(t.id);
       heading.append(a);
       info.append(heading);
-      if (local(t.name[otherLang]) && local(t.name[otherLang]) !== local(t.name)) {
+      if (String(t.name[otherLang] || '').trim() && String(t.name[otherLang]).trim() !== local(t.name)) {
         info.append(make('p', 'faculty-altname', String(t.name[otherLang])));
       }
       if (local(t.title)) info.append(make('p', 'faculty-title', local(t.title)));
