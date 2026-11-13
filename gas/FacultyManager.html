@@ -135,7 +135,7 @@ function renderBasic(){
    const opt=document.createElement('option');opt.value=cat.key;
    opt.textContent=cat.zh+' / '+cat.en;catSelect.append(opt);
  }
- catSelect.value=String(model.teacher.category_key||'full_time');
+ catSelect.value=String(model.teacher.category_key || categories[0]?.key || '');
  catSelect.addEventListener('change',()=>{model.teacher.category_key=catSelect.value;markDirty();});
  catLabel.append(catSelect);flag.append(catLabel);
  flag.append(checkbox('顯示中文頁面',model.teacher.visible_zh,v=>model.teacher.visible_zh=v));
