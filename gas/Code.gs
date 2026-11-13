@@ -24,16 +24,6 @@ const FTV = Object.freeze({
   definitionHeaders: [
     'section_key', 'title_zh', 'title_en', 'display_order', 'order_locked',
     'is_active', 'entry_layout'
-  ],
-  definitions: [
-    ['education',  '學歷',                 'Education',                      10, true],
-    ['experience', '經歷',                 'Experience',                     20, true],
-    ['courses',    '授課課程',             'Courses Taught',                 30, true],
-    ['projects',   '研究計畫',             'Research Projects',              40, true],
-    ['journal',    '學術著作－期刊',       'Journal Publications',           50, true],
-    ['conference', '學術著作－研討會',     'Conference Publications',        60, true],
-    ['honors',     '榮譽與獎項',           'Honors and Awards',              70, true],
-    ['service',    '學術服務',             'Academic Service',               80, true]
   ]
 });
 
@@ -110,23 +100,40 @@ function ftvCreateTable_(name, headers, rows, color) {
   return sh;
 }
 
-/** Only initialize a new sheet; deliberately refuses an old schema. */
+/**
+ * Creates only the schema, never the category, Tab, or field definitions.
+ * All configurable values must be entered in Google Sheets.
+ * Existing Sheets are only validated and are never overwritten.
+ */
 function ftvSetup() {
   const ss = ftvSS_();
-  const existingT = ss.getSheetByName(FTV.teachersSheet);
-  const existingD = ss.getSheetByName(FTV.definitionsSheet);
-  if (existingT || existingD) {
-    if (!existingT || !existingD) {
-      throw new Error('發現不完整的 V3 工作表，請檢查後再操作。');
-    }
-    ftvCheckHeaders_(existingT, FTV.teacherHeaders);
-    ftvCheckHeaders_(existingD, FTV.definitionHeaders);
-    SpreadsheetApp.getUi().alert('V3 已初始化，不需要重複執行。');
+  const tables = [
+    {name: FTV.teachersSheet, columns: FTV.teacherHeaders},
+    {name: FTV.definitionsSheet, columns: FTV.definitionHeaders},
+    {name: 'FacultyCategories', columns: [
+      'category_key','name_zh','name_en','display_order','is_active'
+    ]},
+    {name: 'FieldDefinitions', columns: [
+      'section_key','field_key','label_zh','label_en','field_type',
+      'display_order','is_required','is_active','show_public'
+    ]}
+  ];
+  const existing = tables.filter(t => ss.getSheetByName(t.name));
+  if (existing.length > 0 && existing.length !== tables.length) {
+    throw new Error('發現部分已建立的設定工作表。請先檢查資料，避免初始化時造成不完整結構。');
+  }
+  if (!existing.length) {
+    tables.forEach(t => ftvCreateTable_(t.name, t.columns, []));
+    SpreadsheetApp.getUi().alert(
+      'V3 工作表結構建立完成。請先在 FacultyCategories 和 TabDefinitions ' +
+      '設定分類與 Tab，再於 FieldDefinitions 自訂欄位；GAS 不會產生寫死的預設清單。'
+    );
     return;
   }
-  ftvCreateTable_(FTV.teachersSheet, FTV.teacherHeaders, [], '#17618c');
-  ftvCreateTable_(FTV.definitionsSheet, FTV.definitionHeaders, FTV.definitions, '#697583');
-  SpreadsheetApp.getUi().alert('V3 初始化成功。請選「開啟中英文分頁編輯器」建立第一位教師。');
+  tables.forEach(t => ftvCheckHeaders_(ss.getSheetByName(t.name), t.columns));
+  SpreadsheetApp.getUi().alert(
+    'V3 資料庫結構驗證完成。教師分類、Tab 和欄位內容完全由 Google Sheets 設定表管理。'
+  );
 }
 
 function ftvText_(v, max, field) {
@@ -251,6 +258,10 @@ function ftvCreateTeacher(customId) {
   return ftvLock_(() => {
     const table = ftvReadTable_(FTV.teachersSheet, FTV.teacherHeaders);
     ftvDefinitions_();
+    const firstCategory = fcfgConfigs_().categories
+      .filter(c => c.is_active)
+      .sort((a,b) => Number(a.order)-Number(b.order))[0];
+    if (!firstCategory) throw new Error('請先在 FacultyCategories 設定至少一個啟用分類');
     const requested = String(customId == null ? '' : customId).trim();
     let id;
     if (requested) {
@@ -278,7 +289,7 @@ function ftvCreateTeacher(customId) {
       title_zh:'',title_en:'',unit_zh:'',unit_en:'',office_zh:'',office_en:'',
       expertise_zh:'',expertise_en:'',email:'',profile_url:'',photo_url:'',
       display_order:order, publish_status:'DRAFT', visible_zh:true, visible_en:false,
-      category_key:'full_time'
+      category_key:firstCategory.key
     };
     table.sheet.appendRow(FTV.teacherHeaders.map(h => item[h]));
     return {id, sheet:name};
@@ -305,6 +316,9 @@ function ftvSaveTeacher(payload) {
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Email 格式不正確');
     const status = String(payload.teacher.publish_status || 'DRAFT').toUpperCase();
     if (!['DRAFT','PUBLISHED'].includes(status)) throw new Error('發布狀態不正確');
+    const activeCategories = fcfgConfigs_().categories.filter(c => c.is_active);
+    const defaultCategory = activeCategories
+      .sort((a,b) => Number(a.order)-Number(b.order))[0]?.key || '';
     const teacher = Object.assign({}, existing, {
       teacher_id:newId,
       name_zh:ftvText_(payload.teacher.name_zh,150,'中文姓名'),
@@ -323,9 +337,9 @@ function ftvSaveTeacher(payload) {
       publish_status:status,
       visible_zh:payload.teacher.visible_zh === true,
       visible_en:payload.teacher.visible_en === true,
-      category_key: String(payload.teacher.category_key || existing.category_key || 'full_time')
+      category_key: String(payload.teacher.category_key || existing.category_key || defaultCategory)
     });
-    if (!fcfgConfigs_().categories.some(c=>c.key===teacher.category_key && c.is_active))
+    if (!activeCategories.some(c=>c.key===teacher.category_key))
       throw new Error('教師分類不存在或未啟用：' + teacher.category_key);
     if (!teacher.name_zh) throw new Error('中文姓名不能空白');
     if (status === 'PUBLISHED' && teacher.visible_en && !teacher.name_en) {
