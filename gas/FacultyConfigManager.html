@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--blue:#17618c;--ink:#2b3843;--bg:#f4f7fa;--line:#d8e1e9}*{box-sizing:border-box}
+body{font:15px/1.55 Arial,"Noto Sans TC",sans-serif;color:var(--ink);margin:0;background:#fff}
+header{background:#123f5c;color:white;padding:17px 23px}h1{font-size:21px;margin:0}header p{margin:3px 0 0;color:#d6e6ef;font-size:13px}
+nav{display:flex;flex-wrap:wrap;gap:8px;background:var(--bg);padding:12px 18px;border-bottom:1px solid var(--line)}
+button,select,input,textarea{font:inherit}button{cursor:pointer;background:white;color:var(--blue);border:1px solid #b4c9d8;border-radius:7px;padding:8px 13px}button.primary{background:var(--blue);border-color:var(--blue);color:white}button:disabled{opacity:.55;cursor:not-allowed}
+nav button.active{background:var(--blue);color:#fff}main{padding:20px;max-height:620px;overflow:auto}h2{font-size:19px;margin:0 0 13px}
+.help{font-size:13px;color:#667987;margin:0 0 12px}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.row>.field{flex:1 1 190px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:11px}
+label{font-weight:600;font-size:13px}input,select,textarea{width:100%;border:1px solid #b9ccd8;padding:9px;border-radius:7px;background:white;color:var(--ink)}
+textarea{min-height:75px;resize:vertical}.check{display:flex;align-items:center;gap:7px}.check input{width:auto}
+table{width:100%;border-collapse:collapse;margin:12px 0}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--bg);font-size:13px}
+.panel{border:1px solid var(--line);border-radius:9px;padding:17px;margin:12px 0 18px;background:white}
+.muted{color:#74818e;font-size:13px}
+#message{padding:9px 18px;font-size:14px;background:#eef5f9;border-bottom:1px solid var(--line);min-height:39px}
+#message.error{color:#a52626;background:#fff1f1}.item{padding:15px;margin:12px 0;border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+.item-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:11px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+@media(max-width:680px){.grid{grid-template-columns:1fr}main{padding:13px}th,td{padding:6px}}
+</style></head>
+<body>
+<header><h1>教師資料設定中心 / Faculty Configuration</h1>
+<p>教師分類・個人頁 Tab・動態內容欄位・雙語教師資料</p></header>
+<nav aria-label="功能選單">
+<button data-view="categories" class="active">教師分類</button>
+<button data-view="tabs">分頁設定</button>
+<button data-view="fields">欄位設定</button>
+<button data-view="entries">教師內容編輯</button>
+<button data-view="publish">資料發布</button>
+</nav>
+<div id="message" role="status">讀取資料中…</div>
+<main id="app"></main>
+<script>
+'use strict';
+let cfg=null,view='categories',editing=null,entryState=null;
+const app=document.getElementById('app'),msg=document.getElementById('message');
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function say(text,error=false){msg.textContent=text;msg.classList.toggle('error',error)}
+function run(fn,args=[],success){say('處理中…');google.script.run.withSuccessHandler(res=>{say('完成');if(success)success(res);}).withFailureHandler(err=>say(err.message||String(err),true))[fn](...args)}
+function get(id){return document.getElementById(id)}
+function selected(id){return get(id)?.value||''}
+function checkbox(id){return Boolean(get(id)?.checked)}
+function options(items,valueFn,textFn){return items.map(x=>'<option value="'+esc(valueFn(x))+'">'+esc(textFn(x))+'</option>').join('')}
+function field(id,label,value='',type='text'){return '<div class="field"><label for="'+id+'">'+esc(label)+'</label><input id="'+id+'" type="'+type+'" value="'+esc(value)+'"></div>'}
+function check(id,label,value){return '<label class="check"><input id="'+id+'" type="checkbox" '+(value?'checked':'')+'>'+esc(label)+'</label>'}
+function pickRows(kind){return kind==='category'?cfg.categories:kind==='tab'?cfg.tabs:cfg.fields}
+function kindInfo(kind){return {category:['分類代碼','中文分類','English category'],tab:['Tab 代碼','中文 Tab','English Tab'],field:['欄位代碼','中文欄位','English field']}[kind]}
+function edit(kind,index){editing={kind,index};render()}
+function empty(kind){return kind==='field'?{section_key:cfg.tabs[0]?.key||'',key:'',zh:'',en:'',type:'text',order:10,required:false,is_active:true,show_public:true}:
+ {key:'',zh:'',en:'',order:10,is_active:true,locked:false};}
+function configForm(kind){
+ const raw=editing&&editing.kind===kind?pickRows(kind)[editing.index]:null;
+ const d=raw||empty(kind),labels=kindInfo(kind),codeDisabled=Boolean(raw);
+ return '<section class="panel"><h2>'+(raw?'修改設定':'新增設定')+'</h2>'+
+ '<div class="grid">'+
+ (kind==='field'?'<div class="field"><label>所屬 Tab</label><select id="config-section" '+(raw?'disabled':'')+'>'+options(cfg.tabs,x=>x.key,x=>x.zh+' / '+x.en)+'</select></div>':'')+
+ field('config-key',labels[0],d.key)+field('config-zh',labels[1],d.zh)+field('config-en',labels[2],d.en)+
+ field('config-order','顯示順序',d.order,'number')+
+ (kind==='field'?'<div class="field"><label>欄位類型</label><select id="config-type">'+options(['text','textarea','url','number','date'],x=>x,x=>x)+'</select></div>':'')+
+ '</div>'+
+ '<div class="row">'+check('config-active','啟用',d.is_active)+
+ (kind==='field'?check('config-required','必填',d.required)+check('config-public','公開顯示',d.show_public):
+ kind==='tab'?check('config-locked','固定排序（編輯仍可設定 display_order）',d.locked):'')+'</div>'+
+ '<div class="actions"><button class="primary" id="save-config">儲存設定</button><button id="reset-config">取消／新增其他設定</button></div>'+
+ '<p class="help">代碼建立後請勿修改。調整中英文名稱、順序、停用狀態，不會刪除既有教師內容。</p></section>';
+}
+function configList(kind){
+ const rows=pickRows(kind);
+ const hdr=kind==='field'?['所屬 Tab','代碼','中文','English','類型','順序','狀態','編輯']:['代碼','中文','English','順序','狀態','編輯'];
+ const body=rows.map((r,i)=>'<tr>'+
+ (kind==='field'?'<td>'+esc(r.section_key)+'</td>':'')+
+ '<td><code>'+esc(r.key)+'</code></td><td>'+esc(r.zh)+'</td><td>'+esc(r.en)+'</td>'+
+ (kind==='field'?'<td>'+esc(r.type)+'</td>':'')+
+ '<td>'+esc(r.order)+'</td><td>'+(r.is_active?'啟用':'停用')+'</td>'+
+ '<td><button data-edit="'+i+'">編輯</button></td></tr>').join('');
+ return '<table><thead><tr>'+hdr.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table>';
+}
+function categoriesView(){
+ app.innerHTML='<h2>教師分類 / Faculty Categories</h2><p class="help">分類名稱、順序可以在這裡編輯；教師的身分分類在下表選擇。</p>'+configList('category')+
+ configForm('category')+
+ '<section class="panel"><h2>教師分類指派</h2><table><thead><tr><th>教師</th><th>ID</th><th>分類</th></tr></thead><tbody>'+
+ cfg.teachers.map((t,i)=>'<tr><td>'+esc(t.name)+'</td><td>'+esc(t.id)+'</td><td><select data-category="'+i+'">'+options(cfg.categories,x=>x.key,x=>x.zh+' / '+x.en)+'</select></td></tr>').join('')+
+ '</tbody></table><button class="primary" id="save-categories">儲存所有教師分類</button></section>';
+ cfg.teachers.forEach((t,i)=>{const node=app.querySelector('[data-category="'+i+'"]');if(node)node.value=t.category_key;});
+ attachConfig('category');
+ get('save-categories').onclick=()=>{
+  const jobs=cfg.teachers.map((t,i)=>({id:t.id,key:app.querySelector('[data-category="'+i+'"]').value})).filter(x=>x.key);
+  let n=0;
+  function next(){if(n===jobs.length){load();return;}const j=jobs[n++];run('fcfgSetTeacherCategory',[j.id,j.key],next);}
+  next();
+ };
+}
+function configView(kind){
+ app.innerHTML='<h2>'+(kind==='tab'?'教師個人頁分頁 / Tabs':'分頁內欄位定義 / Field Definitions')+'</h2>'+
+ '<p class="help">'+(kind==='tab'?'新增一個 Tab 不需要改 GAS。欄位可以在下一個頁籤建立。':'例如研究計畫可加上「執行期間」、「計畫編號」；每個欄位都有中英文標題及顯示順序。')+'</p>'+
+ configList(kind)+configForm(kind);
+ attachConfig(kind);
+}
+function attachConfig(kind){
+ app.querySelectorAll('[data-edit]').forEach(btn=>btn.onclick=()=>edit(kind,Number(btn.dataset.edit)));
+ const data=editing&&editing.kind===kind?pickRows(kind)[editing.index]:null;
+ if(data){
+  get('config-key').readOnly=true;
+  if(kind==='field')get('config-section').value=data.section_key;
+  if(kind==='field')get('config-type').value=data.type;
+ }
+ get('reset-config').onclick=()=>{editing=null;render()};
+ get('save-config').onclick=()=>{
+  const d={key:selected('config-key'),zh:selected('config-zh'),en:selected('config-en'),
+    order:Number(selected('config-order')),is_active:checkbox('config-active')};
+  if(kind==='field'){d.section_key=selected('config-section');d.type=selected('config-type');
+    d.required=checkbox('config-required');d.show_public=checkbox('config-public')}
+  if(kind==='tab')d.locked=checkbox('config-locked');
+  run('fcfgUpsertConfig',[kind,d],res=>{cfg=res;editing=null;render()});
+ };
+}
+function entryView(){
+ const chosen=entryState?.teacherId||cfg.teachers[0]?.id||'';
+ const tab=entryState?.sectionKey||cfg.tabs.filter(t=>t.is_active)[0]?.key||'';
+ app.innerHTML='<h2>教師學術內容 / Academic Records</h2><p class="help">欄位由「FieldDefinitions」控制；新增欄位後，此處會自動出現中英文輸入欄位。儲存只更新所選老師、所選 Tab。</p>'+
+ '<div class="row"><div class="field"><label>教師</label><select id="entry-teacher">'+options(cfg.teachers,t=>t.id,t=>t.name+' ('+t.id+')')+'</select></div>'+
+ '<div class="field"><label>分頁</label><select id="entry-tab">'+options(cfg.tabs.filter(t=>t.is_active),t=>t.key,t=>t.zh+' / '+t.en)+'</select></div>'+
+ '<button id="load-entries">載入項目</button></div>'+
+ '<section id="entry-area"><p class="help">請選取教師及 Tab，點選「載入項目」。</p></section>';
+ get('entry-teacher').value=chosen;get('entry-tab').value=tab;
+ get('load-entries').onclick=()=>loadEntries();
+ if(entryState?.entries)paintEntries();
+}
+function loadEntries(){
+ const tid=selected('entry-teacher'),tab=selected('entry-tab');
+ run('fcfgGetEntries',[tid,tab],result=>{entryState={...result,teacherId:tid,sectionKey:tab};paintEntries();});
+}
+function entryCard(e,i){
+ let html='<article class="item" data-index="'+i+'"><div class="item-head"><strong>項目 '+(i+1)+'</strong><div class="actions"><button data-up="'+i+'">上移</button><button data-down="'+i+'">下移</button><button data-del="'+i+'">刪除</button></div></div>'+
+ '<div class="grid">'+field('eid-'+i,'項目 ID（請勿修改）',e.id||'')+
+ '<div class="field"><label>顯示形式</label><select id="etype-'+i+'"><option value="text">段落</option><option value="list_item">清單</option></select></div>'+
+ field('etzh-'+i,'項目標題（中文）',e.title_zh||'')+field('eten-'+i,'Entry title (English)',e.title_en||'')+'</div>'+
+ '<div class="grid"><div class="field"><label>原有中文內容</label><textarea id="eczh-'+i+'">'+esc(e.content_zh||'')+'</textarea></div>'+
+ '<div class="field"><label>Existing English content</label><textarea id="ecen-'+i+'">'+esc(e.content_en||'')+'</textarea></div></div>'+
+ field('eurl-'+i,'相關連結',e.link_url||'')+
+ '<div class="row">'+check('evzh-'+i,'中文顯示',e.visible_zh!==false)+check('even-'+i,'English visible',e.visible_en!==false)+'</div>';
+ const values=e.field_values||{};
+ for(const f of entryState.fields){
+  const val=values[f.key]||{};
+  html+='<div class="grid">'+(f.type==='textarea'?
+   '<div class="field"><label>'+esc(f.zh)+'</label><textarea id="field-zh-'+i+'-'+esc(f.key)+'">'+esc(val.zh||'')+'</textarea></div>'+
+   '<div class="field"><label>'+esc(f.en)+'</label><textarea id="field-en-'+i+'-'+esc(f.key)+'">'+esc(val.en||'')+'</textarea></div>'
+   :field('field-zh-'+i+'-'+f.key,f.zh,val.zh||'',f.type==='date'?'text':f.type)+
+     field('field-en-'+i+'-'+f.key,f.en,val.en||'',f.type==='date'?'text':f.type))+'</div>';
+ }
+ return html+'</article>';
+}
+function paintEntries(){
+ if(!entryState)return;
+ const area=get('entry-area');if(!area)return;
+ area.innerHTML='<div class="actions"><button id="new-entry">新增一筆項目</button><button class="primary" id="save-entries">儲存此 Tab 全部項目</button></div>'+
+ entryState.entries.map(entryCard).join('')+
+ '<p class="help">刪除代表從此 Tab 的資料表中移除該項目。儲存前請先確認。</p>';
+ entryState.entries.forEach((e,i)=>{get('etype-'+i).value=e.type||'text';});
+ const snapshot=()=>{
+  entryState.entries=entryState.entries.map((e,i)=>{
+   const vals={...e.field_values};
+   entryState.fields.forEach(f=>{vals[f.key]={zh:selected('field-zh-'+i+'-'+f.key),en:selected('field-en-'+i+'-'+f.key)};});
+   return {id:selected('eid-'+i),type:selected('etype-'+i),title_zh:selected('etzh-'+i),
+    title_en:selected('eten-'+i),content_zh:get('eczh-'+i).value,content_en:get('ecen-'+i).value,
+    link_url:selected('eurl-'+i),visible_zh:checkbox('evzh-'+i),visible_en:checkbox('even-'+i),field_values:vals};
+  });
+ };
+ area.querySelectorAll('[data-up]').forEach(btn=>btn.onclick=()=>{snapshot();const i=Number(btn.dataset.up);if(i>0){[entryState.entries[i-1],entryState.entries[i]]=[entryState.entries[i],entryState.entries[i-1]];paintEntries();}});
+ area.querySelectorAll('[data-down]').forEach(btn=>btn.onclick=()=>{snapshot();const i=Number(btn.dataset.down);if(i<entryState.entries.length-1){[entryState.entries[i+1],entryState.entries[i]]=[entryState.entries[i],entryState.entries[i+1]];paintEntries();}});
+ area.querySelectorAll('[data-del]').forEach(btn=>btn.onclick=()=>{snapshot();const i=Number(btn.dataset.del);if(confirm('確定刪除項目 '+(i+1)+'？儲存後才會生效。')){entryState.entries.splice(i,1);paintEntries();}});
+ get('new-entry').onclick=()=>{snapshot();entryState.entries.push({id:'',type:'text',title_zh:'',title_en:'',content_zh:'',content_en:'',link_url:'',visible_zh:true,visible_en:true,field_values:{}});paintEntries();};
+ get('save-entries').onclick=()=>{snapshot();run('fcfgSaveEntries',[entryState.teacherId,entryState.sectionKey,entryState.entries],
+  result=>{entryState={...result,teacherId:entryState.teacherId,sectionKey:entryState.sectionKey};paintEntries();});};
+}
+function publishView(){
+ app.innerHTML='<h2>發布 V3 JSON</h2><p class="help">修改試算表設定或教師內容後，需要重新發布 JSON 才會同步到 GitHub Pages。預覽 JSON 也是公開網址，請勿上傳私人或敏感草稿。</p>'+
+ '<div class="panel"><div class="actions"><button id="pub-preview">發布預覽 JSON</button><button class="primary" id="pub-live">發布正式 JSON</button></div>'+
+ '<p>正式版只包含 <code>PUBLISHED</code> 的教師；預覽版包含草稿。</p></div>';
+ get('pub-preview').onclick=()=>{if(confirm('預覽檔也會公開，確定發布？'))run('fcfgPublishPreview',[],r=>say('預覽已發布：'+r.teachers+' 位教師'));};
+ get('pub-live').onclick=()=>{if(confirm('確定將目前 PUBLISHED 教師和欄位設定發布到正式網站？'))run('fcfgPublishProduction',[],r=>say('正式資料已發布：'+r.teachers+' 位教師'));};
+}
+function render(){
+ document.querySelectorAll('nav [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+ if(!cfg){app.textContent='讀取中…';return;}
+ if(view==='categories')categoriesView();
+ else if(view==='tabs')configView('tab');
+ else if(view==='fields')configView('field');
+ else if(view==='entries')entryView();
+ else publishView();
+}
+function load(){run('fcfgGetConfig',[],result=>{cfg=result;render()});}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{view=b.dataset.view;editing=null;render();});
+load();
+</script></body></html>
