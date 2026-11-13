@@ -1,0 +1,64 @@
+{
+  "schema_version": 3,
+  "generated_at": "2026-11-13T17:31:08.528Z",
+  "preview": false,
+  "tabs": [
+    {
+      "key": "education",
+      "zh": "學歷",
+      "en": "Education",
+      "order": 10,
+      "locked": true
+    },
+    {
+      "key": "experience",
+      "zh": "經歷",
+      "en": "Experience",
+      "order": 20,
+      "locked": true
+    },
+    {
+      "key": "courses",
+      "zh": "授課課程",
+      "en": "Courses Taught",
+      "order": 30,
+      "locked": true
+    },
+    {
+      "key": "projects",
+      "zh": "研究計畫",
+      "en": "Research Projects",
+      "order": 40,
+      "locked": true
+    },
+    {
+      "key": "journal",
+      "zh": "學術著作－期刊",
+      "en": "Journal Publications",
+      "order": 50,
+      "locked": true
+    },
+    {
+      "key": "conference",
+      "zh": "學術著作－研討會",
+      "en": "Conference Publications",
+      "order": 60,
+      "locked": true
+    },
+    {
+      "key": "honors",
+      "zh": "榮譽與獎項",
+      "en": "Honors and Awards",
+      "order": 70,
+      "locked": true
+    },
+    {
+      "key": "service",
+      "zh": "學術服務",
+      "en": "Academic Service",
+      "order": 80,
+      "locked": true
+    }
+  ],
+  "teachers": []
+}
