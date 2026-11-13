@@ -166,3 +166,16 @@ Google Sheets 資料庫：[NSYSU_Faculty_Database_V3](https://docs.google.com/sp
 - `FacultyManager.html` 是基礎雙語編輯介面，`FacultyConfigManager.html` 提供完整的自訂欄位編輯，並保存 `field_values_json`。
 - `FacultyCategories`、`TabDefinitions`、`FieldDefinitions` 是**設定資料來源**；網站仍需透過 GAS 發布更新 JSON，才會顯示最新設定。
 - GitHub `gas/` 檔案只是程式碼版本控管，**不會自動同步成已部署的 Apps Script**。
+
+## 無 Hardcode 的分類、Tab 與欄位設定（最新規則）
+
+`gas/Code.gs` 已移除原先 `FTV.definitions` 寫死的 8 個 Tab 清單，也不再把 `full_time` 寫死為預設身分。**設定資料的唯一來源是 Google Sheets**：
+
+- `FacultyCategories`：新增、重新命名、排序、停用教師類別，並決定新增教師可用的預設類別（取啟用分類中排序最前者）。
+- `TabDefinitions`：新增、重新命名、排序、停用任何 Tab（如學歷、研究計畫、新增的專利等）。
+- `FieldDefinitions`：決定各 Tab 需要的中英文欄位、類型、排列順序與顯示狀態。
+- `Teachers.category_key`：每位教師所屬的身分類別。
+
+`ftvSetup()` **只會建立空白資料結構，不會內建或覆寫分類、Tab、欄位的預設值**。第一次建立空白資料庫後，請在上述設定表輸入至少一筆啟用分類和 Tab 才能建立教師；既有 V3 試算表則不需要重新初始化。
+
+新增設定或更動欄位後，需在管理後台發布新版 JSON，GitHub Pages 才會跟著更新。欄位代碼（`section_key`, `field_key`, `category_key`）建立後應保持穩定；只修改名稱、排序與顯示狀態，以免既有教師資料失去對應。
