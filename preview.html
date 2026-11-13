@@ -7,91 +7,308 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
   <title>教師學術經歷</title>
+  
   <style>
     * { box-sizing: border-box; }
+  
     body {
       margin: 0;
-      background: white;
-      color: #333;
+      background: #fff;
+      color: #30343b;
       font-family: Arial, "Noto Sans TC", sans-serif;
+      font-size: 16px;
       line-height: 1.8;
+      overflow-wrap: anywhere;
     }
-    main { padding: 20px; max-width: 1000px; margin: auto; }
-    h1 { font-size: 24px; }
-    h2 {
-      font-size: 19px;
-      border-bottom: 2px solid #17618c;
-      padding-bottom: 8px;
+  
+    #app {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px 24px 28px;
     }
-    section { margin-bottom: 28px; }
-    .muted { color: #666; }
+  
+    .teacher-profile {
+      background: #f6f8fb;
+      border-left: 4px solid #17618c;
+      padding: 22px 26px;
+      margin-bottom: 32px;
+      border-radius: 0 8px 8px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+    }
+  
+    .teacher-info { flex: 1; min-width: 0; }
+  
+    h1 {
+      margin: 0 0 2px;
+      font-size: 28px;
+      line-height: 1.4;
+      color: #163f5c;
+    }
+  
+    .english-name {
+      color: #697583;
+      font-size: 15px;
+      margin: 0 0 12px;
+    }
+  
+    .teacher-title {
+      font-weight: 600;
+      margin: 8px 0 2px;
+    }
+  
+    .teacher-unit {
+      color: #596574;
+      margin: 0 0 8px;
+    }
+  
+    .contact { font-size: 14px; margin: 3px 0; }
+  
+    .teacher-photo {
+      width: 120px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+  
+    .faculty-section { margin-bottom: 30px; }
+  
+    .faculty-section h2 {
+      font-size: 20px;
+      color: #17618c;
+      border-bottom: 1px solid #d7dfe7;
+      padding: 0 0 9px 12px;
+      margin: 0 0 16px;
+      position: relative;
+    }
+  
+    .faculty-section h2::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 4px;
+      height: 23px;
+      background: #17618c;
+      border-radius: 4px;
+    }
+  
+    .entry-list { margin: 0; padding-left: 26px; }
+    .entry-list li { margin: 5px 0; }
+    .entry { margin: 0 0 15px; }
+    .entry h3 { font-size: 16px; margin: 0 0 3px; }
+    .entry p { margin: 0; white-space: pre-line; }
+  
     a { color: #17618c; }
+    .teacher-row {
+      display: block;
+      border-bottom: 1px solid #e1e5ea;
+      padding: 12px 0;
+      text-decoration: none;
+    }
+    .teacher-row:hover { text-decoration: underline; }
+    .muted { color: #687583; }
+    .notice { padding: 16px; background: #f6f8fb; }
+  
+    @media (max-width: 600px) {
+      #app { padding: 16px 14px 20px; }
+      h1 { font-size: 24px; }
+      .teacher-profile {
+        padding: 16px;
+        gap: 12px;
+      }
+      .teacher-photo {
+        width: 84px;
+        height: 108px;
+      }
+      .faculty-section h2 { font-size: 18px; }
+    }
   </style>
+
   
 
-  <script>
-  (function () {
-    function initHeightSync() {
-      const app = document.getElementById('app');
-      if (!app) return;
-  
-      let lastHeight = 0;
-      let pending = false;
-  
-      function sendHeight() {
-        pending = false;
-  
-        // 計算實際內容高度，不使用整個視窗高度
-        const blocks = [...document.body.children]
-          .filter(el => el.tagName !== 'SCRIPT');
-  
-        const bottom = blocks.reduce((max, el) => {
-          return Math.max(
-            max,
-            el.getBoundingClientRect().bottom + window.scrollY
-          );
-        }, 0);
-  
-        const height = Math.ceil(bottom + 12);
-  
-        if (height < 100 || height === lastHeight) return;
-        lastHeight = height;
-  
-        window.parent.postMessage({
-          type: 'NSYSU_FACULTY_HEIGHT',
-          height: height
-        }, '*');
-      }
-  
-      function scheduleHeight() {
-        if (pending) return;
-        pending = true;
-        requestAnimationFrame(sendHeight);
-      }
-  
-      // 持續觀察教師內容的尺寸變化
-      const observer = new ResizeObserver(scheduleHeight);
-      observer.observe(document.body);
-      observer.observe(app);
-  
-      window.addEventListener('load', scheduleHeight);
-      window.addEventListener('resize', scheduleHeight);
-  
-      scheduleHeight();
-    }
-  
-    // 等待 HTML 載入完成才啟動
-    if (document.readyState === 'loading') {
-      document.addEventListener(
-        'DOMContentLoaded',
-        initHeightSync,
-        { once: true }
-      );
+
+<script>
+const app = document.getElementById('app');
+
+function make(tag, text, className) {
+  const el = document.createElement(tag);
+  if (text !== undefined && text !== null) {
+    el.textContent = String(text);
+  }
+  if (className) el.className = className;
+  return el;
+}
+
+function validURL(value) {
+  try {
+    const u = new URL(value);
+    return ['https:', 'http:'].includes(u.protocol)
+      ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function addLink(parent, url, label) {
+  const href = validURL(url);
+  if (!href) return;
+
+  const a = make('a', label);
+  a.href = href;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  parent.append(a);
+}
+
+function renderTeacher(t) {
+  const header = make('header', null, 'teacher-profile');
+  const info = make('div', null, 'teacher-info');
+
+  info.append(make('h1', t.name_zh || '未命名教師'));
+
+  if (t.name_en) {
+    info.append(make('p', t.name_en, 'english-name'));
+  }
+  if (t.title) {
+    info.append(make('p', t.title, 'teacher-title'));
+  }
+  if (t.unit) {
+    info.append(make('p', t.unit, 'teacher-unit'));
+  }
+
+  if (t.email) {
+    const p = make('p', 'Email：', 'contact');
+    const a = make('a', t.email);
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t.email)) {
+      a.href = 'mailto:' + t.email;
+      p.append(a);
     } else {
-      initHeightSync();
+      p.append(t.email);
     }
-  })();
-  </script>
+    info.append(p);
+  }
+
+  if (t.office) {
+    info.append(make('p', '辦公室：' + t.office, 'contact'));
+  }
+
+  if (t.profile_url) {
+    const p = make('p', null, 'contact');
+    addLink(p, t.profile_url, '官方個人網頁');
+    if (p.childNodes.length) info.append(p);
+  }
+
+  header.append(info);
+
+  const photoURL = validURL(t.photo_url);
+  if (photoURL) {
+    const img = make('img', null, 'teacher-photo');
+    img.src = photoURL;
+    img.alt = t.name_zh || '教師照片';
+    img.loading = 'lazy';
+    img.onerror = () => img.remove();
+    header.append(img);
+  }
+
+  app.append(header);
+
+  (t.sections || []).forEach(section => {
+    const box = make('section', null, 'faculty-section');
+    box.append(make('h2', section.title || '其他資料'));
+
+    let list = null;
+
+    (section.entries || []).forEach(entry => {
+      if (entry.type === 'list_item') {
+        if (!list) {
+          list = make('ul', null, 'entry-list');
+          box.append(list);
+        }
+
+        const li = make('li', entry.content || entry.title);
+        if (entry.url) {
+          li.append(' ');
+          addLink(li, entry.url, '相關連結');
+        }
+        list.append(li);
+
+      } else {
+        list = null;
+
+        const item = make('div', null, 'entry');
+
+        if (entry.title && entry.title !== section.title) {
+          item.append(make('h3', entry.title));
+        }
+
+        if (entry.content) {
+          item.append(make('p', entry.content));
+        }
+
+        if (entry.url) {
+          addLink(item, entry.url, '查看相關連結');
+        }
+
+        box.append(item);
+      }
+    });
+
+    app.append(box);
+  });
+}
+
+async function loadFaculty() {
+  try {
+    // 這行保留，供 Apps Script 產生預覽版本
+    const response = await fetch('./data/faculty-preview.json');
+
+    if (!response.ok) {
+      throw new Error('教師資料尚未發布');
+    }
+
+    const data = await response.json();
+    const teachers = data.teachers || [];
+    const id = new URLSearchParams(location.search)
+      .get('teacher');
+
+    app.replaceChildren();
+
+    if (!id) {
+      app.append(make('h1', '教師列表'));
+
+      teachers.forEach(t => {
+        const a = make('a', null, 'teacher-row');
+        a.href = '?teacher=' + encodeURIComponent(t.id);
+        a.append(make('strong', t.name_zh));
+        a.append('　' + (t.title || ''));
+        app.append(a);
+      });
+
+      if (!teachers.length) {
+        app.append(make('p', '目前沒有已發布的教師'));
+      }
+      return;
+    }
+
+    const teacher = teachers.find(t => t.id === id);
+
+    if (!teacher) {
+      app.append(make('p', '找不到指定教師資料', 'notice'));
+      return;
+    }
+
+    renderTeacher(teacher);
+
+  } catch (err) {
+    app.replaceChildren();
+    app.append(make('p', err.message, 'notice'));
+  }
+}
+
+loadFaculty();
+</script>
 
 
 </head>
@@ -112,7 +329,7 @@
 
     async function loadFaculty() {
       try {
-        const response = await fetch('./data/faculty-preview.json');
+        const response = await fetch('./data/faculty.json');
         if (!response.ok) {
           throw new Error('尚未發布正式教師資料');
         }
