@@ -1,0 +1,49 @@
+:root{--marine:#17618c;--navy:#143f5a;--ink:#28343e;--muted:#687887;--line:#dce4eb;--soft:#f5f8fa}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;color:var(--ink);font-family:Arial,"Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:16px;line-height:1.65;overflow-wrap:anywhere}
+[hidden]{display:none!important}
+a{color:var(--marine);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3px}
+#app{max-width:1060px;margin:0 auto;padding:14px 16px 30px}
+.toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px}
+.language-switch{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.language-switch a{padding:5px 13px;font-size:14px;color:var(--marine)}
+.language-switch a[aria-current="page"]{background:var(--marine);color:#fff;font-weight:700;text-decoration:none}
+.preview-notice{background:#fff4d9;color:#785100;text-align:center;font-weight:700;padding:10px 16px;border-bottom:1px solid #f0d9a1}
+.info-notice{border:1px solid var(--line);border-radius:9px;background:var(--soft);padding:20px;color:var(--muted)}
+.faculty-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.faculty-card{display:flex;min-width:0;align-items:flex-start;gap:17px;padding:18px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 2px 9px rgba(13,65,95,.045)}
+.faculty-card:hover{border-color:#a9c5d6;box-shadow:0 5px 15px rgba(13,65,95,.08)}
+.faculty-photo{display:block;width:113px;height:141px;flex:0 0 113px;object-fit:cover;object-position:center top;border-radius:6px;background:var(--soft)}
+.faculty-photo-fallback{display:flex;align-items:center;justify-content:center;color:#8a9baa;font-size:12px;text-align:center}
+.faculty-card-info{min-width:0;flex:1}
+.faculty-name{font-size:21px;font-weight:700;color:var(--navy);line-height:1.35;margin:1px 0 5px}
+.faculty-name a{color:inherit}
+.faculty-altname{color:var(--muted);font-size:14px;margin:0 0 7px}
+.faculty-title{font-weight:600;margin:0 0 3px;font-size:15px}
+.faculty-unit{color:var(--muted);font-size:14px;margin:0 0 8px}
+.faculty-expertise{font-size:14px;margin:5px 0;color:#4b5b66;white-space:pre-line}
+.faculty-contact{font-size:14px;margin:4px 0}
+.faculty-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;font-size:14px}
+.profile{display:flex;align-items:flex-start;gap:25px;padding:24px 25px;background:var(--soft);border-left:4px solid var(--marine);border-radius:0 10px 10px 0;margin-bottom:25px}
+.profile .faculty-photo{width:132px;height:166px;flex-basis:132px}
+.profile-info{flex:1;min-width:0}
+.profile-name{font-size:28px;line-height:1.35;margin:0 0 5px;color:var(--navy)}
+.profile-back{display:inline-block;margin:0 0 14px;font-size:14px}
+.profile-expertise{font-size:15px;white-space:pre-line;margin:8px 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:0 0 9px;margin-bottom:20px}
+.tab-button{cursor:pointer;border:1px solid #d5e0e8;border-radius:7px;background:#f5f8fa;padding:9px 14px;color:var(--navy);font-weight:600;font-size:15px}
+.tab-button:hover{background:#e8f0f5}
+.tab-button[aria-selected="true"]{color:#fff;background:var(--marine);border-color:var(--marine)}
+.tab-panel{padding:0 5px 4px;min-height:60px}
+.entry-list{margin:0;padding-left:26px}
+.entry-list li{margin:8px 0;white-space:pre-line}
+.entry{margin:0 0 17px}
+.entry-title{font-weight:700;margin:0 0 4px}
+.entry-content{margin:0;white-space:pre-line}
+.entry-link{display:inline-block;font-size:14px;margin-top:5px}
+@media(max-width:760px){.faculty-list{grid-template-columns:1fr}.faculty-card{gap:14px}.faculty-card .faculty-photo{width:105px;height:132px;flex-basis:105px}}
+@media(max-width:520px){#app{padding:12px 12px 22px}.faculty-card{padding:13px}.faculty-card .faculty-photo{width:82px;height:106px;flex-basis:82px}.faculty-name{font-size:19px}.faculty-altname,.faculty-unit,.faculty-contact,.faculty-expertise{font-size:13px}.profile{padding:16px;gap:12px;flex-direction:column}.profile .faculty-photo{width:96px;height:122px;flex-basis:auto}.profile-name{font-size:23px}.tab-button{font-size:14px;padding:8px 10px}}
