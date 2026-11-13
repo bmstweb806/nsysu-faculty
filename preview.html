@@ -27,6 +27,29 @@
     .muted { color: #666; }
     a { color: #17618c; }
   </style>
+  
+  <script>
+  (function () {
+    function sendHeight() {
+      const height = Math.ceil(
+        document.documentElement.scrollHeight
+      );
+  
+      window.parent.postMessage({
+        type: 'NSYSU_FACULTY_HEIGHT',
+        height: height
+      }, '*');
+    }
+  
+    window.addEventListener('load', sendHeight);
+  
+    const observer = new ResizeObserver(sendHeight);
+    observer.observe(document.body);
+  
+    sendHeight();
+  })();
+  </script>
+
 </head>
 <body>
 <div style="padding:10px;background:#fff3cd;text-align:center;font-weight:bold">測試預覽｜非正式教師頁面</div>
