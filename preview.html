@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta name="robots" content="noindex,nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>教師學術經歷</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: white;
+      color: #333;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+      line-height: 1.8;
+    }
+    main { padding: 20px; max-width: 1000px; margin: auto; }
+    h1 { font-size: 24px; }
+    h2 {
+      font-size: 19px;
+      border-bottom: 2px solid #17618c;
+      padding-bottom: 8px;
+    }
+    section { margin-bottom: 28px; }
+    .muted { color: #666; }
+    a { color: #17618c; }
+  </style>
+</head>
+<body>
+<div style="padding:10px;background:#fff3cd;text-align:center;font-weight:bold">測試預覽｜非正式教師頁面</div>
+  <main id="app">
+    <p>正在載入教師資料...</p>
+  </main>
+
+  <script>
+    const app = document.getElementById('app');
+
+    function make(tag, content) {
+      const el = document.createElement(tag);
+      el.textContent = String(content ?? '');
+      return el;
+    }
+
+    async function loadFaculty() {
+      try {
+        const response = await fetch('./data/faculty-preview.json');
+        if (!response.ok) {
+          throw new Error('尚未發布正式教師資料');
+        }
+
+        const data = await response.json();
+        const teachers = data.teachers || [];
+        const id = new URLSearchParams(
+          location.search
+        ).get('teacher');
+
+        app.replaceChildren();
+
+        if (!id) {
+          app.append(make('h1', '教師列表'));
+
+          teachers.forEach(t => {
+            const p = document.createElement('p');
+            const a = make('a', t.name_zh);
+            a.href = '?teacher=' + encodeURIComponent(t.id);
+            p.append(a, make('span', ' — ' + (t.title || '')));
+            app.append(p);
+          });
+
+          if (!teachers.length) {
+            app.append(make('p', '目前沒有已發布的教師'));
+          }
+          return;
+        }
+
+        const teacher = teachers.find(t => t.id === id);
+
+        if (!teacher) {
+          app.append(make('p', '找不到指定的教師資料'));
+          return;
+        }
+
+        app.append(make('h1', teacher.name_zh));
+
+        if (teacher.name_en) {
+          const en = make('p', teacher.name_en);
+          en.className = 'muted';
+          app.append(en);
+        }
+
+        app.append(make('p',
+          [teacher.title, teacher.unit]
+            .filter(Boolean).join('｜')
+        ));
+
+        if (teacher.email) {
+          app.append(make('p', 'Email：' + teacher.email));
+        }
+
+        if (teacher.office) {
+          app.append(make('p', '辦公室：' + teacher.office));
+        }
+
+        (teacher.sections || []).forEach(section => {
+          const box = document.createElement('section');
+          box.append(make('h2', section.title));
+
+          (section.entries || []).forEach(entry => {
+            const item = document.createElement('div');
+
+            if (entry.title) {
+              const strong = make('strong', entry.title);
+              item.append(strong);
+            }
+
+            if (entry.content) {
+              item.append(make('p', entry.content));
+            }
+
+            if (entry.url) {
+              try {
+                const url = new URL(entry.url);
+                if (['https:', 'http:'].includes(url.protocol)) {
+                  const link = make('a', '查看相關連結');
+                  link.href = url.href;
+                  link.target = '_blank';
+                  link.rel = 'noopener noreferrer';
+                  item.append(link);
+                }
+              } catch (_) {}
+            }
+
+            box.append(item);
+          });
+
+          app.append(box);
+        });
+
+      } catch (error) {
+        app.replaceChildren();
+        app.append(make('h1', '教師資料尚未發布'));
+        app.append(make('p', error.message));
+      }
+    }
+
+    loadFaculty();
+  </script>
+</body>
+</html>
