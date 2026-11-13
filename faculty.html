@@ -127,69 +127,187 @@
 
   
 
-  <script>
-  (function () {
-    function initHeightSync() {
-      const app = document.getElementById('app');
-      if (!app) return;
-  
-      let lastHeight = 0;
-      let pending = false;
-  
-      function sendHeight() {
-        pending = false;
-  
-        // 計算實際內容高度，不使用整個視窗高度
-        const blocks = [...document.body.children]
-          .filter(el => el.tagName !== 'SCRIPT');
-  
-        const bottom = blocks.reduce((max, el) => {
-          return Math.max(
-            max,
-            el.getBoundingClientRect().bottom + window.scrollY
-          );
-        }, 0);
-  
-        const height = Math.ceil(bottom + 12);
-  
-        if (height < 100 || height === lastHeight) return;
-        lastHeight = height;
-  
-        window.parent.postMessage({
-          type: 'NSYSU_FACULTY_HEIGHT',
-          height: height
-        }, '*');
-      }
-  
-      function scheduleHeight() {
-        if (pending) return;
-        pending = true;
-        requestAnimationFrame(sendHeight);
-      }
-  
-      // 持續觀察教師內容的尺寸變化
-      const observer = new ResizeObserver(scheduleHeight);
-      observer.observe(document.body);
-      observer.observe(app);
-  
-      window.addEventListener('load', scheduleHeight);
-      window.addEventListener('resize', scheduleHeight);
-  
-      scheduleHeight();
-    }
-  
-    // 等待 HTML 載入完成才啟動
-    if (document.readyState === 'loading') {
-      document.addEventListener(
-        'DOMContentLoaded',
-        initHeightSync,
-        { once: true }
-      );
+
+<script>
+const app = document.getElementById('app');
+
+function make(tag, text, className) {
+  const el = document.createElement(tag);
+  if (text !== undefined && text !== null) {
+    el.textContent = String(text);
+  }
+  if (className) el.className = className;
+  return el;
+}
+
+function validURL(value) {
+  try {
+    const u = new URL(value);
+    return ['https:', 'http:'].includes(u.protocol)
+      ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function addLink(parent, url, label) {
+  const href = validURL(url);
+  if (!href) return;
+
+  const a = make('a', label);
+  a.href = href;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  parent.append(a);
+}
+
+function renderTeacher(t) {
+  const header = make('header', null, 'teacher-profile');
+  const info = make('div', null, 'teacher-info');
+
+  info.append(make('h1', t.name_zh || '未命名教師'));
+
+  if (t.name_en) {
+    info.append(make('p', t.name_en, 'english-name'));
+  }
+  if (t.title) {
+    info.append(make('p', t.title, 'teacher-title'));
+  }
+  if (t.unit) {
+    info.append(make('p', t.unit, 'teacher-unit'));
+  }
+
+  if (t.email) {
+    const p = make('p', 'Email：', 'contact');
+    const a = make('a', t.email);
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t.email)) {
+      a.href = 'mailto:' + t.email;
+      p.append(a);
     } else {
-      initHeightSync();
+      p.append(t.email);
     }
-  })();
-  </script>
+    info.append(p);
+  }
+
+  if (t.office) {
+    info.append(make('p', '辦公室：' + t.office, 'contact'));
+  }
+
+  if (t.profile_url) {
+    const p = make('p', null, 'contact');
+    addLink(p, t.profile_url, '官方個人網頁');
+    if (p.childNodes.length) info.append(p);
+  }
+
+  header.append(info);
+
+  const photoURL = validURL(t.photo_url);
+  if (photoURL) {
+    const img = make('img', null, 'teacher-photo');
+    img.src = photoURL;
+    img.alt = t.name_zh || '教師照片';
+    img.loading = 'lazy';
+    img.onerror = () => img.remove();
+    header.append(img);
+  }
+
+  app.append(header);
+
+  (t.sections || []).forEach(section => {
+    const box = make('section', null, 'faculty-section');
+    box.append(make('h2', section.title || '其他資料'));
+
+    let list = null;
+
+    (section.entries || []).forEach(entry => {
+      if (entry.type === 'list_item') {
+        if (!list) {
+          list = make('ul', null, 'entry-list');
+          box.append(list);
+        }
+
+        const li = make('li', entry.content || entry.title);
+        if (entry.url) {
+          li.append(' ');
+          addLink(li, entry.url, '相關連結');
+        }
+        list.append(li);
+
+      } else {
+        list = null;
+
+        const item = make('div', null, 'entry');
+
+        if (entry.title && entry.title !== section.title) {
+          item.append(make('h3', entry.title));
+        }
+
+        if (entry.content) {
+          item.append(make('p', entry.content));
+        }
+
+        if (entry.url) {
+          addLink(item, entry.url, '查看相關連結');
+        }
+
+        box.append(item);
+      }
+    });
+
+    app.append(box);
+  });
+}
+
+async function loadFaculty() {
+  try {
+    // 這行保留，供 Apps Script 產生預覽版本
+    const response = await fetch('./data/faculty.json');
+
+    if (!response.ok) {
+      throw new Error('教師資料尚未發布');
+    }
+
+    const data = await response.json();
+    const teachers = data.teachers || [];
+    const id = new URLSearchParams(location.search)
+      .get('teacher');
+
+    app.replaceChildren();
+
+    if (!id) {
+      app.append(make('h1', '教師列表'));
+
+      teachers.forEach(t => {
+        const a = make('a', null, 'teacher-row');
+        a.href = '?teacher=' + encodeURIComponent(t.id);
+        a.append(make('strong', t.name_zh));
+        a.append('　' + (t.title || ''));
+        app.append(a);
+      });
+
+      if (!teachers.length) {
+        app.append(make('p', '目前沒有已發布的教師'));
+      }
+      return;
+    }
+
+    const teacher = teachers.find(t => t.id === id);
+
+    if (!teacher) {
+      app.append(make('p', '找不到指定教師資料', 'notice'));
+      return;
+    }
+
+    renderTeacher(teacher);
+
+  } catch (err) {
+    app.replaceChildren();
+    app.append(make('p', err.message, 'notice'));
+  }
+}
+
+loadFaculty();
+</script>
 
 
 </head>
