@@ -179,3 +179,27 @@ Google Sheets 資料庫：[NSYSU_Faculty_Database_V3](https://docs.google.com/sp
 `ftvSetup()` **只會建立空白資料結構，不會內建或覆寫分類、Tab、欄位的預設值**。第一次建立空白資料庫後，請在上述設定表輸入至少一筆啟用分類和 Tab 才能建立教師；既有 V3 試算表則不需要重新初始化。
 
 新增設定或更動欄位後，需在管理後台發布新版 JSON，GitHub Pages 才會跟著更新。欄位代碼（`section_key`, `field_key`, `category_key`）建立後應保持穩定；只修改名稱、排序與顯示狀態，以免既有教師資料失去對應。
+
+## Rpage 單一教師個人頁嵌入範本
+
+此儲存庫已提供兩個 **Rpage 內容編輯器可直接貼上** 的片段：
+
+- [rpage/teacher-profile-zh.html](rpage/teacher-profile-zh.html) — 中文單一教師
+- [rpage/teacher-profile-en.html](rpage/teacher-profile-en.html) — English faculty profile
+
+這兩個檔案不是完整網頁，僅包含 `<style>`、`<div>`（內含 `<iframe>`）以及 `<script>`，**沒有** `<html>`、`<head>`、`<body>`。
+
+### 使用步驟
+
+1. 開啟上面的 GitHub 檔案，按 **Raw** 複製全文。
+2. 貼到對應中／英文 Rpage 頁面的 HTML 原始碼編輯器。
+3. 在 `<iframe src="…">` 內把 `teacher=mjlee` 換成 `Teachers.teacher_id` 的實際值，例如 `teacher=jxwu`。
+4. 中文使用 `lang=zh`，英文使用 `lang=en`。
+5. 儲存 Rpage 頁面並檢查是否保留 `<script>`、是否有 iframe 內容。若 Rpage 移除腳本，仍可透過固定高度（預設 760px）顯示，但不會自動調整。
+
+個人頁網址格式：
+`https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&lang=zh`
+
+這些片段會核對 `event.origin`，並以 `event.source === iframe.contentWindow` 配對，避免同頁多個 iframe 互相影響。若同頁包含多個教師，直接重複片段即可，監聽器會自動避免重複註冊。
+
+請注意：GitHub Pages 直接瀏覽的是 `faculty.html`，不是 `rpage/teacher-profile-zh.html`。後者是要**複製到 Rpage 編輯器**的原始碼；上傳到 GitHub 不會自動更新中山大學 Rpage。
