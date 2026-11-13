@@ -47,3 +47,11 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 .entry-link{display:inline-block;font-size:14px;margin-top:5px}
 @media(max-width:760px){.faculty-list{grid-template-columns:1fr}.faculty-card{gap:14px}.faculty-card .faculty-photo{width:105px;height:132px;flex-basis:105px}}
 @media(max-width:520px){#app{padding:12px 12px 22px}.faculty-card{padding:13px}.faculty-card .faculty-photo{width:82px;height:106px;flex-basis:82px}.faculty-name{font-size:19px}.faculty-altname,.faculty-unit,.faculty-contact,.faculty-expertise{font-size:13px}.profile{padding:16px;gap:12px;flex-direction:column}.profile .faculty-photo{width:96px;height:122px;flex-basis:auto}.profile-name{font-size:23px}.tab-button{font-size:14px;padding:8px 10px}}
+
+/* Sheet-configured teacher groups */
+.faculty-category{margin:4px 0 30px}
+.faculty-category-heading{font-size:21px;font-weight:700;color:var(--navy);margin:0 0 14px;border-bottom:2px solid var(--marine);padding:0 0 8px}
+.structured-entry{display:grid;grid-template-columns:minmax(112px,170px) minmax(0,1fr);column-gap:15px;row-gap:9px;padding:15px 18px;margin:0 0 16px;background:var(--soft);border-left:3px solid var(--marine);border-radius:0 7px 7px 0}
+.structured-label{font-weight:700;color:var(--navy);margin:0}
+.structured-value{white-space:pre-line;margin:0}
+@media(max-width:520px){.structured-entry{grid-template-columns:1fr;gap:2px 0}.structured-label:not(:first-child){margin-top:8px}}
