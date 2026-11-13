@@ -139,3 +139,30 @@ Google Sheets 資料庫：[NSYSU_Faculty_Database_V3](https://docs.google.com/sp
 
 **設定更新後仍須透過新版發布函式發布 JSON** 才會反映在 GitHub Pages。GitHub Pages 不會直接存取私人 Google Sheets。設定表及前端已更新；新的 GAS 功能需要先安裝並授權。
 
+## 完整 GAS 來源程式（推薦安裝順序）
+
+目前以 `gas/` 資料夾作為此專案的 **Apps Script 可複製來源碼**。四個檔案都已放在 GitHub，無機密金鑰：
+
+| GitHub 檔案 | Apps Script 中建立的類型／名稱 | 功能 |
+|---|---|---|
+| [gas/Code.gs](gas/Code.gs) | 指令碼 `Code` | 唯一 `onOpen`、唯一 `doGet`、新增教師、自訂／修改教師 ID、雙語基本資料管理、連接 `FacultyConfig` 進行發布 |
+| [gas/FacultyManager.html](gas/FacultyManager.html) | HTML `FacultyManager` | 教師基本資料、中英文內容、個人頁 Tab、教師身分類別 |
+| [gas/FacultyConfig.gs](gas/FacultyConfig.gs) | 指令碼 `FacultyConfig` | 教師分類、動態 Tab／欄位定義、結構化內容編輯與新版 JSON 發布 |
+| [gas/FacultyConfigManager.html](gas/FacultyConfigManager.html) | HTML `FacultyConfigManager` | 動態分類、Tab、欄位管理與內容編輯操作介面 |
+
+安裝到 [V3 Google Sheets](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit) 所綁定的 Apps Script 專案時：
+
+1. 將 `gas/Code.gs` 複製到專案中的 `Code.gs`（取代現有舊版 Code.gs）；確認只有一個 `onOpen()` 和 `doGet(e)`。
+2. 新增指令碼 `FacultyConfig.gs`，貼上同名 GitHub 來源。
+3. 新增 HTML `FacultyManager.html` 與 `FacultyConfigManager.html`，貼上各自內容。這是 **GAS HTML**，不是 GitHub Pages 根目錄的 `faculty.html`。
+4. 在 Apps Script「專案設定 → 指令碼屬性」設定 `GITHUB_TOKEN`，僅放在 Apps Script Properties；**不要提交 Token 到 GitHub**。
+5. 儲存並重新整理試算表，從「教師資料管理 V3」開啟「中英文分頁編輯器」或「教師分類／Tab／欄位設定」。
+6. 若使用獨立 Web App，請部署**新版本**；後台預設 `/exec` 為教師編輯器，`/exec?page=config` 為動態設定介面。請將存取限制設定為管理者，不要公開可修改資料的 Web App。
+
+### 請注意
+
+- `Code.gs` 依賴 `FacultyConfig.gs`，兩者要**一起安裝**。此版本保留單一 `onOpen()` 與 `doGet(e)`。
+- `Code.gs` 中 `ftvPublishPreview()`、`ftvPublishProduction()` 已改為呼叫設定驅動的 `fcfgPublishPreview()`、`fcfgPublishProduction()`。不要再貼上舊的固定八個 Tab 發布函式，否則可能覆蓋 JSON 設定。
+- `FacultyManager.html` 是基礎雙語編輯介面，`FacultyConfigManager.html` 提供完整的自訂欄位編輯，並保存 `field_values_json`。
+- `FacultyCategories`、`TabDefinitions`、`FieldDefinitions` 是**設定資料來源**；網站仍需透過 GAS 發布更新 JSON，才會顯示最新設定。
+- GitHub `gas/` 檔案只是程式碼版本控管，**不會自動同步成已部署的 Apps Script**。
