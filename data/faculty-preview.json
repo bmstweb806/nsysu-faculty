@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "preview": true,
+  "generated_at": "2026-11-13T11:10:20.842Z",
+  "teachers": [
+    {
+      "id": "DEMO-T001",
+      "name_zh": "測試教師甲",
+      "name_en": "Demo Faculty A",
+      "title": "教授",
+      "unit": "示範系所",
+      "email": "demo-a@example.org",
+      "office": "測試辦公室 A",
+      "profile_url": "",
+      "photo_url": "",
+      "sections": [
+        {
+          "id": "DEMO-S001",
+          "key": "bio",
+          "title": "個人簡介",
+          "entries": [
+            {
+              "id": "DEMO-E001",
+              "type": "text",
+              "title": "個人介紹",
+              "content": "這是測試教師甲的示範簡介，並非真實教師資料。",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "DEMO-S002",
+          "key": "education",
+          "title": "學歷",
+          "entries": [
+            {
+              "id": "DEMO-E002",
+              "type": "list_item",
+              "title": "博士",
+              "content": "示範大學生命科學博士（測試資料）",
+              "url": ""
+            },
+            {
+              "id": "DEMO-E003",
+              "type": "list_item",
+              "title": "碩士",
+              "content": "示範大學生物科學碩士（測試資料）",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "DEMO-S003",
+          "key": "expertise",
+          "title": "研究專長",
+          "entries": [
+            {
+              "id": "DEMO-E004",
+              "type": "list_item",
+              "title": "研究方向一",
+              "content": "細胞生物學（示範）",
+              "url": ""
+            },
+            {
+              "id": "DEMO-E005",
+              "type": "list_item",
+              "title": "研究方向二",
+              "content": "分子醫學（示範）",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "DEMO-S004",
+          "key": "publications",
+          "title": "代表著作",
+          "entries": [
+            {
+              "id": "DEMO-E006",
+              "type": "text",
+              "title": "示範論文 A",
+              "content": "Demo Author (2025). Example research article. 測試資料，非真實出版物。",
+              "url": ""
+            },
+            {
+              "id": "DEMO-E007",
+              "type": "text",
+              "title": "示範論文 B",
+              "content": "Demo Author (2024). Another example article. 測試資料，非真實出版物。",
+              "url": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DEMO-T002",
+      "name_zh": "測試教師乙",
+      "name_en": "Demo Faculty B",
+      "title": "副教授",
+      "unit": "示範系所",
+      "email": "demo-b@example.org",
+      "office": "測試辦公室 B",
+      "profile_url": "",
+      "photo_url": "",
+      "sections": [
+        {
+          "id": "DEMO-S005",
+          "key": "bio",
+          "title": "個人簡介",
+          "entries": [
+            {
+              "id": "DEMO-E008",
+              "type": "text",
+              "title": "個人介紹",
+              "content": "這是測試教師乙的示範簡介，並非真實教師資料。",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "DEMO-S006",
+          "key": "expertise",
+          "title": "研究專長",
+          "entries": [
+            {
+              "id": "DEMO-E009",
+              "type": "list_item",
+              "title": "研究方向一",
+              "content": "生物資訊學（示範）",
+              "url": ""
+            },
+            {
+              "id": "DEMO-E010",
+              "type": "list_item",
+              "title": "研究方向二",
+              "content": "系統生物學（示範）",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "DEMO-S007",
+          "key": "projects",
+          "title": "研究計畫",
+          "entries": [
+            {
+              "id": "DEMO-E011",
+              "type": "text",
+              "title": "示範計畫 A",
+              "content": "模擬研究計畫摘要，用於測試資料顯示。",
+              "url": ""
+            },
+            {
+              "id": "DEMO-E012",
+              "type": "text",
+              "title": "示範計畫 B",
+              "content": "模擬研究計畫進度，用於測試資料排序。",
+              "url": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DEMO-T003",
+      "name_zh": "測試教師丙",
+      "name_en": "Demo Faculty C",
+      "title": "助理教授",
+      "unit": "示範系所",
+      "email": "demo-c@example.org",
+      "office": "測試辦公室 C",
+      "profile_url": "",
+      "photo_url": "",
+      "sections": [
+        {
+          "id": "DEMO-S008",
+          "key": "bio",
+          "title": "個人簡介",
+          "entries": [
+            {
+              "id": "DEMO-E013",
+              "type": "text",
+              "title": "個人介紹",
+              "content": "這是測試教師丙的示範簡介，並非真實教師資料。",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "DEMO-S009",
+          "key": "expertise",
+          "title": "研究專長",
+          "entries": [
+            {
+              "id": "DEMO-E014",
+              "type": "list_item",
+              "title": "研究方向一",
+              "content": "免疫學（示範）",
+              "url": ""
+            },
+            {
+              "id": "DEMO-E015",
+              "type": "list_item",
+              "title": "研究方向二",
+              "content": "轉譯醫學（示範）",
+              "url": ""
+            },
+            {
+              "id": "DEMO-E016",
+              "type": "text",
+              "title": "研究概述",
+              "content": "示範內容，供測試長文字、排序及前端排版使用。",
+              "url": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T001",
+      "name_zh": "施慶麟",
+      "name_en": "Ching-Lin Shih",
+      "title": "教授兼教育所所長暨師資培育中心主任",
+      "unit": "國立中山大學教育研究所",
+      "email": "educls@g-mail.nsysu.edu.tw",
+      "office": "",
+      "profile_url": "https://education.nsysu.edu.tw/p/405-1134-241840,c160.php?Lang=zh-tw",
+      "photo_url": "",
+      "sections": [
+        {
+          "id": "S001",
+          "key": "education",
+          "title": "學歷",
+          "entries": [
+            {
+              "id": "E001",
+              "type": "list_item",
+              "title": "最高學歷",
+              "content": "國立中正大學心理計量博士",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "S002",
+          "key": "expertise",
+          "title": "研究專長",
+          "entries": [
+            {
+              "id": "E002",
+              "type": "list_item",
+              "title": "研究專長一",
+              "content": "試題反應理論",
+              "url": ""
+            },
+            {
+              "id": "E003",
+              "type": "list_item",
+              "title": "研究專長二",
+              "content": "電腦化測驗",
+              "url": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
