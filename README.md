@@ -74,3 +74,68 @@ window.addEventListener('message', function(e) {
 - 如果英文項目沒有內容，英文個人頁不會直接使用中文替代；沒有可見項目的分頁會隱藏。
 - 教師 ID 修改後，舊版 `?teacher=...` URL 不會自動重新導向。
 - GitHub Pages 及預覽 JSON **皆屬公開資源**，不要放未授權公開的敏感或私人資料。
+
+
+## V3 可設定教師分類、Tab 與內容欄位（2026-11）
+
+Google Sheets 資料庫：[NSYSU_Faculty_Database_V3](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit)
+
+### Google Sheets 設定表
+
+| 工作表 | 管理用途 |
+|---|---|
+| `FacultyCategories` | 教師分類：代碼、中英文名稱、排序、啟用狀態 |
+| `Teachers` | 每位教師的 `category_key` 指向分類代碼；七位現有教師已分類 |
+| `TabDefinitions` | 個人頁 Tab：代碼、中英文名稱、排序、固定與啟用狀態 |
+| `FieldDefinitions` | 每個 Tab 的欄位：代碼、中英文名稱、欄位類型、排序、必填、啟用與公開 |
+| `<teacher_sheet>` | 教師個別資料；`field_values_json` 儲存自訂欄位值 |
+
+預設分類：`full_time`（專任教師／Full-time Faculty）、`adjunct`（合聘教師／Adjunct Faculty）、`retired`（榮退教師／Retired Faculty）。類別新增、命名與順序均可在試算表修改。
+
+內容欄位可以使用 `text`、`textarea`、`url`、`number`、`date`。新增欄位只要在 `FieldDefinitions` 建立對應 `section_key`、`field_key` 與中英文名稱，**不必修改渲染用 JavaScript 或發布用 GAS**。新增 Tab 同樣可在 `TabDefinitions` 新增一列。
+
+例如 `projects` 新增 `funding_agency`（補助／委託單位／Funding Agency），就會在管理編輯介面出現中文及英文欄位；其內容以 `field_values_json` 儲存，例如：
+
+```json
+{"funding_agency":{"zh":"國家科學及技術委員會","en":"National Science and Technology Council"}}
+```
+
+### 安裝動態管理介面到既有 V3 Apps Script
+
+本 GitHub 儲存庫的以下檔案 **不會自動安裝到 Google Apps Script**：
+
+- [gas/FacultyConfig.gs](gas/FacultyConfig.gs)：可設定的管理/資料操作功能，及覆蓋式 V3 JSON 發布。
+- [gas/FacultyConfigManager.html](gas/FacultyConfigManager.html)：分類、Tab、欄位、教師內容編輯與發布的網頁管理介面。
+
+安裝到與 V3 Sheet 綁定的 Apps Script 專案：
+
+1. 建立 Script 檔 `FacultyConfig`，貼上 `gas/FacultyConfig.gs` 全文。
+2. 建立 HTML 檔 `FacultyConfigManager`，貼上 `gas/FacultyConfigManager.html` 全文。
+3. 在 **既有** 的 `onOpen()` 選單串接：
+   ```javascript
+   .addItem('分類／Tab／欄位設定（V3）', 'fcfgOpenConfig')
+   .addItem('更新新版預覽 JSON', 'fcfgPublishPreview')
+   .addItem('更新新版正式 JSON', 'fcfgPublishProduction')
+   ```
+   注意須加入原本 `createMenu(...)` 鏈中，且必須在 `.addToUi()` 之前，不要建立第二個 `onOpen()`。
+4. 儲存並重新整理試算表，從選單開啟動態管理介面。
+5. 若你原有獨立 Web App `doGet(e)`，可在它的開頭添加：
+   ```javascript
+   if (e && e.parameter && e.parameter.page === 'config') {
+     return fcfgGetAdminHtml();
+   }
+   ```
+   重新部署後，在原本 Web App 網址後加上 `?page=config` 可開啟設定管理介面。**請務必限制 Web App 存取權限**。
+
+### JSON
+
+`data/faculty.json`（正式）、`data/faculty-preview.json`（預覽）新增以下設定：
+
+- `categories`：網站的分組名稱、順序與狀態。
+- `tabs`：各老師個人頁面的標籤名稱、順序、啟用狀態。
+- `fields`：各 Tab 中要如何顯示結構化欄位的名稱、順序、公開狀態。
+- `teachers[].category_key`：教師所屬分類。
+- `teachers[].sections[].entries[].fields`：每個內容項目的雙語欄位值。
+
+**設定更新後仍須透過新版發布函式發布 JSON** 才會反映在 GitHub Pages。GitHub Pages 不會直接存取私人 Google Sheets。設定表及前端已更新；新的 GAS 功能需要先安裝並授權。
+
