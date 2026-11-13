@@ -1,0 +1,55 @@
+<style>
+  /* Rpage 內容區嵌入樣式：不修改 Rpage 其他區域 */
+  .nsysu-faculty-profile-embed {
+    width: 100%;
+    margin: 0;
+  }
+  .nsysu-faculty-profile-embed iframe {
+    display: block;
+    width: 100%;
+    height: 760px; /* 自動高度無法執行時的預設備援 */
+    border: 0;
+    background: #fff;
+  }
+</style>
+
+<div class="nsysu-faculty-profile-embed">
+  <!-- 改 teacher=mjlee 為 Google Sheets「Teachers」中的 teacher_id -->
+  <iframe
+    src="https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&amp;lang=zh"
+    title="教師個人資料"
+    loading="lazy"
+    referrerpolicy="strict-origin-when-cross-origin">
+  </iframe>
+</div>
+
+<script>
+  /* 依 GitHub Pages 傳來的實際內容高度，自動調整 Rpage iframe */
+  (function () {
+    var origin = 'https://bmstweb806.github.io';
+    var installedFlag = '__nsysuFacultyProfileAutoHeightInstalled';
+
+    // 即使同一個 Rpage 放入多位教師，也只需要一個監聽器。
+    if (window[installedFlag]) return;
+    window[installedFlag] = true;
+
+    window.addEventListener('message', function (event) {
+      if (event.origin !== origin) return;
+      if (!event.data || event.data.type !== 'NSYSU_FACULTY_HEIGHT') return;
+
+      var height = Number(event.data.height);
+      if (!isFinite(height) || height < 100 || height > 30000) return;
+
+      var frames = document.querySelectorAll(
+        '.nsysu-faculty-profile-embed iframe'
+      );
+
+      for (var i = 0; i < frames.length; i++) {
+        if (event.source === frames[i].contentWindow) {
+          frames[i].style.height = Math.ceil(height) + 'px';
+          break;
+        }
+      }
+    });
+  })();
+</script>
