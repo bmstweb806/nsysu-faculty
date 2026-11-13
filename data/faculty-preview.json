@@ -1,267 +1,724 @@
 {
-  "version": 1,
+  "schema_version": 3,
+  "generated_at": "2026-11-13T17:20:11.112Z",
   "preview": true,
-  "generated_at": "2026-11-13T11:50:10.546Z",
+  "tabs": [
+    {
+      "key": "education",
+      "zh": "學歷",
+      "en": "Education",
+      "order": 10,
+      "locked": true
+    },
+    {
+      "key": "experience",
+      "zh": "經歷",
+      "en": "Experience",
+      "order": 20,
+      "locked": true
+    },
+    {
+      "key": "courses",
+      "zh": "授課課程",
+      "en": "Courses Taught",
+      "order": 30,
+      "locked": true
+    },
+    {
+      "key": "projects",
+      "zh": "研究計畫",
+      "en": "Research Projects",
+      "order": 40,
+      "locked": true
+    },
+    {
+      "key": "journal",
+      "zh": "學術著作－期刊",
+      "en": "Journal Publications",
+      "order": 50,
+      "locked": true
+    },
+    {
+      "key": "conference",
+      "zh": "學術著作－研討會",
+      "en": "Conference Publications",
+      "order": 60,
+      "locked": true
+    },
+    {
+      "key": "honors",
+      "zh": "榮譽與獎項",
+      "en": "Honors and Awards",
+      "order": 70,
+      "locked": true
+    },
+    {
+      "key": "service",
+      "zh": "學術服務",
+      "en": "Academic Service",
+      "order": 80,
+      "locked": true
+    }
+  ],
   "teachers": [
     {
-      "id": "DEMO-T001",
-      "name_zh": "測試教師甲",
-      "name_en": "Demo Faculty A",
-      "title": "教授",
-      "unit": "示範系所",
-      "email": "demo-a@example.org",
-      "office": "測試辦公室 A",
-      "profile_url": "",
-      "photo_url": "",
+      "id": "mjlee",
+      "name": {
+        "zh": "李孟娟",
+        "en": "Lee, Mon-Juan"
+      },
+      "title": {
+        "zh": "副教授",
+        "en": "Associate Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3006",
+        "en": "IL3006"
+      },
+      "expertise": {
+        "zh": "生物感測技術、藥物篩選平台、奈米生醫材料、幹細胞與再生醫學",
+        "en": "Biosensing technologies; Drug-screening platforms; Nanobiomaterials; Stem cells and regenerative medicine"
+      },
+      "email": "mjlee@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358593,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/458/m/mczh-tw200x200_small358593_463032235939.jpg",
+      "display_order": 10,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
       "sections": [
         {
-          "id": "DEMO-S001",
-          "key": "bio",
-          "title": "個人簡介",
-          "entries": [
-            {
-              "id": "DEMO-E001",
-              "type": "text",
-              "title": "個人介紹",
-              "content": "這是測試教師甲的示範簡介，並非真實教師資料。",
-              "url": ""
-            }
-          ]
-        },
-        {
-          "id": "DEMO-S002",
           "key": "education",
-          "title": "學歷",
           "entries": [
             {
-              "id": "DEMO-E002",
+              "id": "EDU-mjlee-001",
               "type": "list_item",
-              "title": "博士",
-              "content": "示範大學生命科學博士（測試資料）",
-              "url": ""
-            },
-            {
-              "id": "DEMO-E003",
-              "type": "list_item",
-              "title": "碩士",
-              "content": "示範大學生物科學碩士（測試資料）",
-              "url": ""
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立清華大學生命科學系博士",
+                "en": "PhD, Department of Life Science, National Tsing Hua University"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": true
+              }
             }
           ]
         },
         {
-          "id": "DEMO-S003",
-          "key": "expertise",
-          "title": "研究專長",
-          "entries": [
-            {
-              "id": "DEMO-E004",
-              "type": "list_item",
-              "title": "研究方向一",
-              "content": "細胞生物學（示範）",
-              "url": ""
-            },
-            {
-              "id": "DEMO-E005",
-              "type": "list_item",
-              "title": "研究方向二",
-              "content": "分子醫學（示範）",
-              "url": ""
-            }
-          ]
+          "key": "experience",
+          "entries": []
         },
         {
-          "id": "DEMO-S004",
-          "key": "publications",
-          "title": "代表著作",
-          "entries": [
-            {
-              "id": "DEMO-E006",
-              "type": "text",
-              "title": "示範論文 A",
-              "content": "Demo Author (2025). Example research article. 測試資料，非真實出版物。",
-              "url": ""
-            },
-            {
-              "id": "DEMO-E007",
-              "type": "text",
-              "title": "示範論文 B",
-              "content": "Demo Author (2024). Another example article. 測試資料，非真實出版物。",
-              "url": ""
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "DEMO-T002",
-      "name_zh": "測試教師乙",
-      "name_en": "Demo Faculty B",
-      "title": "副教授",
-      "unit": "示範系所",
-      "email": "demo-b@example.org",
-      "office": "測試辦公室 B",
-      "profile_url": "",
-      "photo_url": "",
-      "sections": [
-        {
-          "id": "DEMO-S005",
-          "key": "bio",
-          "title": "個人簡介",
-          "entries": [
-            {
-              "id": "DEMO-E008",
-              "type": "text",
-              "title": "個人介紹",
-              "content": "這是測試教師乙的示範簡介，並非真實教師資料。",
-              "url": ""
-            }
-          ]
+          "key": "courses",
+          "entries": []
         },
         {
-          "id": "DEMO-S006",
-          "key": "expertise",
-          "title": "研究專長",
-          "entries": [
-            {
-              "id": "DEMO-E009",
-              "type": "list_item",
-              "title": "研究方向一",
-              "content": "生物資訊學（示範）",
-              "url": ""
-            },
-            {
-              "id": "DEMO-E010",
-              "type": "list_item",
-              "title": "研究方向二",
-              "content": "系統生物學（示範）",
-              "url": ""
-            }
-          ]
-        },
-        {
-          "id": "DEMO-S007",
           "key": "projects",
-          "title": "研究計畫",
-          "entries": [
-            {
-              "id": "DEMO-E011",
-              "type": "text",
-              "title": "示範計畫 A",
-              "content": "模擬研究計畫摘要，用於測試資料顯示。",
-              "url": ""
-            },
-            {
-              "id": "DEMO-E012",
-              "type": "text",
-              "title": "示範計畫 B",
-              "content": "模擬研究計畫進度，用於測試資料排序。",
-              "url": ""
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "DEMO-T003",
-      "name_zh": "測試教師丙",
-      "name_en": "Demo Faculty C",
-      "title": "助理教授",
-      "unit": "示範系所",
-      "email": "demo-c@example.org",
-      "office": "測試辦公室 C",
-      "profile_url": "",
-      "photo_url": "",
-      "sections": [
-        {
-          "id": "DEMO-S008",
-          "key": "bio",
-          "title": "個人簡介",
-          "entries": [
-            {
-              "id": "DEMO-E013",
-              "type": "text",
-              "title": "個人介紹",
-              "content": "這是測試教師丙的示範簡介，並非真實教師資料。",
-              "url": ""
-            }
-          ]
+          "entries": []
         },
         {
-          "id": "DEMO-S009",
-          "key": "expertise",
-          "title": "研究專長",
-          "entries": [
-            {
-              "id": "DEMO-E014",
-              "type": "list_item",
-              "title": "研究方向一",
-              "content": "免疫學（示範）",
-              "url": ""
-            },
-            {
-              "id": "DEMO-E015",
-              "type": "list_item",
-              "title": "研究方向二",
-              "content": "轉譯醫學（示範）",
-              "url": ""
-            },
-            {
-              "id": "DEMO-E016",
-              "type": "text",
-              "title": "研究概述",
-              "content": "示範內容，供測試長文字、排序及前端排版使用。",
-              "url": ""
-            }
-          ]
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
         }
       ]
     },
     {
       "id": "T001",
-      "name_zh": "施XX",
-      "name_en": "XXXX",
-      "title": "XXXXXX主任",
-      "unit": "國立中山大學XXXX",
-      "email": "educls@g-mail.nsysu.edu.tw",
-      "office": "",
-      "profile_url": "https://education.nsysu.edu.tw/p/405-1134-241840,c160.php?Lang=zh-tw",
+      "name": {
+        "zh": "新教師（請修改）",
+        "en": ""
+      },
+      "title": {
+        "zh": "",
+        "en": ""
+      },
+      "unit": {
+        "zh": "",
+        "en": ""
+      },
+      "office": {
+        "zh": "",
+        "en": ""
+      },
+      "expertise": {
+        "zh": "",
+        "en": ""
+      },
+      "email": "",
+      "profile_url": "",
       "photo_url": "",
+      "display_order": 10,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": false
+      },
       "sections": [
         {
-          "id": "S001",
           "key": "education",
-          "title": "學歷",
+          "entries": []
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "jxwu",
+      "name": {
+        "zh": "巫建興",
+        "en": "Wu, Jian-Xing"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3007",
+        "en": "IL3007"
+      },
+      "expertise": {
+        "zh": "生醫電子系統設計、機器學習與深度學習輔助診斷、無線感測網路技術與應用研發、三維光聲造影系統、醫用超音波",
+        "en": "Biomedical electronic systems design; Machine learning and deep learning-assisted diagnosis; Research and development of wireless sensor network technologies and applications; 3D photoacoustic imaging system; Medical ultrasound"
+      },
+      "email": "jxwu@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358529,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/369/m/mczh-tw200x200_small358529_855637415193.jpg",
+      "display_order": 20,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
           "entries": [
             {
-              "id": "E001",
+              "id": "EDU-jxwu-001",
               "type": "list_item",
-              "title": "最高學歷",
-              "content": "國立中正大學心理計量博士",
-              "url": ""
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立成功大學生物醫學工程學系博士",
+                "en": "Ph.D., Department of Biomedical Engineering, National Cheng Kung University"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": true
+              }
             }
           ]
         },
         {
-          "id": "S002",
-          "key": "expertise",
-          "title": "研究專長",
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "ihyang",
+      "name": {
+        "zh": "楊易軒",
+        "en": "Yang, I-Hsuan"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3009",
+        "en": "IL3009"
+      },
+      "expertise": {
+        "zh": "生醫高分子的修飾及應用、醫用陶瓷及複合材料、組織工程與再生醫學、藥物傳遞系統",
+        "en": "Modification and application of biomedical polymers; Medical ceramics and composite materials; Tissue engineering and regenerative medicine; Drug delivery system"
+      },
+      "email": "ihyang@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358530,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/279/m/mczh-tw200x200_small358530_518165415427.png",
+      "display_order": 30,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
           "entries": [
             {
-              "id": "E002",
+              "id": "EDU-ihyang-001",
               "type": "list_item",
-              "title": "研究專長一",
-              "content": "試題反應理論",
-              "url": ""
-            },
-            {
-              "id": "E003",
-              "type": "list_item",
-              "title": "研究專長二",
-              "content": "電腦化測驗",
-              "url": ""
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立臺灣大學醫學工程學系博士",
+                "en": "Ph.D., Department of Biomedical Engineering, National Taiwan University"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": true
+              }
             }
           ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "hsuanwenlin",
+      "name": {
+        "zh": "林萱文",
+        "en": "Lin, Hsuan-Wen"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3006",
+        "en": "IL3006"
+      },
+      "expertise": {
+        "zh": "生醫影像、分子生物學、神經科學",
+        "en": "Biomedical imaging; Molecular biology; Neuroscience"
+      },
+      "email": "hsuanwenlin@g-mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358531,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/596/m/mczh-tw200x200_small358531_631820115579.png",
+      "display_order": 40,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "id": "EDU-hsuanwenlin-001",
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立清華大學生物科技所博士",
+                "en": "Ph.D., Institute of Biotechnology, National Tsing Hua University"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "wklee",
+      "name": {
+        "zh": "李唯愷",
+        "en": "Lee, Wei-Kai"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3008",
+        "en": "IL3008"
+      },
+      "expertise": {
+        "zh": "醫學影像分析、人工智慧生醫應用、神經影像處理",
+        "en": "Medical image analysis; AI in biomedical application; Neuroimage"
+      },
+      "email": "wklee@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-369434,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/330/m/mczh-tw200x200_small369434_556842759490.jpg",
+      "display_order": 50,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "id": "EDU-wklee-001",
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立陽明交通大學生物醫學影像暨放射科學系博士",
+                "en": "Ph.D., Department of Biomedical Imaging and Radiological Science, National Yang Ming Chiao Tung University"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "cyko",
+      "name": {
+        "zh": "柯瓊媛",
+        "en": "Chiung-Yuan Ko"
+      },
+      "title": {
+        "zh": "副教授（合聘學士後醫學系）",
+        "en": "Associate Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系（合聘學士後醫學系）",
+        "en": "School of Medicine (Joint Appointment)"
+      },
+      "office": {
+        "zh": "",
+        "en": ""
+      },
+      "expertise": {
+        "zh": "神經退化性疾病、神經分子生物學、腦癌抗藥性機轉",
+        "en": "Neurodegenerative diseases; Neuromolecular biology; Mechanisms of drug resistance in brain cancer"
+      },
+      "email": "cyko@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-370513,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/74/m/mczh-tw400x400_small370513_661645354369.jpg",
+      "display_order": 60,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": false
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "id": "EDU-cyko-001",
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立成功大學基礎醫學研究所博士",
+                "en": "Ph.D., Institute of Basic Medical Sciences, National Cheng Kung University"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": false
+              }
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "yc2023",
+      "name": {
+        "zh": "陳彥樺",
+        "en": "Chen, Yen-Hua"
+      },
+      "title": {
+        "zh": "助理教授（合聘學士後醫學系）",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系（合聘學士後醫學系）",
+        "en": "School of Medicine (Joint Appointment)"
+      },
+      "office": {
+        "zh": "",
+        "en": ""
+      },
+      "expertise": {
+        "zh": "免疫學、微生物學、免疫代謝、氣喘、粒線體、基因調控",
+        "en": "Immunology; Microbiology; Immunometabolism; Asthma; Mitochondria; Gene regulation"
+      },
+      "email": "yc2023@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-370512,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/903/m/mczh-tw400x400_small370512_518710554400.jpg",
+      "display_order": 70,
+      "publish_status": "DRAFT",
+      "visible": {
+        "zh": true,
+        "en": false
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "id": "EDU-yc2023-001",
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "美國哥倫比亞大學微生物學與免疫學博士",
+                "en": "Ph.D. in Microbiology & Immunology, Columbia University (New York, USA)"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": false
+              }
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
         }
       ]
     }
