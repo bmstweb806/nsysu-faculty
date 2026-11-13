@@ -1,0 +1,18 @@
+<!-- 貼在 RPage HTML 原始碼區塊（需允許 iframe 與 script） -->
+<iframe id="nsysu-events-frame"
+  src="https://bmstweb806.github.io/nsysu-faculty/events.html"
+  title="學系重要活動日程"
+  loading="lazy"
+  style="width:100%;height:850px;border:0;display:block"
+></iframe>
+<script>
+window.addEventListener('message',function(event){
+  if(event.origin!=='https://bmstweb806.github.io')return;
+  if(event.data&&event.data.type==='NSYSU_EVENTS_HEIGHT'){
+    const frame=document.getElementById('nsysu-events-frame');
+    if(frame&&event.source===frame.contentWindow&&Number.isFinite(event.data.height)){
+      frame.style.height=Math.max(300,Math.min(event.data.height,25000))+'px';
+    }
+  }
+});
+</script>
