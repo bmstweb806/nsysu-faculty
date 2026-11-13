@@ -1,7 +1,7 @@
 {
   "version": 1,
   "preview": true,
-  "generated_at": "2026-11-13T11:10:20.842Z",
+  "generated_at": "2026-11-13T11:15:40.808Z",
   "teachers": [
     {
       "id": "DEMO-T001",
@@ -219,10 +219,10 @@
     },
     {
       "id": "T001",
-      "name_zh": "施慶麟",
-      "name_en": "Ching-Lin Shih",
-      "title": "教授兼教育所所長暨師資培育中心主任",
-      "unit": "國立中山大學教育研究所",
+      "name_zh": "施XX",
+      "name_en": "XXXX",
+      "title": "XXXXXX主任",
+      "unit": "國立中山大學XXXX",
       "email": "educls@g-mail.nsysu.edu.tw",
       "office": "",
       "profile_url": "https://education.nsysu.edu.tw/p/405-1134-241840,c160.php?Lang=zh-tw",
