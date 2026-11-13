@@ -6,26 +6,125 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
   <title>教師學術經歷</title>
+  
   <style>
     * { box-sizing: border-box; }
+  
     body {
       margin: 0;
-      background: white;
-      color: #333;
+      background: #fff;
+      color: #30343b;
       font-family: Arial, "Noto Sans TC", sans-serif;
+      font-size: 16px;
       line-height: 1.8;
+      overflow-wrap: anywhere;
     }
-    main { padding: 20px; max-width: 1000px; margin: auto; }
-    h1 { font-size: 24px; }
-    h2 {
-      font-size: 19px;
-      border-bottom: 2px solid #17618c;
-      padding-bottom: 8px;
+  
+    #app {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px 24px 28px;
     }
-    section { margin-bottom: 28px; }
-    .muted { color: #666; }
+  
+    .teacher-profile {
+      background: #f6f8fb;
+      border-left: 4px solid #17618c;
+      padding: 22px 26px;
+      margin-bottom: 32px;
+      border-radius: 0 8px 8px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+    }
+  
+    .teacher-info { flex: 1; min-width: 0; }
+  
+    h1 {
+      margin: 0 0 2px;
+      font-size: 28px;
+      line-height: 1.4;
+      color: #163f5c;
+    }
+  
+    .english-name {
+      color: #697583;
+      font-size: 15px;
+      margin: 0 0 12px;
+    }
+  
+    .teacher-title {
+      font-weight: 600;
+      margin: 8px 0 2px;
+    }
+  
+    .teacher-unit {
+      color: #596574;
+      margin: 0 0 8px;
+    }
+  
+    .contact { font-size: 14px; margin: 3px 0; }
+  
+    .teacher-photo {
+      width: 120px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+  
+    .faculty-section { margin-bottom: 30px; }
+  
+    .faculty-section h2 {
+      font-size: 20px;
+      color: #17618c;
+      border-bottom: 1px solid #d7dfe7;
+      padding: 0 0 9px 12px;
+      margin: 0 0 16px;
+      position: relative;
+    }
+  
+    .faculty-section h2::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 4px;
+      height: 23px;
+      background: #17618c;
+      border-radius: 4px;
+    }
+  
+    .entry-list { margin: 0; padding-left: 26px; }
+    .entry-list li { margin: 5px 0; }
+    .entry { margin: 0 0 15px; }
+    .entry h3 { font-size: 16px; margin: 0 0 3px; }
+    .entry p { margin: 0; white-space: pre-line; }
+  
     a { color: #17618c; }
+    .teacher-row {
+      display: block;
+      border-bottom: 1px solid #e1e5ea;
+      padding: 12px 0;
+      text-decoration: none;
+    }
+    .teacher-row:hover { text-decoration: underline; }
+    .muted { color: #687583; }
+    .notice { padding: 16px; background: #f6f8fb; }
+  
+    @media (max-width: 600px) {
+      #app { padding: 16px 14px 20px; }
+      h1 { font-size: 24px; }
+      .teacher-profile {
+        padding: 16px;
+        gap: 12px;
+      }
+      .teacher-photo {
+        width: 84px;
+        height: 108px;
+      }
+      .faculty-section h2 { font-size: 18px; }
+    }
   </style>
+
   
 
   <script>
