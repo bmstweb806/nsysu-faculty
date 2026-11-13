@@ -28,27 +28,71 @@
     a { color: #17618c; }
   </style>
   
+
   <script>
   (function () {
-    function sendHeight() {
-      const height = Math.ceil(
-        document.documentElement.scrollHeight
-      );
+    function initHeightSync() {
+      const app = document.getElementById('app');
+      if (!app) return;
   
-      window.parent.postMessage({
-        type: 'NSYSU_FACULTY_HEIGHT',
-        height: height
-      }, '*');
+      let lastHeight = 0;
+      let pending = false;
+  
+      function sendHeight() {
+        pending = false;
+  
+        // 計算實際內容高度，不使用整個視窗高度
+        const blocks = [...document.body.children]
+          .filter(el => el.tagName !== 'SCRIPT');
+  
+        const bottom = blocks.reduce((max, el) => {
+          return Math.max(
+            max,
+            el.getBoundingClientRect().bottom + window.scrollY
+          );
+        }, 0);
+  
+        const height = Math.ceil(bottom + 12);
+  
+        if (height < 100 || height === lastHeight) return;
+        lastHeight = height;
+  
+        window.parent.postMessage({
+          type: 'NSYSU_FACULTY_HEIGHT',
+          height: height
+        }, '*');
+      }
+  
+      function scheduleHeight() {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(sendHeight);
+      }
+  
+      // 持續觀察教師內容的尺寸變化
+      const observer = new ResizeObserver(scheduleHeight);
+      observer.observe(document.body);
+      observer.observe(app);
+  
+      window.addEventListener('load', scheduleHeight);
+      window.addEventListener('resize', scheduleHeight);
+  
+      scheduleHeight();
     }
   
-    window.addEventListener('load', sendHeight);
-  
-    const observer = new ResizeObserver(sendHeight);
-    observer.observe(document.body);
-  
-    sendHeight();
+    // 等待 HTML 載入完成才啟動
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+        'DOMContentLoaded',
+        initHeightSync,
+        { once: true }
+      );
+    } else {
+      initHeightSync();
+    }
   })();
   </script>
+
 
 </head>
 <body>
