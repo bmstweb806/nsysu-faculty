@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "generated_at": "2026-11-13T18:02:07.211Z",
+  "generated_at": "2026-11-13T18:26:50.782Z",
   "preview": false,
   "tabs": [
     {
@@ -76,9 +76,431 @@
       "entry_layout": "list"
     }
   ],
+  "categories": [
+    {
+      "key": "full_time",
+      "zh": "專任教師",
+      "en": "Full-time Faculty",
+      "order": 10,
+      "is_active": true
+    },
+    {
+      "key": "adjunct",
+      "zh": "合聘教師",
+      "en": "Adjunct Faculty",
+      "order": 20,
+      "is_active": true
+    },
+    {
+      "key": "retired",
+      "zh": "榮退教師",
+      "en": "Retired Faculty",
+      "order": 30,
+      "is_active": true
+    }
+  ],
+  "fields": [
+    {
+      "section_key": "education",
+      "key": "degree",
+      "zh": "學位",
+      "en": "Degree",
+      "type": "text",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "experience",
+      "key": "position",
+      "zh": "職務",
+      "en": "Position",
+      "type": "text",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "courses",
+      "key": "academic_year",
+      "zh": "學年度",
+      "en": "Academic Year",
+      "type": "text",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "projects",
+      "key": "project_title",
+      "zh": "計畫名稱",
+      "en": "Project Title",
+      "type": "textarea",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "journal",
+      "key": "authors",
+      "zh": "作者",
+      "en": "Authors",
+      "type": "textarea",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "conference",
+      "key": "authors",
+      "zh": "作者",
+      "en": "Authors",
+      "type": "textarea",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "honors",
+      "key": "award_name",
+      "zh": "獎項",
+      "en": "Award",
+      "type": "text",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "service",
+      "key": "position",
+      "zh": "服務職務",
+      "en": "Service Role",
+      "type": "text",
+      "order": 10,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "education",
+      "key": "institution",
+      "zh": "學校",
+      "en": "Institution",
+      "type": "text",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "experience",
+      "key": "organization",
+      "zh": "任職單位",
+      "en": "Organization",
+      "type": "text",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "courses",
+      "key": "semester",
+      "zh": "學期",
+      "en": "Semester",
+      "type": "text",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "projects",
+      "key": "funding_agency",
+      "zh": "補助／委託單位",
+      "en": "Funding Agency",
+      "type": "text",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "journal",
+      "key": "paper_title",
+      "zh": "論文名稱",
+      "en": "Article Title",
+      "type": "textarea",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "conference",
+      "key": "paper_title",
+      "zh": "論文名稱",
+      "en": "Paper Title",
+      "type": "textarea",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "honors",
+      "key": "awarding_body",
+      "zh": "頒獎單位",
+      "en": "Awarding Organization",
+      "type": "text",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "service",
+      "key": "organization",
+      "zh": "服務單位",
+      "en": "Organization",
+      "type": "text",
+      "order": 20,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "education",
+      "key": "department",
+      "zh": "系所",
+      "en": "Department",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "experience",
+      "key": "start_date",
+      "zh": "開始日期",
+      "en": "Start Date",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "courses",
+      "key": "course_name",
+      "zh": "課程名稱",
+      "en": "Course Name",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "projects",
+      "key": "project_number",
+      "zh": "計畫編號",
+      "en": "Project Number",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "journal",
+      "key": "journal_name",
+      "zh": "期刊名稱",
+      "en": "Journal",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "conference",
+      "key": "conference_name",
+      "zh": "研討會名稱",
+      "en": "Conference Name",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "honors",
+      "key": "award_date",
+      "zh": "獲獎日期",
+      "en": "Award Date",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "service",
+      "key": "period",
+      "zh": "服務期間",
+      "en": "Service Period",
+      "type": "text",
+      "order": 30,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "education",
+      "key": "graduation_year",
+      "zh": "畢業年度",
+      "en": "Graduation Year",
+      "type": "text",
+      "order": 40,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "experience",
+      "key": "end_date",
+      "zh": "結束日期",
+      "en": "End Date",
+      "type": "text",
+      "order": 40,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "courses",
+      "key": "course_code",
+      "zh": "課程代碼",
+      "en": "Course Code",
+      "type": "text",
+      "order": 40,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "projects",
+      "key": "period",
+      "zh": "執行期間",
+      "en": "Project Period",
+      "type": "text",
+      "order": 40,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "journal",
+      "key": "year",
+      "zh": "出版年度",
+      "en": "Publication Year",
+      "type": "text",
+      "order": 40,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "conference",
+      "key": "conference_date",
+      "zh": "會議日期",
+      "en": "Conference Date",
+      "type": "text",
+      "order": 40,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "courses",
+      "key": "credits",
+      "zh": "學分數",
+      "en": "Credits",
+      "type": "text",
+      "order": 50,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "projects",
+      "key": "role",
+      "zh": "擔任角色",
+      "en": "Role",
+      "type": "text",
+      "order": 50,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "journal",
+      "key": "volume_issue",
+      "zh": "卷期",
+      "en": "Volume / Issue",
+      "type": "text",
+      "order": 50,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "conference",
+      "key": "venue",
+      "zh": "會議地點",
+      "en": "Venue",
+      "type": "text",
+      "order": 50,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "journal",
+      "key": "pages",
+      "zh": "頁碼",
+      "en": "Pages",
+      "type": "text",
+      "order": 60,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    },
+    {
+      "section_key": "journal",
+      "key": "doi",
+      "zh": "DOI",
+      "en": "DOI",
+      "type": "url",
+      "order": 70,
+      "required": false,
+      "is_active": true,
+      "show_public": true
+    }
+  ],
   "teachers": [
     {
       "id": "mjlee",
+      "category_key": "full_time",
       "name": {
         "zh": "李孟娟",
         "en": "Lee, Mon-Juan"
@@ -128,7 +550,8 @@
               "visible": {
                 "zh": true,
                 "en": true
-              }
+              },
+              "fields": {}
             }
           ]
         },
@@ -142,7 +565,46 @@
         },
         {
           "key": "projects",
-          "entries": []
+          "entries": [
+            {
+              "id": "E-5573B978-9A8",
+              "type": "list_item",
+              "title": {
+                "zh": "test",
+                "en": "test"
+              },
+              "content": {
+                "zh": "test",
+                "en": "test"
+              },
+              "url": "",
+              "sort_order": 10,
+              "visible": {
+                "zh": true,
+                "en": false
+              },
+              "fields": {}
+            },
+            {
+              "id": "E-CE76807A-840",
+              "type": "list_item",
+              "title": {
+                "zh": "test",
+                "en": "test"
+              },
+              "content": {
+                "zh": "test",
+                "en": "test"
+              },
+              "url": "",
+              "sort_order": 20,
+              "visible": {
+                "zh": true,
+                "en": false
+              },
+              "fields": {}
+            }
+          ]
         },
         {
           "key": "journal",
@@ -160,11 +622,11 @@
           "key": "service",
           "entries": []
         }
-      ],
-      "category_key": "full_time"
+      ]
     },
     {
       "id": "jxwu",
+      "category_key": "full_time",
       "name": {
         "zh": "巫建興",
         "en": "Wu, Jian-Xing"
@@ -214,7 +676,8 @@
               "visible": {
                 "zh": true,
                 "en": true
-              }
+              },
+              "fields": {}
             }
           ]
         },
@@ -246,11 +709,11 @@
           "key": "service",
           "entries": []
         }
-      ],
-      "category_key": "full_time"
+      ]
     },
     {
       "id": "ihyang",
+      "category_key": "full_time",
       "name": {
         "zh": "楊易軒",
         "en": "Yang, I-Hsuan"
@@ -300,7 +763,8 @@
               "visible": {
                 "zh": true,
                 "en": true
-              }
+              },
+              "fields": {}
             }
           ]
         },
@@ -332,11 +796,11 @@
           "key": "service",
           "entries": []
         }
-      ],
-      "category_key": "full_time"
+      ]
     },
     {
       "id": "hsuanwenlin",
+      "category_key": "full_time",
       "name": {
         "zh": "林萱文",
         "en": "Lin, Hsuan-Wen"
@@ -386,7 +850,8 @@
               "visible": {
                 "zh": true,
                 "en": true
-              }
+              },
+              "fields": {}
             }
           ]
         },
@@ -418,11 +883,11 @@
           "key": "service",
           "entries": []
         }
-      ],
-      "category_key": "full_time"
+      ]
     },
     {
       "id": "wklee",
+      "category_key": "full_time",
       "name": {
         "zh": "李唯愷",
         "en": "Lee, Wei-Kai"
@@ -472,7 +937,8 @@
               "visible": {
                 "zh": true,
                 "en": true
-              }
+              },
+              "fields": {}
             }
           ]
         },
@@ -504,11 +970,11 @@
           "key": "service",
           "entries": []
         }
-      ],
-      "category_key": "full_time"
+      ]
     },
     {
       "id": "cyko",
+      "category_key": "adjunct",
       "name": {
         "zh": "柯瓊媛",
         "en": "Chiung-Yuan Ko"
@@ -558,7 +1024,8 @@
               "visible": {
                 "zh": true,
                 "en": false
-              }
+              },
+              "fields": {}
             }
           ]
         },
@@ -590,11 +1057,11 @@
           "key": "service",
           "entries": []
         }
-      ],
-      "category_key": "adjunct"
+      ]
     },
     {
       "id": "yc2023",
+      "category_key": "adjunct",
       "name": {
         "zh": "陳彥樺",
         "en": "Chen, Yen-Hua"
@@ -644,7 +1111,8 @@
               "visible": {
                 "zh": true,
                 "en": false
-              }
+              },
+              "fields": {}
             }
           ]
         },
@@ -676,429 +1144,7 @@
           "key": "service",
           "entries": []
         }
-      ],
-      "category_key": "adjunct"
-    }
-  ],
-  "categories": [
-    {
-      "key": "full_time",
-      "zh": "專任教師",
-      "en": "Full-time Faculty",
-      "order": 10,
-      "is_active": true
-    },
-    {
-      "key": "adjunct",
-      "zh": "合聘教師",
-      "en": "Adjunct Faculty",
-      "order": 20,
-      "is_active": true
-    },
-    {
-      "key": "retired",
-      "zh": "榮退教師",
-      "en": "Retired Faculty",
-      "order": 30,
-      "is_active": true
-    }
-  ],
-  "fields": [
-    {
-      "section_key": "education",
-      "key": "degree",
-      "zh": "學位",
-      "en": "Degree",
-      "type": "text",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "education",
-      "key": "institution",
-      "zh": "學校",
-      "en": "Institution",
-      "type": "text",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "education",
-      "key": "department",
-      "zh": "系所",
-      "en": "Department",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "education",
-      "key": "graduation_year",
-      "zh": "畢業年度",
-      "en": "Graduation Year",
-      "type": "text",
-      "order": 40,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "experience",
-      "key": "position",
-      "zh": "職務",
-      "en": "Position",
-      "type": "text",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "experience",
-      "key": "organization",
-      "zh": "任職單位",
-      "en": "Organization",
-      "type": "text",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "experience",
-      "key": "start_date",
-      "zh": "開始日期",
-      "en": "Start Date",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "experience",
-      "key": "end_date",
-      "zh": "結束日期",
-      "en": "End Date",
-      "type": "text",
-      "order": 40,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "courses",
-      "key": "academic_year",
-      "zh": "學年度",
-      "en": "Academic Year",
-      "type": "text",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "courses",
-      "key": "semester",
-      "zh": "學期",
-      "en": "Semester",
-      "type": "text",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "courses",
-      "key": "course_name",
-      "zh": "課程名稱",
-      "en": "Course Name",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "courses",
-      "key": "course_code",
-      "zh": "課程代碼",
-      "en": "Course Code",
-      "type": "text",
-      "order": 40,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "courses",
-      "key": "credits",
-      "zh": "學分數",
-      "en": "Credits",
-      "type": "text",
-      "order": 50,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "projects",
-      "key": "project_title",
-      "zh": "計畫名稱",
-      "en": "Project Title",
-      "type": "textarea",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "projects",
-      "key": "funding_agency",
-      "zh": "補助／委託單位",
-      "en": "Funding Agency",
-      "type": "text",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "projects",
-      "key": "project_number",
-      "zh": "計畫編號",
-      "en": "Project Number",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "projects",
-      "key": "period",
-      "zh": "執行期間",
-      "en": "Project Period",
-      "type": "text",
-      "order": 40,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "projects",
-      "key": "role",
-      "zh": "擔任角色",
-      "en": "Role",
-      "type": "text",
-      "order": 50,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "journal",
-      "key": "authors",
-      "zh": "作者",
-      "en": "Authors",
-      "type": "textarea",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "journal",
-      "key": "paper_title",
-      "zh": "論文名稱",
-      "en": "Article Title",
-      "type": "textarea",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "journal",
-      "key": "journal_name",
-      "zh": "期刊名稱",
-      "en": "Journal",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "journal",
-      "key": "year",
-      "zh": "出版年度",
-      "en": "Publication Year",
-      "type": "text",
-      "order": 40,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "journal",
-      "key": "volume_issue",
-      "zh": "卷期",
-      "en": "Volume / Issue",
-      "type": "text",
-      "order": 50,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "journal",
-      "key": "pages",
-      "zh": "頁碼",
-      "en": "Pages",
-      "type": "text",
-      "order": 60,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "journal",
-      "key": "doi",
-      "zh": "DOI",
-      "en": "DOI",
-      "type": "url",
-      "order": 70,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "conference",
-      "key": "authors",
-      "zh": "作者",
-      "en": "Authors",
-      "type": "textarea",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "conference",
-      "key": "paper_title",
-      "zh": "論文名稱",
-      "en": "Paper Title",
-      "type": "textarea",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "conference",
-      "key": "conference_name",
-      "zh": "研討會名稱",
-      "en": "Conference Name",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "conference",
-      "key": "conference_date",
-      "zh": "會議日期",
-      "en": "Conference Date",
-      "type": "text",
-      "order": 40,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "conference",
-      "key": "venue",
-      "zh": "會議地點",
-      "en": "Venue",
-      "type": "text",
-      "order": 50,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "honors",
-      "key": "award_name",
-      "zh": "獎項",
-      "en": "Award",
-      "type": "text",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "honors",
-      "key": "awarding_body",
-      "zh": "頒獎單位",
-      "en": "Awarding Organization",
-      "type": "text",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "honors",
-      "key": "award_date",
-      "zh": "獲獎日期",
-      "en": "Award Date",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "service",
-      "key": "position",
-      "zh": "服務職務",
-      "en": "Service Role",
-      "type": "text",
-      "order": 10,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "service",
-      "key": "organization",
-      "zh": "服務單位",
-      "en": "Organization",
-      "type": "text",
-      "order": 20,
-      "required": false,
-      "is_active": true,
-      "show_public": true
-    },
-    {
-      "section_key": "service",
-      "key": "period",
-      "zh": "服務期間",
-      "en": "Service Period",
-      "type": "text",
-      "order": 30,
-      "required": false,
-      "is_active": true,
-      "show_public": true
+      ]
     }
   ]
 }
