@@ -125,18 +125,42 @@ main{padding:24px 28px;max-height:calc(100vh - 90px)}
  #status{width:100%;text-align:right}
 }
 
+body.auth-locked>header,body.auth-locked>#layout{display:none!important}
+#login-screen{display:none;min-height:100vh;align-items:center;justify-content:center;background:#f3f7fa;padding:20px}
+body.auth-locked #login-screen{display:flex}
+.login-panel{width:100%;max-width:390px;background:#fff;border:1px solid #dce6ed;border-radius:13px;box-shadow:0 12px 40px #123e5b14;padding:30px}
+.login-panel h2{margin:0 0 6px;font-size:22px;color:#123e5b}
+.login-panel p{margin:0 0 20px;font-size:13px;color:#728596}
+.login-panel label{display:grid;gap:6px;font-size:13px;font-weight:600;margin:12px 0}
+.login-panel input{width:100%;padding:11px 12px;border:1px solid #bfd1dd;border-radius:7px}
+.login-panel button{width:100%;padding:10px;margin-top:8px}
+.login-panel .login-error{min-height:20px;margin-top:12px;color:#ac3142;font-size:12px}
+#logout{background:transparent;color:#e7f2f7;border:1px solid #61849c}
+#account-name{font-size:12px;color:#b9d7e6}
 .preview-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f6f9fa;color:#637988;border-bottom:1px solid #e0e8ee;padding:6px 20px;font-size:12px}
 .preview-banner strong{font-size:12px;font-weight:700;color:#3f667d}
 .preview-banner a{color:#17618c;text-decoration:none}
-@media(max-width:520px){.preview-banner{padding:6px 12px}}
-
+.preview-login-hint{font-size:12px;color:#58778c;line-height:1.8;margin-top:12px}
 </style>
 <meta name="robots" content="noindex,nofollow">
 </head>
-<body>
-<div class="preview-banner"><strong>預覽模式 · 不寫入 Google Sheets</strong><a href="https://github.com/bmstweb806/nsysu-faculty/blob/main/gas/FacultyManager.html" target="_blank" rel="noopener">程式碼</a></div>
+<body class="auth-locked">
+<div class="preview-banner"><strong>互動預覽 · 不會寄送郵件或寫入 Google Sheets</strong><a href="https://github.com/bmstweb806/nsysu-faculty/blob/main/gas/FacultyManager.html" target="_blank" rel="noopener">正式程式碼</a></div>
+<div id="login-screen"><div class="login-panel">
+<h2>教師資料管理</h2><p>Faculty Management · Email 驗證碼登入</p>
+<form id="otp-request-form">
+<label>電子郵件<input id="login-email" type="email" autocomplete="email" required placeholder="name@mail.nsysu.edu.tw"></label>
+<button class="primary" type="submit">寄送驗證碼</button>
+</form>
+<form id="otp-verify-form" hidden>
+<label>6 位數驗證碼<input id="login-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label>
+<button class="primary" type="submit">驗證並登入</button>
+</form>
+<div id="login-error" class="login-error" role="status" aria-live="polite"></div>
+<div class="preview-login-hint">系辦：demo.admin@example.com<br>教師：demo.teacher@example.com<br>驗證碼：<strong>123456</strong></div>
+</div></div>
 <header>
-<h1>教師管理</h1>
+<h1>教師管理</h1><span id="account-name"></span><button id="logout" type="button">登出</button>
 <select id="teacher-select" aria-label="選擇教師"></select>
 <button id="new-teacher">＋ 教師</button>
 <button id="save" class="primary">儲存</button>
@@ -244,9 +268,62 @@ main{padding:24px 28px;max-height:calc(100vh - 90px)}
       return getTeacher(nextId);
     }
   };
+
+  // DEMO ONLY: no real email is sent, no GAS, no permission table or Sheets access.
+  const demoUsers = {
+    'demo.admin@example.com': {email:'demo.admin@example.com',role:'ADMIN',teacher_id:''},
+    'demo.teacher@example.com': {email:'demo.teacher@example.com',role:'TEACHER',teacher_id:'mjlee'}
+  };
+  const demoSessions = {};
+  const pending = {};
+  function auth(token, teacherId, adminOnly) {
+    const a=demoSessions[token];
+    if(!a)throw Error('請先登入示範帳號');
+    if(adminOnly && a.role!=='ADMIN')throw Error('只有管理員可使用');
+    if(teacherId && a.role!=='ADMIN' && a.teacher_id!==teacherId)throw Error('無權編輯其他教師');
+    return a;
+  }
+  handlers.ftaRequestCode = email => {
+    if(!demoUsers[String(email||'').toLowerCase()])return {ok:true,message:'示範帳號請使用畫面上提供的 Email'};
+    pending[email.toLowerCase()]=true;
+    return {ok:true,message:'示範驗證碼：123456（僅供預覽）'};
+  };
+  handlers.ftaVerifyCode = (email,code) => {
+    const e=String(email||'').toLowerCase();
+    if(!pending[e]||String(code)!=='123456')throw Error('示範驗證碼為 123456');
+    const token='demo_'+Math.random().toString(36).slice(2);
+    demoSessions[token]=demoUsers[e];
+    delete pending[e];
+    return {token,account:clone(demoUsers[e])};
+  };
+  handlers.ftaLogout = token => {delete demoSessions[token];return {ok:true};};
+  const bootstrap=handlers.ftvGetBootstrap;
+  handlers.ftvGetBootstrap=token=>{
+    const a=auth(token),data=bootstrap();
+    if(a.role==='TEACHER')data.teachers=data.teachers.filter(t=>t.id===a.teacher_id);
+    return data;
+  };
+  const getTeacherHandler=handlers.ftvGetTeacher;
+  handlers.ftvGetTeacher=(id,token)=>{auth(token,id);return getTeacherHandler(id);};
+  const createTeacherHandler=handlers.ftvCreateTeacher;
+  handlers.ftvCreateTeacher=(id,token)=>{auth(token,null,true);return createTeacherHandler(id);};
+  const createTabHandler=handlers.fcfgCreateTab;
+  handlers.fcfgCreateTab=(zh,en,token)=>{auth(token,null,true);return createTabHandler(zh,en);};
+  const saveTeacherHandler=handlers.ftvSaveTeacher;
+  handlers.ftvSaveTeacher=(payload,token)=>{
+    const a=auth(token,payload.originalTeacherId);
+    if(a.role==='TEACHER'){
+      if(payload.teacher.teacher_id!==payload.originalTeacherId)throw Error('教師 ID 不可修改');
+      const current=pick(payload.originalTeacherId).teacher;
+      for(const key of ['category_key','publish_status','visible_zh','visible_en'])
+        payload.teacher[key]=current[key];
+    }
+    return saveTeacherHandler(payload);
+  };
   window.google = {
     script: {
       run: {
+        ftaLogout(token){return handlers.ftaLogout(token);},
         withSuccessHandler(success) {
           return {
             withFailureHandler(failure) {
@@ -272,12 +349,58 @@ main{padding:24px 28px;max-height:calc(100vh - 90px)}
 
 
 
+
 </script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
 let boot=null,model=null,originalId='',active='basic',dirty=false,busy=false;
 let resizing=null,dragged=null;
+let authToken='',authAccount=null,loginBusy=false;
+function loginMessage(text,error=false){
+ const el=$('login-error');el.textContent=text;el.style.color=error?'#ac3142':'#42778d';
+}
+function loginCall(name,args,success){
+ if(loginBusy)return;loginBusy=true;
+ document.querySelectorAll('#login-screen button').forEach(b=>b.disabled=true);
+ google.script.run.withSuccessHandler(result=>{
+  loginBusy=false;document.querySelectorAll('#login-screen button').forEach(b=>b.disabled=false);
+  success(result);
+ }).withFailureHandler(err=>{
+  loginBusy=false;document.querySelectorAll('#login-screen button').forEach(b=>b.disabled=false);
+  loginMessage(err?.message||String(err),true);
+ })[name](...args);
+}
+$('otp-request-form').addEventListener('submit',e=>{
+ e.preventDefault();
+ loginMessage('寄送中…');
+ loginCall('ftaRequestCode',[$('login-email').value.trim()],result=>{
+  $('otp-verify-form').hidden=false;
+  loginMessage(result.message||'請檢查電子郵件');
+  $('login-code').focus();
+ });
+});
+$('otp-verify-form').addEventListener('submit',e=>{
+ e.preventDefault();
+ loginMessage('驗證中…');
+ loginCall('ftaVerifyCode',[$('login-email').value.trim(),$('login-code').value.trim()],result=>{
+  authToken=result.token;authAccount=result.account;
+  document.body.classList.remove('auth-locked');
+  $('account-name').textContent=authAccount.email;
+  $('new-teacher').hidden=authAccount.role!=='ADMIN';
+  $('teacher-select').hidden=authAccount.role!=='ADMIN';
+  loadBootstrap();
+ });
+});
+$('logout').addEventListener('click',()=>{
+ const token=authToken;
+ authToken='';authAccount=null;boot=null;model=null;dirty=false;
+ document.body.classList.add('auth-locked');
+ $('login-code').value='';$('otp-verify-form').hidden=true;
+ loginMessage('已登出');
+ if(token)google.script.run.ftaLogout(token);
+});
+
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
 function status(message,error=false){
  $('status').textContent=message;
@@ -293,7 +416,7 @@ function invoke(name,args,callback){
  }).withFailureHandler(e=>{
   busy=false;document.querySelectorAll('header button').forEach(b=>b.disabled=false);
   status(e?.message||String(e),true);
- })[name](...(args||[]));
+ })[name](...(args||[]),authToken);
 }
 function changed(){dirty=true;status('未儲存');}
 function canLeave(){return !dirty||confirm('有尚未儲存的變更，確定捨棄？');}
@@ -316,6 +439,7 @@ function renderTabs(){
   '<label>English<input id="new-category-en" maxlength="150" placeholder="Patents"></label>'+
   '<div class="row"><button class="primary" type="submit">建立分類</button>'+
   '<button id="cancel-category" type="button">取消</button></div></form>';
+ $('add-category-toggle').hidden=authAccount?.role!=='ADMIN';
  $('tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{
    active=b.dataset.tab;renderTabs();render();
  });
@@ -390,6 +514,12 @@ function renderProfile(){
    cat.appendChild(option);
  }
  cat.value=t.category_key;
+ if(authAccount?.role!=='ADMIN'){
+  for(const k of ['teacher_id','category_key','publish_status','visible_zh','visible_en']){
+   const el=$('editor').querySelector('[data-profile="'+k+'"]');
+   if(el)el.disabled=true;
+  }
+ }
  const statusSelect=$('editor').querySelector('[data-profile="publish_status"]');
  statusSelect.value=t.publish_status||'DRAFT';
  for(const k of ['visible_zh','visible_en']){
@@ -601,7 +731,7 @@ $('save').onclick=()=>{
  });
 };
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
-loadBootstrap();
+// No faculty data is loaded before successful OTP verification.
 </script>
 </body>
 </html>
