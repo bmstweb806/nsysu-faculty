@@ -4,7 +4,8 @@
  */
 function fcfgGetConfig(){
  const base=ftvGetBootstrap();
- return {...base,teachers:ftvTable_(FTV.teachers).items.map(t=>({
+ return {...base,categories:ftvCategories_(),tabs:ftvDefinitions_(),fields:ftvFields_(),
+ teachers:ftvTable_(FTV.teachers).items.map(t=>({
    id:String(t.teacher_id),name:String(t.name_zh||t.teacher_id),
    category_key:String(t.category_key||''),sheet:String(t.teacher_sheet||'')
  }))};
