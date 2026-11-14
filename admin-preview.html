@@ -68,25 +68,60 @@ aside .category-form .row .primary{background:var(--blue);color:white}
 .actions{display:flex;flex-wrap:wrap;gap:7px}
 @media(max-width:750px){#layout{grid-template-columns:1fr}aside{display:flex;flex-wrap:wrap;gap:5px;padding:8px;border-right:0;border-bottom:1px solid var(--line)}aside button{display:inline-block;width:auto;margin:0;padding:7px}main{max-height:none}.profile-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){main{padding:12px}.profile-form{grid-template-columns:1fr}.profile-form .long{grid-column:auto}.card-form,.card-more{grid-template-columns:1fr}.card-content{padding:11px}}
-/* Preview-only banner */
-.preview-banner{background:#fff3d6;color:#755000;padding:10px 18px;font-size:13px;border-bottom:1px solid #e7c779;line-height:1.55}
-.preview-banner strong{display:block;font-size:15px}
-.preview-banner a{color:#175b80}
+
+/* Minimal visual hierarchy: navigation · content · actions */
+header{padding:13px 20px;gap:9px}
+header h1{font-size:17px;font-weight:700;letter-spacing:.02em}
+header select{max-width:230px}
+header button.primary{background:#eaf4fa;border-color:#eaf4fa;color:#164965;font-weight:700}
+header button.primary:hover{background:#fff}
+#status{min-height:0;padding:0;margin-left:2px;border:0;background:none;color:#bad6e6;font-size:12px;white-space:nowrap}
+#status.error{color:#ffc2cb;background:none}
+#status.dirty{color:#ffe0a8}
+#layout{grid-template-columns:198px minmax(0,1fr)}
+aside{padding:16px 10px}
+aside button{padding:9px 12px;margin:0 0 4px;border-radius:7px}
+aside button:hover{background:#e8f0f5}
+aside button.selected{background:var(--blue)}
+aside .side-heading{padding:5px 12px 11px;font-size:11px;letter-spacing:.07em;color:#8a9ca8}
+aside .add-category{margin-top:12px;border-color:#bdd0dc}
+main{padding:24px 28px;max-height:calc(100vh - 90px)}
+.topline{margin-bottom:18px}
+.topline h2{font-size:21px}
+.topline-heading{display:flex;align-items:baseline;gap:9px}
+.topline-heading small{color:#8695a0;font-size:12px}
+.card-board{margin:0 0 16px;gap:7px}
+.card-top{height:40px;min-height:40px;background:#fff}
+.entry-card.is-open .card-top{background:#eef5f9}
+.entry-card{box-shadow:none}
+.entry-card:hover{border-color:#a6c5d9}
+.empty{text-align:center;padding:42px 15px;border-color:#d4e0e8;background:#fbfcfd}
+@media(max-width:750px){
+ #layout{grid-template-columns:1fr}
+ aside .side-heading{display:none}
+ aside .add-category{width:auto;margin:0}
+ main{padding:16px 13px;max-height:none}
+ #status{width:100%;text-align:right}
+}
+
+/* Preview: compact, distinct, not a tutorial */
+.preview-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f6f9fa;color:#637988;border-bottom:1px solid #e0e8ee;padding:6px 20px;font-size:12px}
+.preview-banner strong{font-size:12px;font-weight:700;color:#3f667d}
+.preview-banner a{color:#17618c;text-decoration:none}
+@media(max-width:520px){.preview-banner{padding:6px 12px}}
+
 </style>
 <meta name="robots" content="noindex,nofollow">
 </head>
 <body>
-<div class="preview-banner"><strong>教師後台預覽（僅示範）</strong>
-可操作：左側新增分類、每個分類新增項目（插最上方）、箭頭展開／收合、拖曳排序和展開後調整高度。所有操作只存在當次頁面，**不會修改 Google Sheets**；重新整理即還原。
-<a href="https://github.com/bmstweb806/nsysu-faculty/blob/main/gas/FacultyManager.html" target="_blank" rel="noopener">正式後台程式碼</a>
-</div>
+<div class="preview-banner"><strong>預覽模式 · 不寫入 Google Sheets</strong><a href="https://github.com/bmstweb806/nsysu-faculty/blob/main/gas/FacultyManager.html" target="_blank" rel="noopener">程式碼</a></div>
 <header>
-<h1>教師資料編輯器 / Faculty Manager</h1>
+<h1>教師管理</h1>
 <select id="teacher-select" aria-label="選擇教師"></select>
-<button id="new-teacher">＋ 新增教師</button>
-<button id="save" class="primary">儲存變更</button>
+<button id="new-teacher">＋ 教師</button>
+<button id="save" class="primary">儲存</button>
+<span id="status" role="status" aria-live="polite">載入中…</span>
 </header>
-<div id="status" role="status">讀取資料中…</div>
 <div id="layout"><aside id="tabs"></aside><main id="editor"></main></div>
 <script>
 
@@ -215,6 +250,7 @@ aside .category-form .row .primary{background:var(--blue);color:white}
 })();
 
 
+
 </script>
 <script>
 'use strict';
@@ -222,7 +258,11 @@ const $=id=>document.getElementById(id);
 let boot=null,model=null,originalId='',active='basic',dirty=false,busy=false;
 let resizing=null,dragged=null;
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
-function status(message,error=false){$('status').textContent=message;$('status').classList.toggle('error',error)}
+function status(message,error=false){
+ $('status').textContent=message;
+ $('status').classList.toggle('error',error);
+ $('status').classList.toggle('dirty',!error&&message==='未儲存');
+}
 function invoke(name,args,callback){
  if(busy)return;
  busy=true;document.querySelectorAll('header button').forEach(b=>b.disabled=true);status('處理中…');
@@ -234,7 +274,7 @@ function invoke(name,args,callback){
   status(e?.message||String(e),true);
  })[name](...(args||[]));
 }
-function changed(){dirty=true;status('尚未儲存 • 拖曳後按「儲存變更」才能同步 Google Sheets');}
+function changed(){dirty=true;status('未儲存');}
 function canLeave(){return !dirty||confirm('有尚未儲存的變更，確定捨棄？');}
 function field(label,name,value,type='text',cls=''){
  const id='profile-'+name;
@@ -247,12 +287,12 @@ function chooser(){
 }
 function renderTabs(){
  const items=[{key:'basic',zh:'基本資料',en:'Profile'},...boot.tabs];
- $('tabs').innerHTML='<div class="side-heading">教師資料分類</div>'+
+ $('tabs').innerHTML='<div class="side-heading">內容分類</div>'+
   items.map(t=>'<button type="button" data-tab="'+esc(t.key)+'" class="'+(t.key===active?'selected':'')+'">'+esc(t.zh||t.en)+'</button>').join('')+
-  '<button id="add-category-toggle" type="button" class="add-category">＋ 新增分類</button>'+
+  '<button id="add-category-toggle" type="button" class="add-category">＋ 分類</button>'+
   '<form id="new-category-form" class="category-form" hidden>'+
-  '<label>分類名稱（中文）<input id="new-category-zh" maxlength="150" required placeholder="例如：專利、專書"></label>'+
-  '<label>English name（可留空）<input id="new-category-en" maxlength="150" placeholder="Patents"></label>'+
+  '<label>分類名稱<input id="new-category-zh" maxlength="150" required placeholder="例如：專利"></label>'+
+  '<label>English<input id="new-category-en" maxlength="150" placeholder="Patents"></label>'+
   '<div class="row"><button class="primary" type="submit">建立分類</button>'+
   '<button id="cancel-category" type="button">取消</button></div></form>';
  $('tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{
@@ -271,14 +311,13 @@ function renderTabs(){
    invoke('fcfgCreateTab',[zh,en],tab=>{
      boot.tabs.push(tab);active=tab.key;
      renderTabs();render();
-     status('分類「'+tab.zh+'」已建立在 Google Sheets；重新發布 JSON 後才會出現在公開網站');
+     status('已建立：'+tab.zh+'（尚未發布）');
    });
  });
 }
 function renderProfile(){
  const t=model.teacher;
- $('editor').innerHTML='<div class="topline"><h2>教師基本資料</h2><span class="hint">唯一識別碼：教師 ID</span></div>'+
- '<p class="hint">教師名單順序直接依 Teachers 工作表列順序；研究專長不需要個別 ID。</p>'+
+ $('editor').innerHTML='<div class="topline"><h2>基本資料</h2></div>'+
  '<div class="profile-form">'+
  field('教師 ID（可修改）','teacher_id',t.teacher_id)+
  field('中文姓名','name_zh',t.name_zh)+field('English Name','name_en',t.name_en)+
@@ -365,11 +404,11 @@ function updateField(index,key,value){
 function renderEntries(){
  const tab=boot.tabs.find(t=>t.key===active);
  const indexes=sectionIndexes();
- $('editor').innerHTML='<div class="topline"><h2>'+esc(tab?.zh||active)+' / '+esc(tab?.en||'')+'</h2>'+
-  '<div class="actions"><button class="primary" id="add-entry" type="button">＋ 新增'+esc(tab?.zh||'項目')+'</button></div></div>'+
-  '<p class="hint">所有內容預設收合。按右側箭頭展開編輯，拖曳左側 ⠿ 調整順序。新項目一律放最上方；按「儲存變更」才會同步 Google Sheets。</p>'+
+ $('editor').innerHTML='<div class="topline"><div class="topline-heading"><h2>'+esc(tab?.zh||active)+'</h2><small>'+esc(tab?.en||'')+'</small></div>'+
+  '<div class="actions"><button class="primary" id="add-entry" type="button">＋ 新增</button></div></div>'+
+  
   (indexes.length?'<section class="card-board" id="cards">'+indexes.map((i,n)=>card(model.entries[i],i,n+1)).join('')+'</section>':
-  '<p class="empty">這個分類尚無內容，按右上角「＋ 新增」即可開始。</p>');
+  '<p class="empty">尚無內容</p>');
  $('add-entry').onclick=()=>{
    const positions=sectionIndexes();
    const insertAt=positions.length?positions[0]:0;
@@ -462,7 +501,7 @@ function render(){if(!model){$('editor').textContent='請選擇教師';return;}i
 function loadTeacher(id){
  invoke('ftvGetTeacher',[id],result=>{
   model=result;originalId=String(model.teacher.teacher_id);active='basic';dirty=false;
-  chooser();renderTabs();render();status('已載入 '+(model.teacher.name_zh||originalId));
+  chooser();renderTabs();render();status('已載入');
  });
 }
 function loadBootstrap(selectId){
@@ -489,7 +528,7 @@ $('save').onclick=()=>{
  const payload={originalTeacherId:originalId,teacher:model.teacher,entries:model.entries,revision:model.revision};
  invoke('ftvSaveTeacher',[payload],result=>{
   dirty=false;model=result;originalId=String(result.teacher.teacher_id);
-  loadBootstrap(originalId);status('示範資料已儲存（僅本頁暫存，不會修改 Google Sheets）');
+  loadBootstrap(originalId);status('預覽已儲存');
  });
 };
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
