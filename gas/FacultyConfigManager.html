@@ -185,7 +185,7 @@ function renderTeachers(){
  };
 }
 function renderPublish(){
- $('app').innerHTML='<h2>發布資料</h2><p class="hint">修改 Sheets 或編輯老師資料後，必須重新發布 JSON 才會更新公開網站。預覽 JSON 也會公開在 GitHub。</p>'+
+ $('app').innerHTML='<h2>發布資料</h2><p class="hint">系辦可在此發布整個網站；已核准公開的教師也能在自己的編輯器按「儲存並發布我的資料」更新個人頁。分類、排序、首次公開及預覽仍由系辦發布。預覽 JSON 也會公開在 GitHub。</p>'+
  '<div class="row"><button class="primary" id="live">正式發布</button><button id="preview">發布預覽</button></div>';
  $('live').onclick=()=>{if(confirm('確定發布目前已標記 PUBLISHED 的教師內容？'))
   run('fcfgPublishProduction',[],r=>status('已發布 '+r.teachers+' 位教師'))};

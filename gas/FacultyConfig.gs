@@ -102,39 +102,35 @@ function fcfgSetTeacherCategory(id,categoryKey,token){
  });
 }
 function fcfgLocale_(zh,en){return {zh:String(zh||''),en:String(en||'')};}
-function fcfgBuildJson_(preview){
- const categories=ftvCategories_().filter(c=>c.is_active);
- const tabs=ftvDefinitions_().filter(d=>d.is_active);
- const fields=ftvFields_().filter(f=>f.is_active);
- const rows=ftvTable_(FTV.teachers);
- ftvCheckColumns_(rows,FTV.teacherColumns);
- const teachers=[];
- for(const t of rows.items){
-  const status=String(t.publish_status||'DRAFT').toUpperCase();
-  if(!preview&&status!=='PUBLISHED')continue;
-  if(!t.teacher_id||!t.teacher_sheet)continue;
-  const table=ftvTable_(String(t.teacher_sheet));
-  ftvCheckColumns_(table,FTV.entryColumns);
-  const sections=tabs.map(tab=>({
+/**
+ * Serialize one teacher, without scanning or touching other teacher sheets.
+ * Shared with full publishing and teacher self-service publishing.
+ */
+function fcfgSerializeTeacher_(t,tabs){
+ const status=String(t.publish_status||'DRAFT').toUpperCase();
+ if(!t.teacher_id||!t.teacher_sheet)throw new Error('此教師缺少 ID 或資料工作表');
+ const table=ftvTable_(String(t.teacher_sheet));
+ ftvCheckColumns_(table,FTV.entryColumns);
+ const sections=tabs.map(tab=>({
    key:tab.key,
    entries:table.items.filter(e=>String(e.section_key)===tab.key).map(e=>{
-    let values={};
-    try{values=JSON.parse(String(e.field_values_json||'{}'));}catch(_){}
-    if(!values||typeof values!=='object'||Array.isArray(values))values={};
-    const width=Number(e.card_width),height=Number(e.card_height);
-    return {
-     type:String(e.entry_type||'list_item'),
-     title:fcfgLocale_(e.title_zh,e.title_en),
-     content:fcfgLocale_(e.content_zh,e.content_en),
-     url:String(e.link_url||''),
-     visible:{zh:ftvBool_(e.visible_zh),en:ftvBool_(e.visible_en)},
-     fields:values,
-     card_width:Number.isFinite(width)&&width>0?width:null,
-     card_height:Number.isFinite(height)&&height>0?height:null
-    };
+     let values={};
+     try{values=JSON.parse(String(e.field_values_json||'{}'));}catch(_){}
+     if(!values||typeof values!=='object'||Array.isArray(values))values={};
+     const width=Number(e.card_width),height=Number(e.card_height);
+     return {
+       type:String(e.entry_type||'list_item'),
+       title:fcfgLocale_(e.title_zh,e.title_en),
+       content:fcfgLocale_(e.content_zh,e.content_en),
+       url:String(e.link_url||''),
+       visible:{zh:ftvBool_(e.visible_zh),en:ftvBool_(e.visible_en)},
+       fields:values,
+       card_width:Number.isFinite(width)&&width>0?width:null,
+       card_height:Number.isFinite(height)&&height>0?height:null
+     };
    })
-  }));
-  teachers.push({
+ }));
+ return {
    id:String(t.teacher_id),category_key:String(t.category_key||''),
    name:fcfgLocale_(t.name_zh,t.name_en),title:fcfgLocale_(t.title_zh,t.title_en),
    unit:fcfgLocale_(t.unit_zh,t.unit_en),
@@ -144,12 +140,23 @@ function fcfgBuildJson_(preview){
    photo_url:String(t.photo_url||''),publish_status:status,
    visible:{zh:ftvBool_(t.visible_zh),en:ftvBool_(t.visible_en)},
    sections
-  });
- }
- return {
-  schema_version:3,generated_at:new Date().toISOString(),preview:!!preview,
-  categories,tabs,fields,teachers
  };
+}
+function fcfgBuildJson_(preview){
+ const categories=ftvCategories_().filter(c=>c.is_active);
+ const tabs=ftvDefinitions_().filter(d=>d.is_active);
+ const fields=ftvFields_().filter(f=>f.is_active);
+ const rows=ftvTable_(FTV.teachers);
+ ftvCheckColumns_(rows,FTV.teacherColumns);
+ const teachers=[];
+ for(const t of rows.items){
+   const status=String(t.publish_status||'DRAFT').toUpperCase();
+   if(!preview&&status!=='PUBLISHED')continue;
+   if(!t.teacher_id||!t.teacher_sheet)continue;
+   teachers.push(fcfgSerializeTeacher_(t,tabs));
+ }
+ return {schema_version:3,generated_at:new Date().toISOString(),
+         preview:!!preview,categories,tabs,fields,teachers};
 }
 /**
  * Publish the complete public dataset in ONE GitHub commit, to avoid a mixed
@@ -228,3 +235,82 @@ function fcfgPublish_(preview){
 }
 function fcfgPublishProduction(token){ftaAdmin_(token);return fcfgPublish_(false);}
 function fcfgPublishPreview(token){ftaAdmin_(token);return fcfgPublish_(true);}
+
+/**
+ * Allow TEACHER to publish only their existing approved public profile;
+ * ADMIN may publish any approved teacher. Other teachers/config are untouched.
+ * Writes two JSON files in one Git commit: profile + index summary.
+ */
+function fcfgPublishOwnTeacher(teacherId,token){
+ const id=ftvId_(teacherId);
+ ftaRequire_(token,id);
+ return ftvLock_(()=>{
+   ftaRequire_(token,id);
+   const record=ftvFindTeacher_(id).teacher;
+   if(String(record.publish_status||'DRAFT').toUpperCase()!=='PUBLISHED')
+     throw new Error('此教師仍是草稿，請系辦先核准公開並正式發布一次');
+   const tabs=ftvDefinitions_().filter(t=>t.is_active);
+   const teacher=fcfgSerializeTeacher_(record,tabs);
+   const props=PropertiesService.getScriptProperties();
+   const githubToken=props.getProperty('GITHUB_TOKEN');
+   if(!githubToken)throw new Error('系統缺少 GITHUB_TOKEN，請聯絡系辦');
+   const repo=props.getProperty('GITHUB_REPO')||'bmstweb806/nsysu-faculty';
+   if(!/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(repo))
+     throw new Error('GITHUB_REPO 格式錯誤');
+   const base='https://api.github.com/repos/'+repo;
+   const headers={'Authorization':'Bearer '+githubToken,
+     'Accept':'application/vnd.github+json',
+     'X-GitHub-Api-Version':'2022-11-28','User-Agent':'NSYSU-Faculty-V7'};
+   const head=fcfgGit_(base+'/git/ref/heads/main',headers,'get');
+   const parent=head.object.sha;
+   const parentCommit=fcfgGit_(base+'/git/commits/'+parent,headers,'get');
+   const treeSha=parentCommit.tree.sha;
+   const blob=fcfgGit_(
+     base+'/contents/data/faculty-index.json?ref='+encodeURIComponent(parent),headers,'get');
+   if(blob.encoding!=='base64'||!blob.content)
+     throw new Error('網站索引資料無法讀取，請聯絡系辦');
+   const index=JSON.parse(Utilities.newBlob(
+     Utilities.base64Decode(String(blob.content).replace(/\s/g,'')))
+     .getDataAsString('UTF-8'));
+   if(index.schema_version!==4||index.preview!==false||!Array.isArray(index.teachers))
+     throw new Error('網站索引版本不符，請系辦先執行一次全站正式發布');
+   const position=index.teachers.findIndex(t=>String(t.id)===id);
+   if(position<0)
+     throw new Error('此教師尚未列入公開名單，請系辦先執行一次正式發布');
+   const old=index.teachers[position];
+   if(old.publish_status!=='PUBLISHED'||!old.visible||
+      !(old.visible.zh===true||old.visible.en===true))
+     throw new Error('此教師目前未開放公開，請聯絡系辦');
+   // Publication status, visibility, category and list order remain ADMIN-owned.
+   if(String(old.category_key)!==teacher.category_key||
+      old.visible.zh!==teacher.visible.zh||old.visible.en!==teacher.visible.en)
+     throw new Error('教師分類或公開設定有異動，請系辦先發布全站設定');
+   const fields=['name','title','unit','expertise','email','profile_url','photo_url'];
+   const summary={...old};
+   fields.forEach(k=>{summary[k]=teacher[k];});
+   index.teachers[position]=summary;
+   // Do not include individual entries hidden in BOTH languages.
+   const publicTeacher={...teacher,sections:teacher.sections.map(section=>({
+     key:section.key,
+     entries:section.entries.filter(e=>e.visible&&(e.visible.zh===true||e.visible.en===true))
+   }))};
+   const teacherPath='data/teachers/'+id+'.json';
+   const entries=[
+     {path:'data/faculty-index.json',mode:'100644',type:'blob',
+      content:JSON.stringify(index,null,2)+'\n'},
+     {path:teacherPath,mode:'100644',type:'blob',
+      content:JSON.stringify({schema_version:4,preview:false,teacher:publicTeacher},null,2)+'\n'}
+   ];
+   const tree=fcfgGit_(base+'/git/trees',headers,'post',
+                       {base_tree:treeSha,tree:entries});
+   const commit=fcfgGit_(base+'/git/commits',headers,'post',{
+     message:'Publish faculty profile '+id+' (self-service)',
+     tree:tree.sha,parents:[parent]
+   });
+   // Never force a concurrent update; request should be retried.
+   fcfgGit_(base+'/git/refs/heads/main',headers,'patch',
+            {sha:commit.sha,force:false});
+   return {ok:true,id,path:teacherPath,
+     url:'https://github.com/'+repo+'/blob/main/'+teacherPath};
+ });
+}

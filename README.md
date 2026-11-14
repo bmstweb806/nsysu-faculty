@@ -1,3 +1,15 @@
+## V7：教師自行發布個人 JSON（2026-11-15）
+
+- **老師可自行發布**：老師透過 Email OTP 登入後，使用 `FacultyManager` 的「儲存並發布我的資料」，先儲存 Google Sheets，再發布自己的個人 JSON；ADMIN 也可對目前選取的教師使用「儲存並發布此教師」。
+- **權限**：伺服器 `fcfgPublishOwnTeacher(teacherId,token)` 使用 `ftaRequire_` 檢查登入 Session 和教師 ID。TEACHER 無法發布其他老師，不能發布全站設定、預覽檔案或任意 GitHub 路徑。
+- **發布範圍只有兩個檔案**：`data/teachers/{id}.json` 與 `data/faculty-index.json` 中該老師的姓名、職稱等摘要。其他老師、索引順序、分類、可見語言、欄位及 Tab 定義都不變；同一個 Git commit 寫入，遇到並行變更不強制覆蓋。
+- **首次核准仍由系辦負責**：新建 `DRAFT` 教師、尚未進入正式 index 的老師，或被系辦停用／改變公開語言與分類者，必須先由系辦核准並正式發布一次。之後已核准的老師才能獨立發布自己的更新。
+- **公開 JSON 安全提醒**：個人自助發布會排除中英文都設為不顯示的內容項目；但過去已提交到 GitHub 的歷史版本可能仍有資料，請勿存入機密內容。正式網站的公開顯示仍由瀏覽器依欄位公開設定處理。
+- **部署**：請同步最新 `gas/FacultyConfig.gs`、`gas/FacultyManager.html`、`gas/FacultyConfigManager.html` 到正式 Apps Script，重新部署新版本 Web App。已設定的 `AUTH_SECRET`、`GITHUB_TOKEN` 不需重設。
+- **驗收待完成**：使用老師真實信箱測試自己的發布成功，跨教師發布、DRAFT 發布遭拒，以及確認其他老師 JSON 與全站設定檔案不變。
+
+---
+
 ## V6.3：修復新教師工作表與教師排序（2026-11-15）
 
 - **已直接修復正式 Google Sheet**：`Teachers!A1001:S1001` 原有新教師 `T001`，但缺少 `T001_教師資料` 工作表。已建立缺少的工作表與標準 12 欄表頭、將 T001 整列移至 `Teachers` 第 9 列，設定分類 `full_time`，保持 `DRAFT` 狀態。其餘七位教師資料與順序不變。
@@ -90,7 +102,7 @@
 - Google Sheets 新增 `UserPermissions`：`email, role, teacher_id, is_active`。已根據現有教師資料建立七位教師的對應紀錄，並以 `bmstweb806@gmail.com` 為初始系辦管理員。**啟用前請核對老師實際能收信的地址**，特別是 `g-mail.nsysu.edu.tw`。
 - 教師登入後只會看到自己的資料。GAS 在 `ftvGetBootstrap`、`ftvGetTeacher`、`ftvSaveTeacher` 等函式再次檢查登入憑證，教師不能改教師 ID、分類、發布狀態及語言公開設定。
 - 系辦 ADMIN 可管理所有教師、分類、欄位和正式／預覽 JSON 發布。新增教師、修改教師 ID、修改分類與發布都必須有 ADMIN 工作階段。
-- 教師修改資料後仍須系辦發布 JSON，公開網站才會更新。
+- 已核准公開的教師可自行儲存並發布個人 JSON；首次公開與全站設定仍由系辦負責。
 
 ### 必須完成的正式安裝
 

@@ -161,6 +161,7 @@ body.auth-locked #login-screen{display:flex}
 <button id="move-teacher-down" type="button" hidden title="依 Teachers 試算表列順序向下移動，需重新發布網站">↓ 下移</button>
 <button id="new-teacher">＋ 教師</button>
 <button id="save" class="primary">儲存</button>
+<button id="publish-own" type="button" title="儲存並發布選取的教師資料">儲存並發布</button>
 <span id="status" role="status" aria-live="polite">載入中…</span>
 </header>
 <div id="layout"><aside id="tabs"></aside><main id="editor"></main></div>
@@ -217,6 +218,7 @@ $('otp-verify-form').addEventListener('submit',e=>{
   $('account-name').textContent=authAccount.email;
   $('new-teacher').hidden=authAccount.role!=='ADMIN';
   $('teacher-select').hidden=authAccount.role!=='ADMIN';
+  $('publish-own').textContent=authAccount.role==='ADMIN'?'儲存並發布此教師':'儲存並發布我的資料';
   loadBootstrap();
  });
 });
@@ -582,6 +584,22 @@ $('save').onclick=()=>{
   loadBootstrap(originalId);status('已儲存 · 未發布');
  });
 };
+$('publish-own').onclick=()=>{
+ if(!model||busy||!authAccount)return;
+ if(String(model.teacher.publish_status||'DRAFT')!=='PUBLISHED'){
+  status('此教師尚未核准公開，請系辦先設定 PUBLISHED 並正式發布一次',true);
+  return;
+ }
+ const payload={originalTeacherId:originalId,teacher:model.teacher,
+  entries:model.entries,revision:model.revision};
+ // Persist edits first, then atomically publish just this teacher to GitHub.
+ invoke('ftvSaveTeacher',[payload],result=>{
+  dirty=false;model=result;originalId=String(result.teacher.teacher_id);
+  invoke('fcfgPublishOwnTeacher',[originalId],published=>{
+   status('已發布 '+originalId+'，公開網站稍後更新');
+  });
+ });
+};
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
 // Google Sheets menu dialogs can receive a server-verified ADMIN session.
 // In public /exec, only a server-verified Google ADMIN receives the bootstrap;
@@ -593,6 +611,7 @@ if(sheetAdmin&&sheetAdmin.token&&sheetAdmin.account&&sheetAdmin.account.role==='
  $('account-name').textContent=authAccount.email;
  $('new-teacher').hidden=false;
  $('teacher-select').hidden=false;
+ $('publish-own').textContent='儲存並發布此教師';
  loadBootstrap();
 }
 </script>
