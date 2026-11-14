@@ -4,235 +4,288 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-:root{font-family:Arial,'Noto Sans TC',sans-serif;color:#243241;line-height:1.55}
-*{box-sizing:border-box}body{margin:0;background:#f6f8fb;font-size:14px}
-header{position:sticky;top:0;background:white;z-index:3;border-bottom:1px solid #d9e0e8;padding:11px 18px}
-h1{font-size:18px;margin:0 0 7px;color:#164c71}h2{font-size:17px;margin:0 0 12px}
-nav{display:flex;gap:6px;overflow:auto;padding:9px 0 2px}button,select,input,textarea{font:inherit}
-button{cursor:pointer;border:1px solid #cbd7e0;background:white;color:#184f76;padding:8px 13px;border-radius:7px}
-button:disabled{opacity:.55;cursor:wait}button.primary{background:#17618c;color:white;border-color:#17618c}
-button.danger{color:#a83236;border-color:#dfb8b9}button.muted{color:#4a5665}
-nav button{white-space:nowrap;padding:7px 11px}nav button.active{background:#17618c;color:white;border-color:#17618c}
-main{padding:14px 18px 24px;max-width:1150px;margin:auto}
-.panel{border:1px solid #d9e0e8;background:#fff;border-radius:9px;padding:16px;margin-bottom:14px}
-.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.controls select{min-width:270px;flex:1}
-.badge{font-size:12px;background:#edf4f9;border-radius:20px;padding:4px 10px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 15px}
-label.field{display:flex;flex-direction:column;gap:4px;color:#536274;font-weight:600;font-size:12px}
-input[type=text],input[type=email],input[type=url],input[type=number],textarea,select{width:100%;border:1px solid #c6d2dc;border-radius:6px;padding:8px;background:white;color:#243241}
-textarea{min-height:72px;resize:vertical}.wide{grid-column:1/-1}
-.checks{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:8px 0}
-.checks label{display:flex;align-items:center;gap:6px}
-.card{border:1px solid #dce4eb;border-radius:8px;background:#fcfdff;padding:12px;margin:10px 0}
-.card-head{display:flex;gap:7px;align-items:center;justify-content:space-between;margin-bottom:9px}
-.card-head .actions{display:flex;gap:5px}.card-head button{padding:4px 8px}
-.note{color:#697783;font-size:12px}.sticky-save{position:sticky;bottom:0;background:rgba(255,255,255,.98);padding:12px 18px;border-top:1px solid #d9e0e8;display:flex;align-items:center;gap:12px;justify-content:space-between}
-#status{min-height:21px;color:#17618c}#status.error{color:#b31c2d}
-section[hidden]{display:none}input:focus,textarea:focus{outline:2px solid #a0d3ed}
-@media(max-width:760px){.grid{grid-template-columns:1fr}.controls select{min-width:100px}main{padding:10px}header{padding:10px}.wide{grid-column:auto}}
+:root{--blue:#17618c;--ink:#263847;--muted:#647786;--line:#d8e2e9;--soft:#f4f8fa}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font:14px/1.45 Arial,"Noto Sans TC",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;background:#fff;border:1px solid #b8cddc;border-radius:7px;padding:7px 11px;color:var(--blue)}
+button:hover{background:#eaf3f8}button.primary{color:#fff;background:var(--blue);border-color:var(--blue)}button:disabled{opacity:.45;cursor:wait}
+header{background:#123e5b;color:#fff;padding:12px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+header h1{font-size:18px;margin:0 auto 0 0}
+header select{background:white;color:var(--ink);padding:8px;border-radius:7px;max-width:220px}
+#status{padding:8px 18px;color:#175b80;border-bottom:1px solid var(--line);min-height:36px}
+#status.error{color:#a72134;background:#fff3f3}
+#layout{display:grid;grid-template-columns:205px minmax(0,1fr);min-height:500px}
+aside{border-right:1px solid var(--line);padding:13px;background:var(--soft)}
+aside button{display:block;width:100%;text-align:left;margin:0 0 6px;border:0;background:none;padding:10px 11px;color:#2d4a60}
+aside button.selected{background:var(--blue);color:#fff;font-weight:700}
+main{padding:15px 18px;max-height:calc(100vh - 130px);overflow:auto;min-height:420px}
+.topline{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:9px}
+h2{font-size:19px;margin:0}p.hint{color:var(--muted);font-size:12px;margin:6px 0 13px}
+label{font-size:12px;color:#435c70;font-weight:600}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+input,textarea,select{width:100%;padding:8px;border:1px solid #b5c6d3;border-radius:6px;background:#fff;color:var(--ink)}
+textarea{resize:vertical;min-height:65px}
+.profile-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.profile-form .long{grid-column:span 2}
+.profile-form .wide{grid-column:1/-1}
+.check{display:inline-flex;gap:6px;align-items:center;margin:4px 10px 4px 0}
+.check input{width:auto}
+.card-board{display:flex;align-items:flex-start;align-content:flex-start;gap:11px;flex-wrap:wrap;margin:9px 0 18px}
+.entry-card{position:relative;flex:0 0 auto;width:300px;height:190px;min-width:230px;min-height:120px;max-width:100%;max-height:90vh;resize:both;overflow:auto;border:1px solid #b9cfde;border-radius:9px;background:white;box-shadow:0 2px 7px #0c3b5810}
+.entry-card.dragging{opacity:.45}.entry-card.target{outline:2px dashed var(--blue);outline-offset:2px}
+.card-top{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding:7px;background:var(--soft);position:sticky;top:0;z-index:1}
+.grab{cursor:grab;user-select:none;color:#356987;font-size:20px;line-height:1;padding:2px 5px;border-radius:5px}
+.grab:active{cursor:grabbing}
+.card-title{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-top button{padding:4px 7px;font-size:12px}
+.card-content{padding:10px}
+.summary{white-space:pre-wrap;max-height:65px;overflow:hidden;color:#687986;font-size:13px;margin:6px 0}
+.card-form{display:grid;grid-template-columns:1fr;gap:9px}
+.card-form .field{gap:3px}
+.card-form textarea{min-height:58px}
+.card-form details{border-top:1px solid var(--line);padding-top:8px}
+.card-form summary{cursor:pointer;color:var(--blue);font-weight:600}
+.card-more{display:grid;grid-template-columns:1fr;gap:8px;padding:8px 0}
+.empty{padding:20px;border:1px dashed #bdcfdc;background:var(--soft);border-radius:9px;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:7px}
+@media(max-width:750px){#layout{grid-template-columns:1fr}aside{display:flex;flex-wrap:wrap;gap:5px;padding:8px;border-right:0;border-bottom:1px solid var(--line)}aside button{display:inline-block;width:auto;margin:0;padding:7px}main{max-height:none}.profile-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){main{padding:12px}.profile-form{grid-template-columns:1fr}.profile-form .long{grid-column:auto}.entry-card{width:100%;height:215px}}
 </style>
 </head>
 <body>
 <header>
-  <h1>NSYSU 教師資料管理 V3 · 中英文</h1>
-  <div class="controls">
-    <select id="teacherSelect" aria-label="選擇教師"><option>載入中...</option></select>
-    <button id="reloadBtn">重新載入</button>
-    <button id="newBtn">＋ 建立教師</button>
-    <span class="badge" id="sheetLabel"></span>
-  </div>
-  <nav id="navigation" aria-label="管理分頁"></nav>
+<h1>教師資料編輯器 / Faculty Manager</h1>
+<select id="teacher-select" aria-label="選擇教師"></select>
+<button id="new-teacher">＋ 新增教師</button>
+<button id="save" class="primary">儲存變更</button>
 </header>
-<main>
-  <section id="basicPanel" class="panel">
-    <h2>基本資料 / Faculty Profile</h2>
-    <div id="basicFields" class="grid"></div>
-    <div id="basicFlags" class="checks"></div>
-    <p class="note">中英文欄位分開儲存；英文未完成時，可取消「顯示英文教師頁」。草稿不會被正式發布。</p>
-  </section>
-  <section id="entriesPanel" class="panel" hidden>
-    <div class="controls" style="justify-content:space-between">
-      <div><h2 id="entriesTitle">內容</h2><div id="entriesSubtitle" class="note"></div></div>
-      <button id="addBtn">＋ 新增這個分頁的內容</button>
-    </div>
-    <div id="entries"></div>
-  </section>
-</main>
-<div class="sticky-save">
-  <span id="status" aria-live="polite">讀取資料中...</span>
-  <button class="primary" id="saveBtn" disabled>儲存全部變更</button>
-</div>
+<div id="status" role="status">讀取資料中…</div>
+<div id="layout"><aside id="tabs"></aside><main id="editor"></main></div>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-let defs=[],teachers=[],categories=[],model=null,activeKey='basic',busy=false,dirty=false;
-const profileFields=[
- ['teacher_id','教師 ID / Teacher ID','text',true],
- ['name_zh','中文姓名','text',true],['name_en','English Name','text'],
- ['title_zh','中文職稱','text'],['title_en','English Title','text'],
- ['unit_zh','中文系所','text'],['unit_en','English Unit','text'],
- ['office_zh','中文辦公室','text'],['office_en','English Office','text'],
- ['expertise_zh','中文研究專長','textarea'],['expertise_en','English Research Interests','textarea'],
- ['email','Email','email'],['profile_url','個人網址 / Profile URL','url'],
- ['photo_url','照片網址 / Photo URL','url'],['display_order','教師排序','number']
-];
-function setStatus(message,error=false){$('status').textContent=message;$('status').className=error?'error':'';}
-function setBusy(on){busy=on;for(const id of ['newBtn','reloadBtn','saveBtn','teacherSelect'])$(id).disabled=on || (id==='saveBtn'&&!model);}
-function call(name,args=[],ok){setBusy(true);setStatus('正在處理...');google.script.run
- .withFailureHandler(e=>{setBusy(false);setStatus(e.message||String(e),true);})
- .withSuccessHandler(r=>{setBusy(false);ok(r);})[name](...args);}
-function markDirty(){dirty=true;setStatus('有尚未儲存的修改');}
-function cellLabel(label,field,value,type='text',cb,required=false){
- const host=document.createElement('label');host.className='field';host.textContent=label;
- const inp=document.createElement(type==='textarea'?'textarea':'input');
- if(type!=='textarea')inp.type=type;inp.value=value==null?'':String(value);
- if(required)inp.required=true;
- inp.addEventListener('input',()=>{cb(inp.value);markDirty();});
- host.append(inp);return host;
+let boot=null,model=null,originalId='',active='basic',dirty=false,busy=false;
+let resizing=null,dragged=null;
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
+function status(message,error=false){$('status').textContent=message;$('status').classList.toggle('error',error)}
+function invoke(name,args,callback){
+ if(busy)return;
+ busy=true;document.querySelectorAll('header button').forEach(b=>b.disabled=true);status('處理中…');
+ google.script.run.withSuccessHandler(result=>{
+  busy=false;document.querySelectorAll('header button').forEach(b=>b.disabled=false);
+  status('就緒');if(callback)callback(result);
+ }).withFailureHandler(e=>{
+  busy=false;document.querySelectorAll('header button').forEach(b=>b.disabled=false);
+  status(e?.message||String(e),true);
+ })[name](...(args||[]));
 }
-function checkbox(text,checked,cb){
- const label=document.createElement('label'),inp=document.createElement('input');inp.type='checkbox';inp.checked=!!checked;
- inp.addEventListener('change',()=>{cb(inp.checked);markDirty();});label.append(inp,document.createTextNode(text));return label;
+function changed(){dirty=true;status('尚未儲存 • 拖曳後按「儲存變更」才能同步 Google Sheets');}
+function canLeave(){return !dirty||confirm('有尚未儲存的變更，確定捨棄？');}
+function field(label,name,value,type='text',cls=''){
+ const id='profile-'+name;
+ if(type==='textarea')return '<label class="field '+cls+'">'+esc(label)+'<textarea data-profile="'+esc(name)+'">'+esc(value)+'</textarea></label>';
+ return '<label class="field '+cls+'">'+esc(label)+'<input data-profile="'+esc(name)+'" type="'+type+'" value="'+esc(value)+'"></label>';
 }
-function button(text,handler,kind=''){const b=document.createElement('button');b.textContent=text;if(kind)b.className=kind;b.addEventListener('click',handler);return b;}
-function renderTeacherSelect(){
- // 修改 ID 的過程中仍以原 ID 選中教師，直到儲存成功。
- const sel=$('teacherSelect'),chosen=model?.originalTeacherId||sel.value;sel.replaceChildren();
- for(const t of teachers){const o=document.createElement('option');o.value=t.id;o.textContent=`${t.id} · ${t.name} (${t.status})`;sel.append(o);}
- if(teachers.some(t=>t.id===chosen))sel.value=chosen;
- $('sheetLabel').textContent=model?model.teacher.teacher_sheet:'';
+function chooser(){
+ $('teacher-select').innerHTML=boot.teachers.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+' ('+esc(t.id)+')</option>').join('');
+ $('teacher-select').value=originalId;
 }
-function renderNav(){
- const nav=$('navigation');nav.replaceChildren();
- const items=[{key:'basic',zh:'基本資料',en:'Profile'},...defs];
- for(const t of items){const b=button(t.zh,()=>{activeKey=t.key;render();});if(activeKey===t.key)b.classList.add('active');nav.append(b);}
+function renderTabs(){
+ const items=[{key:'basic',zh:'基本資料',en:'Profile'},...boot.tabs];
+ $('tabs').innerHTML=items.map(t=>'<button data-tab="'+esc(t.key)+'" class="'+(t.key===active?'selected':'')+'">'+esc(t.zh||t.en)+'</button>').join('');
+ $('tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{active=b.dataset.tab;renderTabs();render();});
 }
-function renderBasic(){
- const host=$('basicFields');host.replaceChildren();
- for(const [key,name,type,required] of profileFields){
-  const f=cellLabel(name,key,model.teacher[key],type,v=>{model.teacher[key]=type==='number'?Number(v):v;},required);
-  if(key==='teacher_id'){
-   const input=f.querySelector('input');
-   input.autocomplete='off';input.maxLength=40;input.pattern='[A-Za-z0-9_-]{2,40}';
-   input.title='限 2–40 字元：英文字母、數字、底線、連字號';
-   const tip=document.createElement('small');tip.className='note';
-   tip.textContent='修改 ID 後會更新公開網址，不會移動或重新命名教師的 Google Sheets 工作表。';
-   f.append(tip);
-  }
-  host.append(f);
- }
- const flag=$('basicFlags');flag.replaceChildren();
- const statusLabel=document.createElement('label');statusLabel.className='field';statusLabel.textContent='發布狀態 / Status';
- const select=document.createElement('select');
- for(const [val,label] of [['DRAFT','草稿 / Draft'],['PUBLISHED','公開 / Published']]){const o=document.createElement('option');o.value=val;o.textContent=label;select.append(o);}
- select.value=String(model.teacher.publish_status||'DRAFT');
- select.addEventListener('change',()=>{model.teacher.publish_status=select.value;markDirty();});
- statusLabel.append(select);flag.append(statusLabel);
- const catLabel=document.createElement('label');catLabel.className='field';
- catLabel.textContent='教師分類 / Faculty Category';
- const catSelect=document.createElement('select');
- for(const cat of categories){
-   const opt=document.createElement('option');opt.value=cat.key;
-   opt.textContent=cat.zh+' / '+cat.en;catSelect.append(opt);
- }
- catSelect.value=String(model.teacher.category_key || categories[0]?.key || '');
- catSelect.addEventListener('change',()=>{model.teacher.category_key=catSelect.value;markDirty();});
- catLabel.append(catSelect);flag.append(catLabel);
- flag.append(checkbox('顯示中文頁面',model.teacher.visible_zh,v=>model.teacher.visible_zh=v));
- flag.append(checkbox('顯示英文頁面',model.teacher.visible_en,v=>model.teacher.visible_en=v));
+function renderProfile(){
+ const t=model.teacher;
+ $('editor').innerHTML='<div class="topline"><h2>教師基本資料</h2><span class="hint">唯一識別碼：教師 ID</span></div>'+
+ '<p class="hint">教師名單順序直接依 Teachers 工作表列順序；研究專長不需要個別 ID。</p>'+
+ '<div class="profile-form">'+
+ field('教師 ID（可修改）','teacher_id',t.teacher_id)+
+ field('中文姓名','name_zh',t.name_zh)+field('English Name','name_en',t.name_en)+
+ field('中文職稱','title_zh',t.title_zh)+field('English Title','title_en',t.title_en)+
+ field('分類','category_key',t.category_key)+
+ field('中文單位','unit_zh',t.unit_zh)+field('English Unit','unit_en',t.unit_en)+
+ field('中文研究室','office_zh',t.office_zh)+field('English Office','office_en',t.office_en)+
+ field('中文研究專長','expertise_zh',t.expertise_zh,'textarea','long')+
+ field('Research Interests','expertise_en',t.expertise_en,'textarea','long')+
+ field('Email','email',t.email,'email')+field('官方網址','profile_url',t.profile_url,'url')+
+ field('教師照片網址','photo_url',t.photo_url,'url')+
+ '<label class="field">發布狀態<select data-profile="publish_status"><option>DRAFT</option><option>PUBLISHED</option></select></label>'+
+ '<div class="field"><span>語言顯示</span><label class="check"><input type="checkbox" data-profile="visible_zh">顯示中文</label>'+
+ '<label class="check"><input type="checkbox" data-profile="visible_en">Show English</label></div></div>';
+ const categoryInput=$('editor').querySelector('[data-profile="category_key"]');
+ const cSelect=document.createElement('select');cSelect.dataset.profile='category_key';
+ for(const c of boot.categories){const option=document.createElement('option');option.value=c.key;option.textContent=c.zh+' / '+c.en;cSelect.appendChild(option);}
+ cSelect.value=t.category_key;categoryInput.replaceWith(cSelect);
+ const st=$('editor').querySelector('[data-profile="publish_status"]');st.value=t.publish_status||'DRAFT';
+ for(const k of ['visible_zh','visible_en'])$('editor').querySelector('[data-profile="'+k+'"]').checked=t[k]===true;
+ $('editor').querySelectorAll('[data-profile]').forEach(el=>{
+  el.addEventListener('input',()=>{
+   t[el.dataset.profile]=el.type==='checkbox'?el.checked:el.value;changed();
+  });
+  el.addEventListener('change',()=>{
+   t[el.dataset.profile]=el.type==='checkbox'?el.checked:el.value;changed();
+  });
+ });
 }
-function entriesFor(key){return model.entries.filter(e=>String(e.section_key)===key)
-  .sort((a,b)=>Number(a.sort_order)-Number(b.sort_order));}
+function blankEntry(tab){
+ return {section_key:tab,entry_type:'list_item',title_zh:'',title_en:'',content_zh:'',content_en:'',
+ link_url:'',visible_zh:true,visible_en:true,field_values_json:'{}',card_width:290,card_height:190};
+}
+function sectionIndexes(){return model.entries.map((e,i)=>e.section_key===active?i:-1).filter(i=>i>=0);}
+function entryField(index,key,label,value,type='text'){
+ return '<label class="field">'+esc(label)+(type==='textarea'?
+  '<textarea data-index="'+index+'" data-key="'+esc(key)+'">'+esc(value)+'</textarea>':
+  '<input type="'+(type==='url'?'url':type==='number'?'number':'text')+'" data-index="'+index+'" data-key="'+esc(key)+'" value="'+esc(value)+'">')+'</label>';
+}
+function card(entry,index,number){
+ let values={};
+ try{values=JSON.parse(entry.field_values_json||'{}')}catch(_){}
+ const title=entry.title_zh||entry.title_en||entry.content_zh||'未命名項目';
+ const defs=boot.fields.filter(f=>f.section_key===active&&f.is_active);
+ const custom=defs.map(f=>{
+  const vals=values[f.key]||{};
+  return entryField(index,'field:'+f.key+':zh',f.zh,vals.zh||'',f.type)+
+         entryField(index,'field:'+f.key+':en',f.en,vals.en||'',f.type);
+ }).join('');
+ const w=Number(entry.card_width)||290,h=Number(entry.card_height)||190;
+ return '<article class="entry-card" data-index="'+index+'" style="width:'+Math.max(230,Math.min(800,w))+'px;height:'+Math.max(120,Math.min(1200,h))+'px">'+
+ '<div class="card-top"><span draggable="true" class="grab" title="拖曳改變順序" aria-label="拖曳排序">⠿</span>'+
+ '<span class="card-title">'+number+'. '+esc(title.slice(0,70))+'</span>'+
+ '<button data-toggle="'+index+'">編輯</button><button data-remove="'+index+'">刪除</button></div>'+
+ '<div class="card-content"><p class="summary">'+esc((entry.content_zh||entry.content_en||'點擊「編輯」填寫中英文內容').slice(0,115))+'</p>'+
+ '<div class="card-form" hidden>'+
+ entryField(index,'title_zh','中文標題',entry.title_zh)+entryField(index,'title_en','English title',entry.title_en)+
+ entryField(index,'content_zh','中文內容',entry.content_zh,'textarea')+
+ entryField(index,'content_en','English content',entry.content_en,'textarea')+
+ entryField(index,'link_url','相關連結',entry.link_url,'url')+
+ '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_zh" '+(entry.visible_zh===true?'checked':'')+'>中文公開</label>'+
+ '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_en" '+(entry.visible_en===true?'checked':'')+'>English visible</label>'+
+ '<label class="field">顯示方式<select data-index="'+index+'" data-key="entry_type"><option value="list_item" '+(entry.entry_type==='list_item'?'selected':'')+'>清單</option><option value="text" '+(entry.entry_type==='text'?'selected':'')+'>段落</option></select></label>'+
+ (custom?'<details><summary>自訂欄位（中英文）</summary><div class="card-more">'+custom+'</div></details>':'')+
+ '</div></div></article>';
+}
+function updateField(index,key,value){
+ const entry=model.entries[index];if(!entry)return;
+ if(key.startsWith('field:')){
+  const [_,fieldKey,lang]=key.split(':');let fields={};
+  try{fields=JSON.parse(entry.field_values_json||'{}')}catch(_){}
+  fields[fieldKey]={...(fields[fieldKey]||{}),[lang]:value};
+  entry.field_values_json=JSON.stringify(fields);
+ }else entry[key]=value;
+ changed();
+}
 function renderEntries(){
- const def=defs.find(d=>d.key===activeKey),host=$('entries');
- $('entriesTitle').textContent=def.zh+' / '+def.en;
- $('entriesSubtitle').textContent='Tab 的順序由系統鎖定；下方內容項目可以上下移動。';
- host.replaceChildren();const list=entriesFor(activeKey);
- if(!list.length){const p=document.createElement('p');p.className='note';p.textContent='尚無內容。可新增中文或英文資料。';host.append(p);}
- list.forEach((entry,i)=>{
-  const box=document.createElement('article');box.className='card';
-  const head=document.createElement('div');head.className='card-head';
-  const num=document.createElement('strong');num.textContent='第 '+(i+1)+' 筆';head.append(num);
-  const acts=document.createElement('div');acts.className='actions';
-  acts.append(button('↑',()=>moveEntry(activeKey,i,-1)));acts.append(button('↓',()=>moveEntry(activeKey,i,1)));
-  acts.append(button('刪除',()=>{if(!confirm('刪除此筆資料？儲存後生效。'))return;model.entries.splice(model.entries.indexOf(entry),1);reindex(activeKey);markDirty();renderEntries();},'danger'));
-  head.append(acts);box.append(head);
-  const grid=document.createElement('div');grid.className='grid';
-  for(const [key,label,type] of [
-    ['title_zh','項目標題（中文）','text'],['title_en','Entry title (English)','text'],
-    ['content_zh','內容（中文）','textarea'],['content_en','Content (English)','textarea'],
-    ['link_url','相關網址（兩語共用）','url']]){
-   const el=cellLabel(label,key,entry[key],type,v=>entry[key]=v);
-   if(key==='link_url')el.classList.add('wide');grid.append(el);
+ const tab=boot.tabs.find(t=>t.key===active);
+ const indexes=sectionIndexes();
+ $('editor').innerHTML='<div class="topline"><h2>'+esc(tab?.zh||active)+' / '+esc(tab?.en||'')+'</h2>'+
+ '<div class="actions"><button class="primary" id="add-entry">＋ 新增'+esc(tab?.zh||'項目')+'</button></div></div>'+
+ '<p class="hint">不用項目 ID、不用排序欄。拖曳左上角 ⠿ 改變排列；拖動卡片右下角可以縮放；「編輯」展開詳細內容。儲存後會把新順序寫回 Sheet。</p>'+
+ (indexes.length?'<section class="card-board" id="cards">'+indexes.map((i,n)=>card(model.entries[i],i,n+1)).join('')+'</section>':
+ '<p class="empty">這個分頁尚無資料。按「＋ 新增」即可建立。</p>');
+ $('add-entry').onclick=()=>{
+  model.entries.push(blankEntry(active));changed();renderEntries();
+  const element=$('cards')?.lastElementChild;const b=element?.querySelector('[data-toggle]');if(b)b.click();
+ };
+ const cards=$('cards');if(!cards)return;
+ cards.addEventListener('input',e=>{
+  const el=e.target.closest('[data-key]');
+  if(!el)return;updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
+ });
+ cards.addEventListener('change',e=>{
+  const el=e.target.closest('[data-key]');
+  if(!el)return;updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
+ });
+ cards.querySelectorAll('[data-toggle]').forEach(btn=>btn.onclick=()=>{
+  const box=btn.closest('.entry-card'),form=box.querySelector('.card-form'),sum=box.querySelector('.summary');
+  form.hidden=!form.hidden;sum.hidden=!form.hidden;btn.textContent=form.hidden?'編輯':'收合';
+ });
+ cards.querySelectorAll('[data-remove]').forEach(btn=>btn.onclick=()=>{
+  if(confirm('確定刪除這筆資料？儲存後才會寫回試算表。')){
+   model.entries.splice(Number(btn.dataset.remove),1);changed();renderEntries();
   }
-  const typeLabel=document.createElement('label');typeLabel.className='field';typeLabel.textContent='呈現格式';
-  const sel=document.createElement('select');for(const [value,label] of [['list_item','清單項目'],['text','段落']]){const o=document.createElement('option');o.value=value;o.textContent=label;sel.append(o);}
-  sel.value=entry.entry_type||'list_item';sel.addEventListener('change',()=>{entry.entry_type=sel.value;markDirty();});typeLabel.append(sel);grid.append(typeLabel);
-  box.append(grid);
-  const checks=document.createElement('div');checks.className='checks';
-  checks.append(checkbox('中文顯示',entry.visible_zh,v=>entry.visible_zh=v));
-  checks.append(checkbox('英文顯示',entry.visible_en,v=>entry.visible_en=v));box.append(checks);
-  host.append(box);
+ });
+ cards.querySelectorAll('.grab').forEach(handle=>{
+  handle.addEventListener('dragstart',event=>{
+   dragged=Number(handle.closest('.entry-card').dataset.index);
+   handle.closest('.entry-card').classList.add('dragging');
+   event.dataTransfer.effectAllowed='move';
+   event.dataTransfer.setData('text/plain',String(dragged));
+  });
+  handle.addEventListener('dragend',()=>{
+   dragged=null;cards.querySelectorAll('.entry-card').forEach(el=>el.classList.remove('dragging','target'));
+  });
+ });
+ cards.querySelectorAll('.entry-card').forEach(el=>{
+  el.addEventListener('dragover',event=>{if(dragged===null)return;event.preventDefault();el.classList.add('target');});
+  el.addEventListener('dragleave',()=>el.classList.remove('target'));
+  el.addEventListener('drop',event=>{
+   event.preventDefault();el.classList.remove('target');
+   const target=Number(el.dataset.index);
+   if(dragged===null||dragged===target)return;
+   const positions=sectionIndexes(),list=positions.map(p=>model.entries[p]);
+   const from=positions.indexOf(dragged),to=positions.indexOf(target);
+   if(from<0||to<0)return;
+   const item=list.splice(from,1)[0];list.splice(to,0,item);
+   positions.forEach((p,i)=>model.entries[p]=list[i]);
+   dragged=null;changed();renderEntries();
+  });
+  // Persist the size only after a deliberate pointer action on the native resize corner.
+  el.addEventListener('pointerdown',event=>{
+   const rect=el.getBoundingClientRect();
+   if(rect.right-event.clientX<=26&&rect.bottom-event.clientY<=26)
+    resizing={element:el,index:Number(el.dataset.index),w:rect.width,h:rect.height};
+  });
  });
 }
-function reindex(key){entriesFor(key).forEach((e,i)=>e.sort_order=(i+1)*10);}
-function moveEntry(key,index,delta){
- const arr=entriesFor(key),dest=index+delta;if(dest<0||dest>=arr.length)return;
- const a=arr[index],b=arr[dest],tmp=a.sort_order;a.sort_order=b.sort_order;b.sort_order=tmp;
- markDirty();renderEntries();
-}
-function render(){renderTeacherSelect();renderNav();$('basicPanel').hidden=activeKey!=='basic';$('entriesPanel').hidden=activeKey==='basic';
- if(!model){$('basicPanel').hidden=false;$('entriesPanel').hidden=true;return;}
- if(activeKey==='basic')renderBasic();else renderEntries();$('saveBtn').disabled=busy;
-}
-function loadTeacher(id){if(!id){setStatus('目前沒有教師，請新增教師。');return;}
- call('ftvGetTeacher',[id],r=>{
-  model=r;model.originalTeacherId=String(r.teacher.teacher_id);
-  activeKey='basic';dirty=false;render();setStatus('已載入 '+r.teacher.name_zh);
- });
-}
-function bootstrap(choose){call('ftvGetBootstrap',[],r=>{defs=r.tabs;categories=r.categories||[];teachers=r.teachers;renderTeacherSelect();
- const id=choose||model?.teacher.teacher_id||teachers[0]?.id;
- if(id)loadTeacher(id);else{model=null;render();setStatus('請點選「建立教師」');}
-});}
-$('teacherSelect').addEventListener('change',e=>{
- const id=e.target.value;if(dirty&&!confirm('尚未儲存的修改將遺失，確定切換教師？')){renderTeacherSelect();return;}loadTeacher(id);
-});
-$('reloadBtn').addEventListener('click',()=>{
- if(dirty&&!confirm('確定捨棄未儲存的修改並重新讀取？'))return;
- bootstrap(model?.teacher.teacher_id);
-});
-$('newBtn').addEventListener('click',()=>{
- if(dirty&&!confirm('將捨棄未儲存修改，確定新增教師？'))return;
- const reply=prompt('請輸入新教師 ID（例如 BMST001）。留空會自動產生 T001、T002…','');
- if(reply===null)return;
- const customId=reply.trim();
- if(customId&&!/^[A-Za-z0-9_-]{2,40}$/.test(customId)){
-  setStatus('教師 ID 只能使用英數字、底線、連字號，長度 2–40 字元。',true);return;
+document.addEventListener('pointerup',()=>{
+ if(!resizing)return;
+ const {element,index,w,h}=resizing;resizing=null;
+ if(!element.isConnected)return;
+ const rect=element.getBoundingClientRect();
+ if(Math.abs(rect.width-w)>5||Math.abs(rect.height-h)>5){
+  model.entries[index].card_width=Math.round(rect.width);
+  model.entries[index].card_height=Math.round(rect.height);
+  changed();
  }
- call('ftvCreateTeacher',[customId],r=>{model=null;bootstrap(r.id);});
 });
-$('addBtn').addEventListener('click',()=>{
- if(!model)return;
- const group=entriesFor(activeKey);model.entries.push({entry_id:'',section_key:activeKey,entry_type:'list_item',
-  title_zh:'',title_en:'',content_zh:'',content_en:'',link_url:'',sort_order:(group.length?Math.max(...group.map(e=>Number(e.sort_order)||0)):0)+10,
-  visible_zh:true,visible_en:false});markDirty();renderEntries();
-});
-$('saveBtn').addEventListener('click',()=>{
- if(!model)return;
- const oldId=String(model.originalTeacherId||'').trim();
- const newId=String(model.teacher.teacher_id||'').trim();
- if(!/^[A-Za-z0-9_-]{2,40}$/.test(newId)){
-  setStatus('教師 ID 只能使用英數字、底線、連字號，長度 2–40 字元。',true);return;
- }
- if(oldId!==newId&&!confirm(`確定將教師 ID 從 ${oldId} 改為 ${newId}？\n原本使用舊 ID 的教師網址需要同步更新；教師專屬工作表及資料會保留。`))return;
- call('ftvSaveTeacher',[model],r=>{
-  model=r;model.originalTeacherId=String(r.teacher.teacher_id);
-  dirty=false;bootstrap(r.teacher.teacher_id);
+function render(){if(!model){$('editor').textContent='請選擇教師';return;}if(active==='basic')renderProfile();else renderEntries();}
+function loadTeacher(id){
+ invoke('ftvGetTeacher',[id],result=>{
+  model=result;originalId=String(model.teacher.teacher_id);active='basic';dirty=false;
+  chooser();renderTabs();render();status('已載入 '+(model.teacher.name_zh||originalId));
  });
+}
+function loadBootstrap(selectId){
+ invoke('ftvGetBootstrap',[],result=>{
+  boot=result;originalId=selectId||boot.teachers[0]?.id||'';
+  chooser();
+  if(originalId)loadTeacher(originalId);
+  else{status('尚未建立教師');renderTabs();render();}
+ });
+}
+$('teacher-select').addEventListener('change',e=>{
+ if(!canLeave()){e.target.value=originalId;return;}
+ loadTeacher(e.target.value);
 });
-window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
-bootstrap();
+$('new-teacher').onclick=()=>{
+ if(!canLeave())return;
+ const id=prompt('請輸入新教師 ID（例如 BMST008）。只有教師需要 ID：');
+ if(id===null)return;
+ if(!id.trim()){status('教師 ID 不可空白',true);return;}
+ invoke('ftvCreateTeacher',[id.trim()],result=>{dirty=false;loadBootstrap(result.id);});
+};
+$('save').onclick=()=>{
+ if(!model||busy)return;
+ const payload={originalTeacherId:originalId,teacher:model.teacher,entries:model.entries,revision:model.revision};
+ invoke('ftvSaveTeacher',[payload],result=>{
+  dirty=false;model=result;originalId=String(result.teacher.teacher_id);
+  loadBootstrap(originalId);status('已儲存；如要更新公開網站，請另行發布 JSON');
+ });
+};
+window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
+loadBootstrap();
 </script>
 </body>
 </html>
