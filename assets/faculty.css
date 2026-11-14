@@ -1,6 +1,6 @@
 :root{--marine:#17618c;--navy:#143f5a;--ink:#28343e;--muted:#687887;--line:#dce4eb;--soft:#f5f8fa}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:auto}
 body{margin:0;background:#fff;color:var(--ink);font-family:Arial,"Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:16px;line-height:1.65;overflow-wrap:anywhere}
 [hidden]{display:none!important}
 a{color:var(--marine);text-decoration:none}
@@ -16,7 +16,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 .info-notice{border:1px solid var(--line);border-radius:9px;background:var(--soft);padding:20px;color:var(--muted)}
 .faculty-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 .faculty-card{display:flex;min-width:0;align-items:flex-start;gap:17px;padding:18px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 2px 9px rgba(13,65,95,.045)}
-.faculty-card:hover{border-color:#a9c5d6;box-shadow:0 5px 15px rgba(13,65,95,.08)}
+.faculty-card:hover{border-color:#a9c5d6;box-shadow:none}
 .faculty-photo{display:block;width:113px;height:141px;flex:0 0 113px;object-fit:cover;object-position:center top;border-radius:6px;background:var(--soft)}
 .faculty-photo-fallback{display:flex;align-items:center;justify-content:center;color:#8a9baa;font-size:12px;text-align:center}
 .faculty-card-info{min-width:0;flex:1}
@@ -99,9 +99,9 @@ body {background:#fff;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans
 .faculty-card {
   border:1px solid var(--line);border-radius:2px;box-shadow:none;
   border-top:3px solid var(--marine);background:#fff;padding:19px 20px;
-  gap:20px;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+  gap:20px;
 }
-.faculty-card:hover {border-color:#b4c9d8;box-shadow:0 7px 20px rgba(25,61,88,.075);transform:translateY(-2px);}
+.faculty-card:hover {border-color:#b4c9d8;box-shadow:none;transform:none;}
 .faculty-photo {border-radius:2px;background:#e9eff3;width:116px;height:146px;flex-basis:116px;}
 .faculty-name {font-size:21px;letter-spacing:.025em;color:var(--navy);margin-bottom:3px;}
 .faculty-name a:hover {color:var(--marine);}
@@ -147,4 +147,4 @@ body {background:#fff;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans
   .profile-name {font-size:24px;}
   .tab-button {padding:9px 12px;font-size:13px;}
 }
-@media(prefers-reduced-motion:reduce){.faculty-card{transition:none}.faculty-card:hover{transform:none}}
+/* No animation, movement or smooth-scrolling by default. */
