@@ -104,8 +104,7 @@
 
   function orderedCategories(json) {
     return (Array.isArray(json.categories) ? json.categories : [])
-      .filter(c => c && c.is_active !== false)
-      .sort((a,b) => Number(a.order||0) - Number(b.order||0));
+      .filter(c => c && c.is_active !== false);
   }
 
   function renderList(teachers, json) {
@@ -160,7 +159,6 @@
     const structured = entry.fields && typeof entry.fields === 'object' ? entry.fields : {};
     const activeFields = fieldDefs
       .filter(def => def.is_active !== false && def.show_public !== false)
-      .sort((a,b) => Number(a.order||0) - Number(b.order||0))
       .map(def => ({ label: local(def), value: local(structured[def.key]) }))
       .filter(item => item.label && item.value);
     if (activeFields.length) {
@@ -176,7 +174,7 @@
     const c = local(entry.content);
     const t = local(entry.title);
     if (entry.type === 'list_item') {
-      const li = make('li', '', c || t);
+      const li = make('p', 'entry-line', c || t);
       if (c && t && t !== c && !/^最高學歷$|^Highest Degree$/i.test(t)) {
         const head = make('strong', '', t + '：');
         li.prepend(head);
@@ -221,12 +219,11 @@
 
     const sections = Array.isArray(teacher.sections) ? teacher.sections : [];
     const visibleTabs = [...tabDefs]
-      .sort((a, b) => Number(a.order) - Number(b.order))
+      .filter(def => def.is_active !== false)
       .map((def) => {
         const section = sections.find((s) => String(s.key) === String(def.key));
         const entries = (section && Array.isArray(section.entries) ? section.entries : [])
-          .filter((e) => e && e.visible && e.visible[lang] === true && (local(e.content) || local(e.title) || Object.values(e.fields || {}).some(v => local(v))))
-          .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+          .filter((e) => e && e.visible && e.visible[lang] === true && (local(e.content) || local(e.title) || Object.values(e.fields || {}).some(v => local(v))));
         return { key: def.key, title: local({ zh: def.zh, en: def.en }), entries };
       })
       .filter((tab) => tab.entries.length && tab.title);
@@ -251,17 +248,50 @@
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', btn.id);
       panel.hidden = i !== 0;
-      let list = null;
+      const board = make('div', 'entry-board');
+      let dragSource = null;
       tab.entries.forEach((e) => {
-        const hasFields = e.fields && typeof e.fields === 'object' && Object.keys(e.fields).length > 0;
-        if (e.type === 'list_item' && !hasFields) {
-          if (!list) { list = make('ul', 'entry-list'); panel.append(list); }
-          renderEntry(e, list);
-        } else {
-          list = null;
-          renderEntry(e, panel, fieldDefs.filter(f=>f.section_key===tab.key));
-        }
+        const item = make('article', 'public-entry-card');
+        const handle = make('span', 'public-drag-handle', '⠿');
+        handle.draggable = true;
+        handle.title = lang === 'en'
+          ? 'Rearrange cards for this visit only'
+          : '拖曳調整顯示位置（只影響本次瀏覽）';
+        handle.setAttribute('aria-label', handle.title);
+        handle.addEventListener('dragstart', ev => {
+          dragSource = item;
+          item.classList.add('is-dragging');
+          ev.dataTransfer.effectAllowed = 'move';
+          ev.dataTransfer.setData('text/plain', 'reorder');
+        });
+        handle.addEventListener('dragend', () => {
+          item.classList.remove('is-dragging');
+          dragSource = null;
+        });
+        item.addEventListener('dragover', ev => {
+          if (dragSource && dragSource !== item) ev.preventDefault();
+        });
+        item.addEventListener('drop', ev => {
+          if (!dragSource || dragSource === item) return;
+          ev.preventDefault();
+          const cards = [...board.children];
+          if (cards.indexOf(dragSource) < cards.indexOf(item))
+            board.insertBefore(dragSource, item.nextSibling);
+          else board.insertBefore(dragSource, item);
+          scheduleHeight();
+        });
+        item.append(handle);
+        const content = make('div', 'public-entry-body');
+        renderEntry(e, content, fieldDefs.filter(f => f.section_key === tab.key));
+        item.append(content);
+        const width = Number(e.card_width), height = Number(e.card_height);
+        if (Number.isFinite(width) && width >= 180 && width <= 800)
+          item.style.width = width + 'px';
+        if (Number.isFinite(height) && height >= 100 && height <= 1200)
+          item.style.height = height + 'px';
+        board.append(item);
       });
+      panel.append(board);
       buttons.push(btn);
       tablist.append(btn);
       panels.append(panel);
@@ -334,8 +364,8 @@
       if (Boolean(json.preview) !== isPreview) throw new Error('Preview/production mismatch');
       root.replaceChildren();
       languageToolbar();
-      const teachers = json.teachers.filter(available).sort((a, b) =>
-        Number(a.display_order || 0) - Number(b.display_order || 0));
+      // The order of teachers in the JSON is the physical Teachers sheet row order.
+      const teachers = json.teachers.filter(available);
       if (view === 'list') {
         renderList(teachers, json);
       } else {
