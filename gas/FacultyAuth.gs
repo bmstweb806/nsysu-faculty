@@ -122,7 +122,8 @@ function ftaVerifyCode(emailInput,codeInput){
  });
 }
 /**
- * Only bound Google Sheets dialogs receive this server-issued ADMIN session.
+ * Google Sheets dialogs and /exec can attempt a trusted Google identity check.
+ * In owner-executed /exec, getActiveUser() is often blank; those users remain on OTP.
  * Never use getEffectiveUser() or trust an email supplied by the browser.
  */
 function ftaIssueSession_(account){

@@ -207,7 +207,7 @@ function ftvOpenManager(){
 }
 function doGet(e){
   if(e&&e.parameter&&e.parameter.page==='config')return fcfgGetAdminHtml();
-  return HtmlService.createHtmlOutputFromFile('FacultyManager').setTitle('NSYSU Faculty Manager');
+  return ftaSheetAdminHtml_('FacultyManager').setTitle('NSYSU Faculty Manager');
 }
 function onOpen(){
   SpreadsheetApp.getUi().createMenu('教師資料管理')

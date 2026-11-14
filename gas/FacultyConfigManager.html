@@ -201,7 +201,8 @@ function render(){
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{view=b.dataset.view;editing=null;render()});
 // Trusted Google Sheets menu dialogs can receive a server-verified session.
-// Public /exec?page=config remains protected by Email OTP.
+// /exec?page=config accepts only server-verified Google ADMIN for quick login;
+// other visitors remain on Email OTP.
 const sheetAdmin=window.__NSYSU_SHEET_ADMIN;
 if(sheetAdmin&&sheetAdmin.token&&sheetAdmin.account&&sheetAdmin.account.role==='ADMIN'){
  authToken=sheetAdmin.token;

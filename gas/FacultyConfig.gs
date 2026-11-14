@@ -17,7 +17,7 @@ function fcfgOpenConfig(){
      .setWidth(1120).setHeight(760),'教師設定 / Faculty Configuration');
 }
 function fcfgGetAdminHtml(){
- return HtmlService.createHtmlOutputFromFile('FacultyConfigManager')
+ return ftaSheetAdminHtml_('FacultyConfigManager')
    .setTitle('NSYSU Faculty Configuration');
 }
 function fcfgUpsertConfig(kind,data,token){

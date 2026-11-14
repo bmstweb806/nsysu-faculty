@@ -1,3 +1,14 @@
+## V6.2：/exec 嘗試辨識 Google 管理員身分（2026-11-15）
+
+- GAS `doGet(e)` 與 `fcfgGetAdminHtml()` 改為呼叫 `ftaSheetAdminHtml_`，與 Google Sheets 選單採用相同的可信身分辨識程序。
+- 只使用 `Session.getActiveUser().getEmail()` 回傳的可信非空 Email，再由伺服器比對 `UserPermissions` 的啟用 ADMIN 紀錄，符合才核發短效 Session；**不得**使用 `getEffectiveUser()` 來判斷網站訪客，也不接受前端傳入的 Email 作為登入證據。
+- **限制**：在「以我身分執行」的 Apps Script Web App，Google 常無法提供訪客的 Email。即使是管理員，若傳回空白仍需 Email OTP；此功能為機會式登入，**不是保證有效的 Google SSO**。
+- 若要求公開 `/exec` 穩定支援所有管理員的 Google 一鍵登入，須另行配置 Google Identity Services / OAuth 驗證並在伺服器檢查可信身分憑證。不要單純改為「以存取者身分執行」：這會改變目前對私有 Sheets 與 GitHub 發布的權限模型。
+- **套用步驟**：同步本次更新的五個 GAS 檔案，儲存，將 Web App 現有部署更新為**新版本**。先測管理員瀏覽器開啟 `/exec`，如果看不到登入直接完成的結果，表示在這個執行情境 Google 未提供訪客可信 Email，請使用 OTP。
+- 已有 `AUTH_SECRET` 和 `GITHUB_TOKEN` 不需重新產生；GitHub 原始碼更新不等於正式 Apps Script 部署已更新。
+
+---
+
 ## V6.1：RPage 風格調整與原生 HTML 嵌入（2026-11-15）
 
 - 已更新 `assets/faculty.css`，採中山大學 RPage 學術型版面方向：深藍文字與頁籤、金色細邊、白色教師資料區、細框線與適度留白。中文與英文資料、行動版和教師頁籤功能不變。
