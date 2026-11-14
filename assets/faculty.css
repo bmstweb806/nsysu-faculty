@@ -69,3 +69,82 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 .faculty-entry-list-item .structured-label{font-weight:700;color:var(--navy);margin:0}
 .faculty-entry-list-item .structured-value{margin:0;white-space:pre-line}
 @media(max-width:540px){.faculty-entry-list{padding-left:1.35rem}.faculty-entry-list-item .structured-entry{grid-template-columns:1fr;gap:0}.faculty-entry-list-item .structured-label:not(:first-child){margin-top:7px}}
+
+
+/* NSYSU RPage-inspired academic presentation — scoped to standalone faculty pages.
+   Simple navy headings, a restrained gold rule, clean white surfaces, and flat tabs.
+   No site-wide RPage header or navigation is duplicated here. */
+:root {
+  --marine:#164d70;
+  --navy:#123a58;
+  --ink:#273747;
+  --muted:#607388;
+  --line:#d9e2e9;
+  --soft:#f7f9fb;
+  --bmst-gold:#c69d50;
+}
+body {background:#fff;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;line-height:1.75;}
+#app {max-width:1140px;padding:24px 20px 48px;}
+.toolbar {border-bottom:1px solid var(--line);padding:0 0 14px;margin-bottom:26px;}
+.language-switch {border-radius:3px;background:#fff;}
+.language-switch a {font-size:13px;padding:6px 13px;}
+.language-switch a[aria-current="page"] {background:var(--navy);}
+.faculty-category {margin:0 0 42px;}
+.faculty-category-heading {
+  font-size:22px;font-weight:700;letter-spacing:.05em;line-height:1.4;
+  color:var(--navy);padding:0 0 12px 17px;margin:0 0 20px;
+  border-bottom:1px solid var(--line);border-left:5px solid var(--bmst-gold);
+}
+.faculty-list {grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;}
+.faculty-card {
+  border:1px solid var(--line);border-radius:2px;box-shadow:none;
+  border-top:3px solid var(--marine);background:#fff;padding:19px 20px;
+  gap:20px;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.faculty-card:hover {border-color:#b4c9d8;box-shadow:0 7px 20px rgba(25,61,88,.075);transform:translateY(-2px);}
+.faculty-photo {border-radius:2px;background:#e9eff3;width:116px;height:146px;flex-basis:116px;}
+.faculty-name {font-size:21px;letter-spacing:.025em;color:var(--navy);margin-bottom:3px;}
+.faculty-name a:hover {color:var(--marine);}
+.faculty-altname {font-size:13px;}
+.faculty-title {font-size:15px;color:#334a5e;}
+.faculty-unit {font-size:13px;}
+.faculty-expertise {font-size:13px;line-height:1.65;margin:10px 0;color:#506477;}
+.faculty-links {padding-top:7px;margin-top:12px;border-top:1px solid #edf1f4;}
+.profile {
+  background:linear-gradient(100deg,#f4f8fb 0%,#fff 100%);
+  border:1px solid var(--line);border-top:4px solid var(--marine);border-left:1px solid var(--line);
+  border-radius:2px;padding:28px 30px;gap:27px;margin-bottom:28px;
+}
+.profile .faculty-photo {width:140px;height:174px;flex-basis:140px;}
+.profile-name {font-size:30px;letter-spacing:.035em;}
+.profile-back {font-size:14px;display:inline-flex;align-items:center;gap:4px;margin:0 0 18px;}
+.tabs {gap:0;border-bottom:2px solid var(--marine);padding:0;margin-bottom:22px;}
+.tab-button {
+  border:1px solid var(--line);border-bottom:0;border-radius:0;
+  background:#f4f7f9;color:var(--navy);padding:10px 20px;
+  margin:0 4px 0 0;font-size:14px;font-weight:700;
+}
+.tab-button:hover {background:#e8eff4;}
+.tab-button[aria-selected="true"] {background:var(--navy);border-color:var(--navy);color:#fff;}
+.tab-panel {padding:4px 9px 6px;min-height:70px;}
+.faculty-entry-list-item {line-height:1.8;margin-bottom:13px;}
+.faculty-entry-list-item::marker {color:var(--bmst-gold);}
+.faculty-entry-list-item .structured-entry {line-height:1.65;}
+.info-notice {border-radius:2px;background:#f7f9fb;}
+@media(max-width:760px){
+  .faculty-list {grid-template-columns:1fr;}
+  .faculty-card {gap:16px;}
+  .profile {padding:23px;}
+}
+@media(max-width:520px){
+  #app {padding:14px 12px 30px;}
+  .faculty-category-heading {font-size:19px;padding-left:12px;}
+  .faculty-card {padding:14px;gap:12px;}
+  .faculty-card .faculty-photo {width:86px;height:112px;flex-basis:86px;}
+  .faculty-name {font-size:19px;}
+  .profile {padding:17px;gap:14px;}
+  .profile .faculty-photo {width:104px;height:128px;flex-basis:auto;}
+  .profile-name {font-size:24px;}
+  .tab-button {padding:9px 12px;font-size:13px;}
+}
+@media(prefers-reduced-motion:reduce){.faculty-card{transition:none}.faculty-card:hover{transform:none}}

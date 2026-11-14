@@ -1,55 +1,101 @@
 <style>
-  /* Rpage 內容區嵌入樣式：不修改 Rpage 其他區域 */
-  .nsysu-faculty-profile-embed {
-    width: 100%;
-    margin: 0;
-  }
-  .nsysu-faculty-profile-embed iframe {
-    display: block;
-    width: 100%;
-    height: 760px; /* 自動高度無法執行時的預設備援 */
-    border: 0;
-    background: #fff;
-  }
+/* NSYSU Faculty — native RPage content. Everything is scoped to this block. */
+.bmst-faculty-embed{--bmst-navy:#123a58;--bmst-blue:#164d70;--bmst-gold:#c69d50;--bmst-line:#d9e2e9;--bmst-muted:#607388;--bmst-soft:#f6f9fb;color:#273747;font-family:inherit;font-size:16px;line-height:1.75;width:100%;max-width:1140px;margin:0 auto;padding:6px 0 22px;overflow-wrap:anywhere}
+.bmst-faculty-embed,.bmst-faculty-embed *{box-sizing:border-box}
+.bmst-faculty-embed a{color:var(--bmst-blue);text-decoration:none}
+.bmst-faculty-embed a:hover{text-decoration:underline}
+.bmst-faculty-embed a:focus-visible,.bmst-faculty-embed button:focus-visible{outline:3px solid #d7a63b;outline-offset:3px}
+.bmst-faculty-embed .bmst-status{margin:8px 0;padding:15px;background:var(--bmst-soft);border:1px solid var(--bmst-line);font-size:14px;color:var(--bmst-muted)}
+.bmst-faculty-embed .bmst-group{margin:0 0 38px}
+.bmst-faculty-embed .bmst-group-title{font-size:21px;color:var(--bmst-navy);font-weight:700;letter-spacing:.04em;line-height:1.45;margin:0 0 18px;padding:0 0 10px 15px;border-bottom:1px solid var(--bmst-line);border-left:5px solid var(--bmst-gold)}
+.bmst-faculty-embed .bmst-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.bmst-faculty-embed .bmst-card{display:flex;align-items:flex-start;gap:18px;padding:18px;border:1px solid var(--bmst-line);border-top:3px solid var(--bmst-blue);background:#fff;min-width:0}
+.bmst-faculty-embed .bmst-card:hover{border-color:#b8cedb;box-shadow:0 7px 20px rgba(28,67,93,.075)}
+.bmst-faculty-embed .bmst-avatar{display:block;width:112px;height:142px;flex:0 0 112px;object-fit:cover;object-position:center top;background:#e7eef3;border-radius:2px}
+.bmst-faculty-embed .bmst-avatar-empty{display:flex;justify-content:center;align-items:center;text-align:center;color:#8194a4;font-size:13px}
+.bmst-faculty-embed .bmst-info{flex:1;min-width:0}
+.bmst-faculty-embed .bmst-name{font-size:21px;color:var(--bmst-navy);font-weight:700;line-height:1.35;letter-spacing:.02em;margin:0 0 4px}
+.bmst-faculty-embed .bmst-name a{color:inherit}
+.bmst-faculty-embed .bmst-alt{font-size:13px;color:var(--bmst-muted);margin:0 0 7px}
+.bmst-faculty-embed .bmst-role{font-size:15px;color:#364e60;font-weight:600;margin:0 0 5px}
+.bmst-faculty-embed .bmst-unit,.bmst-faculty-embed .bmst-meta{font-size:14px;color:#51677a;margin:4px 0}
+.bmst-faculty-embed .bmst-expertise{font-size:14px;color:#4b5e70;margin:9px 0;white-space:pre-line}
+.bmst-faculty-embed .bmst-linkrow{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;margin-top:12px;padding-top:8px;border-top:1px solid #edf1f4}
+.bmst-faculty-embed .bmst-back{display:inline-block;font-size:14px;margin:0 0 17px}
+.bmst-faculty-embed .bmst-profile{display:flex;align-items:flex-start;gap:28px;padding:25px 28px;margin:0 0 25px;background:linear-gradient(100deg,#f4f8fb,#fff);border:1px solid var(--bmst-line);border-top:4px solid var(--bmst-blue)}
+.bmst-faculty-embed .bmst-profile .bmst-avatar{width:138px;height:176px;flex-basis:138px}
+.bmst-faculty-embed .bmst-profile .bmst-name{font-size:29px}
+.bmst-faculty-embed .bmst-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:0;border-bottom:2px solid var(--bmst-blue)}
+.bmst-faculty-embed .bmst-tab{font:inherit;font-weight:700;font-size:14px;cursor:pointer;background:#f1f5f8;color:var(--bmst-navy);border:1px solid var(--bmst-line);border-bottom:0;border-radius:0;padding:10px 17px}
+.bmst-faculty-embed .bmst-tab:hover{background:#e4edf4}
+.bmst-faculty-embed .bmst-tab[aria-selected="true"]{background:var(--bmst-navy);color:#fff;border-color:var(--bmst-navy)}
+.bmst-faculty-embed .bmst-panel{padding:20px 9px 8px}
+.bmst-faculty-embed .bmst-entry-list{margin:0;padding:0 0 0 1.45rem;list-style:disc}
+.bmst-faculty-embed .bmst-entry-list li{margin:0 0 13px;padding:1px 0;line-height:1.8}
+.bmst-faculty-embed .bmst-entry-list li::marker{color:var(--bmst-gold)}
+.bmst-faculty-embed .bmst-entry-title{font-weight:700}
+.bmst-faculty-embed .bmst-entry-content{white-space:pre-line}
+.bmst-faculty-embed .bmst-fields{margin:0;display:grid;grid-template-columns:minmax(110px,165px) minmax(0,1fr);gap:3px 11px}
+.bmst-faculty-embed .bmst-fields dt{font-weight:700;color:var(--bmst-navy)}
+.bmst-faculty-embed .bmst-fields dd{margin:0;white-space:pre-line}
+@media(max-width:780px){.bmst-faculty-embed .bmst-grid{grid-template-columns:1fr}.bmst-faculty-embed .bmst-card{gap:15px}}
+@media(max-width:540px){.bmst-faculty-embed{font-size:15px}.bmst-faculty-embed .bmst-group-title{font-size:19px}.bmst-faculty-embed .bmst-card{gap:12px;padding:13px}.bmst-faculty-embed .bmst-card .bmst-avatar{width:85px;height:110px;flex-basis:85px}.bmst-faculty-embed .bmst-name{font-size:19px}.bmst-faculty-embed .bmst-profile{padding:17px;gap:13px;flex-direction:column}.bmst-faculty-embed .bmst-profile .bmst-avatar{width:105px;height:130px;flex-basis:auto}.bmst-faculty-embed .bmst-profile .bmst-name{font-size:24px}.bmst-faculty-embed .bmst-tab{font-size:13px;padding:8px 12px}.bmst-faculty-embed .bmst-fields{grid-template-columns:1fr;gap:2px}.bmst-faculty-embed .bmst-fields dt:not(:first-child){margin-top:8px}}
 </style>
-
-<div class="nsysu-faculty-profile-embed">
-  <!-- 改 teacher=mjlee 為 Google Sheets「Teachers」中的 teacher_id -->
-  <iframe
-    src="https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&amp;lang=en"
-    title="Faculty profile"
-    loading="lazy"
-    referrerpolicy="strict-origin-when-cross-origin">
-  </iframe>
+<!-- Copy the whole block into the RPage HTML source editor. No iframe or page-level title. -->
+<div class="bmst-faculty-embed" data-view="profile" data-lang="en" data-teacher="mjlee">
+  <p class="bmst-status">Loading faculty information…</p>
 </div>
-
 <script>
-  /* 依 GitHub Pages 傳來的實際內容高度，自動調整 Rpage iframe */
-  (function () {
-    var origin = 'https://bmstweb806.github.io';
-    var installedFlag = '__nsysuFacultyProfileAutoHeightInstalled';
-
-    // 即使同一個 Rpage 放入多位教師，也只需要一個監聽器。
-    if (window[installedFlag]) return;
-    window[installedFlag] = true;
-
-    window.addEventListener('message', function (event) {
-      if (event.origin !== origin) return;
-      if (!event.data || event.data.type !== 'NSYSU_FACULTY_HEIGHT') return;
-
-      var height = Number(event.data.height);
-      if (!isFinite(height) || height < 100 || height > 30000) return;
-
-      var frames = document.querySelectorAll(
-        '.nsysu-faculty-profile-embed iframe'
-      );
-
-      for (var i = 0; i < frames.length; i++) {
-        if (event.source === frames[i].contentWindow) {
-          frames[i].style.height = Math.ceil(height) + 'px';
-          break;
-        }
-      }
-    });
-  })();
+(function(){
+'use strict';
+var root=document.currentScript&&document.currentScript.previousElementSibling;
+if(!root||!root.classList.contains('bmst-faculty-embed'))return;
+var base='https://bmstweb806.github.io/nsysu-faculty/';
+var params=new URLSearchParams(window.location.search);
+var arg=params.get('Lang')||params.get('lang')||'';
+var lang=/^en/i.test(arg)?'en':(/^zh/i.test(arg)?'zh':root.getAttribute('data-lang')||'zh');
+var other=lang==='en'?'zh':'en';
+var mode=root.getAttribute('data-view')||'list';
+var tId=root.getAttribute('data-teacher')||'';
+var words=lang==='en'?{loading:'Loading faculty information…',empty:'No published faculty are currently available.',error:'Unable to load faculty information.',notFound:'Faculty profile not found.',profile:'View profile',site:'Official profile',email:'Email',office:'Office',expertise:'Research interests',back:'Back to faculty directory',photo:'No photograph',none:'No additional profile information.'}:{loading:'教師資料載入中…',empty:'目前尚無已發布的教師資料。',error:'教師資料暫時無法載入。',notFound:'找不到此教師，或此語言版本尚未公開。',profile:'查看個人資料',site:'官方教師頁面',email:'電子郵件',office:'研究室',expertise:'研究專長',back:'返回教師列表',photo:'暫無照片',none:'目前尚無其他資料。'};
+var serial=Math.random().toString(36).slice(2,9);
+function node(tag,cls,txt){var el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined&&txt!==null)el.textContent=String(txt);return el;}
+function loc(data){return data&&typeof data==='object'?String(data[lang]||'').trim():'';}
+function safeUrl(x){try{var u=new URL(String(x));return /^https?:$/.test(u.protocol)?u.href:'';}catch(e){return '';}}
+function link(parent,url,label,cls){var target=safeUrl(url);if(!target)return null;var a=node('a',cls,label);a.href=target;a.target='_blank';a.rel='noopener noreferrer';parent.appendChild(a);return a;}
+function notice(t){root.replaceChildren(node('p','bmst-status',t));}
+function available(t){return t&&t.visible&&t.visible[lang]===true&&t.publish_status==='PUBLISHED'&&loc(t.name);}
+function avatar(t){var url=safeUrl(t.photo_url),fallback=node('div','bmst-avatar bmst-avatar-empty',words.photo);if(!url)return fallback;var img=node('img','bmst-avatar');img.src=url;img.alt=loc(t.name);img.loading='lazy';img.decoding='async';img.onerror=function(){img.replaceWith(fallback);};return img;}
+function line(parent,cls,text){if(String(text||'').trim())parent.appendChild(node('p',cls,text));}
+function email(parent,t){var addr=String(t.email||'').trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr))return;var p=node('p','bmst-meta');var a=node('a','',addr);a.href='mailto:'+addr;p.appendChild(a);parent.appendChild(p);}
+function detailsUrl(id){var custom=root.getAttribute('data-profile-page');var u=new URL(custom||base+'faculty.html',window.location.href);u.searchParams.set('teacher',String(id));if(custom)u.searchParams.set('Lang',lang==='en'?'en':'zh-tw');else u.searchParams.set('lang',lang);return u.href;}
+function basic(t,isProfile){var info=node('div','bmst-info');var h=node(isProfile?'h2':'h3','bmst-name');if(isProfile)h.textContent=loc(t.name);else{var a=node('a','',loc(t.name));a.href=detailsUrl(t.id);h.appendChild(a);}info.appendChild(h);
+if(loc(t.name&&{zh:t.name[other],en:t.name[other]}))line(info,'bmst-alt',t.name[other]);
+line(info,'bmst-role',loc(t.title));line(info,'bmst-unit',loc(t.unit));
+if(isProfile)line(info,'bmst-meta',(words.office+': ')+(loc(t.office)||''));line(info,'bmst-expertise',loc(t.expertise));email(info,t);
+var actions=node('div','bmst-linkrow');
+if(!isProfile){var more=node('a','',words.profile);more.href=detailsUrl(t.id);actions.appendChild(more);}
+link(actions,t.profile_url,words.site);
+if(actions.childNodes.length)info.appendChild(actions);return info;}
+function list(index){root.replaceChildren();var active=index.teachers.filter(available),cats=(index.categories||[]).filter(function(c){return c.is_active!==false;});
+function group(title,members){if(!members.length)return;var section=node('section','bmst-group');if(title)section.appendChild(node('h3','bmst-group-title',title));var grid=node('div','bmst-grid');members.forEach(function(t){var card=node('article','bmst-card');card.appendChild(avatar(t));card.appendChild(basic(t,false));grid.appendChild(card);});section.appendChild(grid);root.appendChild(section);}
+var done=new Set();cats.forEach(function(c){var members=active.filter(function(t){return t.category_key===c.key;});if(!members.length)return;done.add(c.key);group(loc(c),members);});group('',active.filter(function(t){return !done.has(t.category_key);}));if(!active.length)notice(words.empty);}
+function entryVisible(e){return e&&e.visible&&e.visible[lang]===true&&(loc(e.title)||loc(e.content)||Object.values(e.fields||{}).some(function(v){return loc(v);}));}
+function entries(t,defs,fields){var container=node('div');var buttons=node('div','bmst-tabs'),panels=node('div');buttons.setAttribute('role','tablist');var visible=[];
+(defs||[]).filter(function(x){return x.is_active!==false;}).forEach(function(tab){var section=(t.sections||[]).find(function(s){return s.key===tab.key;});var items=(section&&section.entries||[]).filter(entryVisible);if(items.length&&loc(tab))visible.push({tab:tab,items:items});});
+if(!visible.length){container.appendChild(node('p','bmst-status',words.none));return container;}
+visible.forEach(function(item,i){var b=node('button','bmst-tab',loc(item.tab));b.type='button';b.id='bmst-tab-'+serial+'-'+i;b.setAttribute('role','tab');b.setAttribute('aria-selected',i===0?'true':'false');b.setAttribute('aria-controls','bmst-panel-'+serial+'-'+i);b.tabIndex=i===0?0:-1;var panel=node('section','bmst-panel');panel.id='bmst-panel-'+serial+'-'+i;panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',b.id);panel.hidden=i!==0;var ul=node('ul','bmst-entry-list');
+item.items.forEach(function(e){var li=node('li'),rowFields=(fields||[]).filter(function(f){return f.section_key===item.tab.key&&f.is_active!==false&&f.show_public!==false;});var values=rowFields.map(function(f){return {label:loc(f),value:loc((e.fields||{})[f.key])};}).filter(function(v){return v.label&&v.value;});if(values.length){var dl=node('dl','bmst-fields');values.forEach(function(v){dl.appendChild(node('dt','',v.label));dl.appendChild(node('dd','',v.value));});li.appendChild(dl);}else{var title=loc(e.title),content=loc(e.content);if(content&&title&&title!==content&&!/^(最高學歷|Highest Degree)$/i.test(title)){li.appendChild(node('strong','bmst-entry-title',title+'：'));li.appendChild(node('span','bmst-entry-content',content));}else li.appendChild(node('span','bmst-entry-content',content||title));}if(safeUrl(e.url)){li.appendChild(document.createTextNode(' '));link(li,e.url,words.site);}ul.appendChild(li);});
+panel.appendChild(ul);b.addEventListener('click',function(){Array.from(buttons.children).forEach(function(tab){var selected=tab===b;tab.setAttribute('aria-selected',selected?'true':'false');tab.tabIndex=selected?0:-1;});Array.from(panels.children).forEach(function(p){p.hidden=p!==panel;});});buttons.appendChild(b);panels.appendChild(panel);});
+container.appendChild(buttons);container.appendChild(panels);return container;}
+async function get(path){var r=await fetch(base+path,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function main(){notice(words.loading);try{var index=await get('data/faculty-index.json');if(index.schema_version!==4||index.preview||!Array.isArray(index.teachers))throw new Error('Index schema mismatch');
+if(mode==='list'){list(index);return;}
+if(!/^[A-Za-z0-9_-]{2,40}$/.test(tId)){notice(words.notFound);return;}var t=index.teachers.find(function(x){return x.id===tId&&available(x);});if(!t){notice(words.notFound);return;}
+var both=await Promise.all([get('data/teachers/'+encodeURIComponent(tId)+'.json'),get('data/faculty-config.json')]);var profile=both[0],config=both[1];if(profile.schema_version!==4||profile.preview||!profile.teacher||profile.teacher.id!==tId||!available(profile.teacher)||config.schema_version!==4||config.preview){throw new Error('Profile schema mismatch');}
+root.replaceChildren();var backLink=root.getAttribute('data-list-page');if(backLink){var back=node('a','bmst-back',words.back);back.href=new URL(backLink,window.location.href).href;root.appendChild(back);}
+var header=node('section','bmst-profile');header.appendChild(avatar(profile.teacher));header.appendChild(basic(profile.teacher,true));root.appendChild(header);root.appendChild(entries(profile.teacher,config.tabs,config.fields));
+}catch(e){notice(words.error);if(window.console&&console.warn)console.warn('BMST faculty embed:',e);}}
+main();
+})();
 </script>
