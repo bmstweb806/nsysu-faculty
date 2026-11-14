@@ -248,47 +248,14 @@
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', btn.id);
       panel.hidden = i !== 0;
+      // Public page: compact read-only cards in the order published from Sheets.
+      // Dragging and resizing are editor-only features in FacultyManager.html.
       const board = make('div', 'entry-board');
-      let dragSource = null;
       tab.entries.forEach((e) => {
         const item = make('article', 'public-entry-card');
-        const handle = make('span', 'public-drag-handle', '⠿');
-        handle.draggable = true;
-        handle.title = lang === 'en'
-          ? 'Rearrange cards for this visit only'
-          : '拖曳調整顯示位置（只影響本次瀏覽）';
-        handle.setAttribute('aria-label', handle.title);
-        handle.addEventListener('dragstart', ev => {
-          dragSource = item;
-          item.classList.add('is-dragging');
-          ev.dataTransfer.effectAllowed = 'move';
-          ev.dataTransfer.setData('text/plain', 'reorder');
-        });
-        handle.addEventListener('dragend', () => {
-          item.classList.remove('is-dragging');
-          dragSource = null;
-        });
-        item.addEventListener('dragover', ev => {
-          if (dragSource && dragSource !== item) ev.preventDefault();
-        });
-        item.addEventListener('drop', ev => {
-          if (!dragSource || dragSource === item) return;
-          ev.preventDefault();
-          const cards = [...board.children];
-          if (cards.indexOf(dragSource) < cards.indexOf(item))
-            board.insertBefore(dragSource, item.nextSibling);
-          else board.insertBefore(dragSource, item);
-          scheduleHeight();
-        });
-        item.append(handle);
         const content = make('div', 'public-entry-body');
         renderEntry(e, content, fieldDefs.filter(f => f.section_key === tab.key));
         item.append(content);
-        const width = Number(e.card_width), height = Number(e.card_height);
-        if (Number.isFinite(width) && width >= 180 && width <= 800)
-          item.style.width = width + 'px';
-        if (Number.isFinite(height) && height >= 100 && height <= 1200)
-          item.style.height = height + 'px';
         board.append(item);
       });
       panel.append(board);
