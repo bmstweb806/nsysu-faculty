@@ -200,5 +200,12 @@ function render(){
  else renderPublish();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{view=b.dataset.view;editing=null;render()});
-// Wait for admin OTP login before loading configuration.
+// Trusted Google Sheets menu dialogs can receive a server-verified session.
+// Public /exec?page=config remains protected by Email OTP.
+const sheetAdmin=window.__NSYSU_SHEET_ADMIN;
+if(sheetAdmin&&sheetAdmin.token&&sheetAdmin.account&&sheetAdmin.account.role==='ADMIN'){
+ authToken=sheetAdmin.token;
+ document.body.classList.remove('auth-locked');
+ run('fcfgGetConfig',[],result=>{config=result;render()});
+}
 </script></body></html>

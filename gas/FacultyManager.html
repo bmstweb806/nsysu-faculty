@@ -557,7 +557,17 @@ $('save').onclick=()=>{
  });
 };
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
-// No faculty data is loaded before successful OTP verification.
+// Google Sheets menu dialogs can receive a server-verified ADMIN session.
+// Public /exec Web Apps never receive this bootstrap and require Email OTP.
+const sheetAdmin=window.__NSYSU_SHEET_ADMIN;
+if(sheetAdmin&&sheetAdmin.token&&sheetAdmin.account&&sheetAdmin.account.role==='ADMIN'){
+ authToken=sheetAdmin.token;authAccount=sheetAdmin.account;
+ document.body.classList.remove('auth-locked');
+ $('account-name').textContent=authAccount.email;
+ $('new-teacher').hidden=false;
+ $('teacher-select').hidden=false;
+ loadBootstrap();
+}
 </script>
 </body>
 </html>

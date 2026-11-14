@@ -13,7 +13,7 @@ function fcfgGetConfig(token){
 }
 function fcfgOpenConfig(){
  SpreadsheetApp.getUi().showModalDialog(
-   HtmlService.createHtmlOutputFromFile('FacultyConfigManager')
+   ftaSheetAdminHtml_('FacultyConfigManager')
      .setWidth(1120).setHeight(760),'教師設定 / Faculty Configuration');
 }
 function fcfgGetAdminHtml(){

@@ -118,11 +118,32 @@ function ftaVerifyCode(emailInput,codeInput){
   const account=ftaAccount_(email);
   if(!account){cache.remove(otpKey);throw new Error('帳號已停用');}
   cache.remove(otpKey);
-  const token=ftaHex_(32);
-  const sessionKey='session:'+ftaHash_('session:'+token);
-  cache.put(sessionKey,JSON.stringify({email,created:Date.now()}),FTA.sessionSeconds);
-  return {token,account:{email,role:account.role,teacher_id:account.teacher_id}};
+  return ftaIssueSession_(account);
  });
+}
+/**
+ * Only bound Google Sheets dialogs receive this server-issued ADMIN session.
+ * Never use getEffectiveUser() or trust an email supplied by the browser.
+ */
+function ftaIssueSession_(account){
+ const email=account.email;
+ const token=ftaHex_(32);
+ const key='session:'+ftaHash_('session:'+token);
+ ftaCache_().put(key,JSON.stringify({email,created:Date.now()}),FTA.sessionSeconds);
+ return {token,account:{email,role:account.role,teacher_id:account.teacher_id}};
+}
+function ftaSheetAdminHtml_(fileName){
+ const output=HtmlService.createHtmlOutputFromFile(fileName);
+ let email='';
+ try{email=String(Session.getActiveUser().getEmail()||'').trim().toLowerCase();}
+ catch(_){return output;}
+ if(!email)return output;
+ const account=ftaAccount_(email);
+ if(!account||account.role!=='ADMIN')return output;
+ const session=ftaIssueSession_(account);
+ const payload=JSON.stringify(session).replace(/</g,'\\u003c');
+ const injection='<script>window.__NSYSU_SHEET_ADMIN='+payload+';</script>';
+ return HtmlService.createHtmlOutput(output.getContent().replace('</head>',injection+'</head>'));
 }
 function ftaSession_(token){
  if(!/^[a-f0-9]{64}$/.test(String(token||'')))throw new Error('請先登入');

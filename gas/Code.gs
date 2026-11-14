@@ -203,7 +203,7 @@ function ftvSetup(){
 }
 function ftvOpenManager(){
   SpreadsheetApp.getUi().showModalDialog(
-    HtmlService.createHtmlOutputFromFile('FacultyManager').setWidth(1180).setHeight(780),'教師資料管理');
+    ftaSheetAdminHtml_('FacultyManager').setWidth(1180).setHeight(780),'教師資料管理');
 }
 function doGet(e){
   if(e&&e.parameter&&e.parameter.page==='config')return fcfgGetAdminHtml();
@@ -215,7 +215,7 @@ function onOpen(){
     .addItem('分類／Tab／欄位設定','fcfgOpenConfig')
     .addItem('驗證工作表結構','ftvSetup')
     .addSeparator()
-    .addItem('開啟網站發布管理（Email 驗證）','ftvOpenPublishManager')
+    .addItem('開啟網站發布管理（管理員身分驗證）','ftvOpenPublishManager')
     .addToUi();
 }
 /**
