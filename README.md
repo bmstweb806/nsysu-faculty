@@ -1,3 +1,11 @@
+## V5.2：OTP 固定期限與重新寄送倒數（2026-11-14）
+
+- **驗證碼效期固定 5 分鐘**：由伺服器在產生驗證碼時記錄 `expiresAt`，每次驗證先確認是否已過期。輸錯驗證碼時重新寫入 ScriptCache，僅保留剩餘秒數，不延長原始期限；驗證成功即刪除。
+- **重新寄送間隔 90 秒**：伺服器透過 `CacheService.getScriptCache()` 的 `cool:` 紀錄限制同一信箱的下一次寄信；教師與系辦登入頁均有倒數提示及按鈕停用。重新寄送會使先前的驗證碼失效，最新驗證碼有獨立的 5 分鐘有效期。
+- **寄信限制**：同一信箱每小時最多五次，系統每日最多 60 封，另受 Google MailApp 寄信配額限制。對尚未授權、冷卻中或已達上限的信箱，API 仍回傳相同的通用訊息，避免公開可登入帳號清單。
+- `ScriptCache` 是暫存，不提供強一致或持久化保證；若 Google 提前移除冷卻紀錄，90 秒限制可能提早失效。需要嚴格保證時可改成持久化的速率限制儲存。
+- **同步提醒**：此次只提交 GitHub，正式 Apps Script 仍須更新 `FacultyAuth.gs`、`FacultyManager.html`、`FacultyConfigManager.html` 並重新部署新版本。已設定的 `AUTH_SECRET` 與 `GITHUB_TOKEN` 無需重設。
+
 ## V5.1：Google Sheets 發布選單安全修正（2026-11-14）
 
 - Google Sheets 的「教師資料管理 → 開啟網站發布管理（Email 驗證）」會開啟 `FacultyConfigManager`，必須以 ADMIN 信箱完成 OTP 登入，再按左側「發布網站」操作正式或預覽發布。
