@@ -1,3 +1,13 @@
+## V7.1：管理後台導覽更直覺（2026-11-15）
+
+- 教師編輯器現在依操作流程分區：**01 選擇教師**（下拉選單、公開狀態、管理員專用排序／新增）→ **02 編輯內容**（左側分類導覽）→ **03 儲存與發布**（「儲存草稿」及主要「儲存並發布」按鈕）。
+- 登入帳號和登出按鈕獨立在最上方深藍標題列，不與主要操作混用；處理狀態獨立放於工具列下方，並用低彩度標示未儲存／錯誤。
+- 教師身分不再顯示空白的教師下拉選單，改顯示目前正在編輯的教師姓名。所有原有登入權限、排序及自行發布 API 均保留。
+- 連同 `admin-preview.html` 互動示範頁及 `gas/FacultyConfigManager.html` 系辦設定導覽一起調整。預覽頁的排序及發布只模擬操作，不會連接 Google Sheets 或 GitHub。
+- 正式系統需同步 `gas/FacultyManager.html`、`gas/FacultyConfigManager.html` 至 Apps Script 並儲存，公開 /exec Web App 需更新部署版本。GitHub Pages 預覽頁隨 Pages 更新。
+
+---
+
 ## V7：教師自行發布個人 JSON（2026-11-15）
 
 - **老師可自行發布**：老師透過 Email OTP 登入後，使用 `FacultyManager` 的「儲存並發布我的資料」，先儲存 Google Sheets，再發布自己的個人 JSON；ADMIN 也可對目前選取的教師使用「儲存並發布此教師」。

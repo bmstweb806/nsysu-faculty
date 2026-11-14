@@ -138,6 +138,59 @@ body.auth-locked #login-screen{display:flex}
 .login-panel .resend-hint{font-size:12px;color:#647786;margin:7px 0 0}
 #logout{background:transparent;color:#e7f2f7;border:1px solid #61849c}
 #account-name{font-size:12px;color:#b9d7e6}
+
+
+/* Simplified three-step navigation — static, responsive and accessible */
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 21px;background:#123e5b;color:#fff}
+.app-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.app-mark{height:40px;min-width:61px;border:1px solid #84a6ba;border-radius:3px;display:grid;place-items:center;font-weight:800;font-size:12px;letter-spacing:.04em}
+.app-kicker{display:block;color:#c5d8e2;font-size:11px;letter-spacing:.03em;margin-bottom:1px}
+.app-brand h1{font-size:18px;line-height:1.3;margin:0}
+.app-account{display:flex;align-items:center;gap:12px;min-width:0}
+.app-account #account-name{color:#bfd8e5;font-size:12px;overflow-wrap:anywhere}
+.app-account #logout{background:transparent;border:1px solid #65889e;color:#fff;padding:7px 11px;border-radius:4px}
+.workspace-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;padding:16px 21px;background:#f7f9fb;border-bottom:1px solid #dce6ed}
+.workspace-teacher,.workspace-actions{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:8px}
+.step-title{display:flex;align-items:center;gap:8px;color:#3c5d72;font-size:12px;font-weight:750}
+.step-title b,.step-index{display:inline-grid;place-items:center;background:#173f5b;color:white;border-radius:4px;min-width:25px;height:25px;font-size:11px;flex:0 0 auto}
+.teacher-chooser{display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%}
+.teacher-chooser #teacher-select{width:min(100%,300px);min-width:185px;max-width:none;padding:9px 12px;min-height:41px;font-weight:650;border-radius:5px;border:1px solid #b9ccd8;background:#fff;color:#213d53}
+.teacher-chooser #selected-teacher{color:#174a6a;font-size:16px}
+.teacher-state{border:1px solid #c8dfd0;background:#ebf6ef;color:#276543;border-radius:4px;padding:4px 9px;font-size:11px;font-weight:700;white-space:nowrap}
+.teacher-state[data-state="draft"]{background:#fff5e6;color:#8a5d18;border-color:#edd4a5}
+.admin-teacher-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.admin-teacher-tools button{border-radius:4px;border:1px solid #c9d8e1;background:#fff;font-size:12px;padding:6px 9px;color:#385b70}
+.admin-teacher-tools #new-teacher{border-color:transparent;background:transparent;color:#17618c;font-weight:700}
+.workspace-actions{border-left:1px solid #d9e3eb;padding-left:23px;align-items:flex-end}
+.workspace-actions small{font-size:11px;color:#6a8090}
+.action-buttons{display:flex;align-items:center;gap:9px}
+.action-buttons button{font-weight:700;border-radius:5px;padding:10px 16px;min-height:41px;white-space:nowrap;font-size:13px}
+.action-buttons #save{background:#fff;color:#175575;border-color:#aac0cf}
+.action-buttons #publish-own{background:#145d87;border-color:#145d87;color:white}
+.action-buttons #publish-own:hover{background:#0f4c71}
+.workspace-notice{display:flex;align-items:center;gap:9px;background:#fff;border-bottom:1px solid #e6edf1;padding:7px 23px;min-height:34px;color:#647a88;font-size:12px}
+.status-dot{height:7px;width:7px;flex:0 0 7px;border-radius:50%;background:#a6b9c6}
+.workspace-notice #status{border:0;padding:0;margin:0;min-height:0;color:inherit;background:none;white-space:normal;font-size:12px}
+.workspace-notice:has(#status.dirty){background:#fff9ef;color:#9b6c24}
+.workspace-notice:has(#status.dirty) .status-dot{background:#bd8533}
+.workspace-notice:has(#status.error){background:#fff4f4;color:#ae3448}
+.workspace-notice:has(#status.error) .status-dot{background:#ae3448}
+#layout{grid-template-columns:220px minmax(0,1fr);min-height:460px}
+#tabs{padding:17px 10px;background:#fff;border-right:1px solid #e1e9ef}
+#tabs .side-heading{display:flex;align-items:center;gap:9px;padding:1px 10px 15px;color:#294b63;font-size:13px;letter-spacing:0;font-weight:750}
+#tabs .side-heading small{margin-left:auto;color:#8497a3;font-size:11px;font-weight:400;letter-spacing:0}
+#tabs button[data-tab]{display:block;width:100%;padding:10px 12px;margin-bottom:4px;border:0;border-radius:4px;text-align:left;background:transparent;color:#435e71;font-size:13px;font-weight:650}
+#tabs button[data-tab]:hover{background:#f2f7fa}
+#tabs button[data-tab].selected{background:#e9f1f7;color:#134c70;box-shadow:inset 3px 0 #c49b50;font-weight:800}
+#tabs .add-category{margin-top:17px;padding:9px;background:#fafcfd;border:1px solid #c6d8e4;text-align:center}
+#editor{padding:24px 28px;max-height:calc(100vh - 200px);overflow:auto}
+body.auth-locked>.workspace-bar,body.auth-locked>.workspace-notice{display:none!important}
+.app-header button:focus-visible,.workspace-bar button:focus-visible,#tabs button:focus-visible{outline:2px solid #c49b50;outline-offset:2px}
+.card-toggle .caret{transition:none}
+@media(max-width:900px){.workspace-bar{grid-template-columns:1fr;gap:14px}.workspace-actions{align-items:flex-start;border-left:0;border-top:1px solid #d9e3eb;padding:13px 0 0}#editor{max-height:none}}
+@media(max-width:750px){#layout{grid-template-columns:1fr}#tabs{padding:12px;border-right:0;border-bottom:1px solid #e1e9ef}#tabs .side-heading{display:flex;padding:4px 6px 11px}#tabs button[data-tab]{display:inline-block;width:auto;padding:9px 12px;margin-right:4px}#editor{padding:17px 14px}}
+@media(max-width:520px){.app-header{padding:11px 14px}.app-mark{min-width:48px;height:36px;font-size:10px}.app-account{flex-direction:column;align-items:flex-end;gap:3px}.app-account #account-name{font-size:10px}.app-kicker{font-size:10px}.workspace-bar{padding:14px}.teacher-chooser #teacher-select{min-width:0;width:100%}.action-buttons{width:100%;display:grid;grid-template-columns:1fr 1fr}.action-buttons button{white-space:normal;padding:9px}}
+
 </style>
 </head>
 <body class="auth-locked">
@@ -154,17 +207,24 @@ body.auth-locked #login-screen{display:flex}
 </form>
 <div id="login-error" class="login-error" role="status" aria-live="polite"></div>
 </div></div>
-<header>
-<h1>教師管理</h1><span id="account-name"></span><button id="logout" type="button">登出</button>
-<select id="teacher-select" aria-label="選擇教師"></select>
-<button id="move-teacher-up" type="button" hidden title="依 Teachers 試算表列順序向上移動，需重新發布網站">↑ 上移</button>
-<button id="move-teacher-down" type="button" hidden title="依 Teachers 試算表列順序向下移動，需重新發布網站">↓ 下移</button>
-<button id="new-teacher">＋ 教師</button>
-<button id="save" class="primary">儲存</button>
-<button id="publish-own" type="button" title="儲存並發布選取的教師資料">儲存並發布</button>
-<span id="status" role="status" aria-live="polite">載入中…</span>
+<header class="app-header">
+  <div class="app-brand"><span class="app-mark" aria-hidden="true">NSYSU</span><div><span class="app-kicker">生物醫學科技學系 · FACULTY CMS</span><h1>教師管理</h1></div></div>
+  <div class="app-account"><span id="account-name"></span><button id="logout" type="button">登出</button></div>
 </header>
-<div id="layout"><aside id="tabs"></aside><main id="editor"></main></div>
+<section class="workspace-bar" aria-label="選取教師與發布">
+  <div class="workspace-teacher">
+    <div class="step-title"><b>01</b> 選擇教師</div>
+    <div class="teacher-chooser"><select id="teacher-select" aria-label="選擇要編輯的教師"></select><strong id="selected-teacher" hidden></strong><span id="teacher-state" class="teacher-state">讀取中</span></div>
+    <div id="admin-teacher-tools" class="admin-teacher-tools"><button id="move-teacher-up" type="button" hidden title="調整此教師的列表位置">↑ 上移</button><button id="move-teacher-down" type="button" hidden title="調整此教師的列表位置">↓ 下移</button><button id="new-teacher" type="button">＋ 新增教師</button></div>
+  </div>
+  <div class="workspace-actions">
+    <div class="step-title"><b>03</b> 儲存與發布</div>
+    <small>儲存不會公開；發布才會更新網站</small>
+    <div class="action-buttons"><button id="save" type="button">儲存草稿</button><button id="publish-own" class="primary" type="button" title="儲存後更新對外教師資料">儲存並發布</button></div>
+  </div>
+</section>
+<div class="workspace-notice" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span id="status">載入中…</span></div>
+<div id="layout"><aside id="tabs" aria-label="教師資料內容區塊"></aside><main id="editor"></main></div>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -239,12 +299,12 @@ function status(message,error=false){
 }
 function invoke(name,args,callback){
  if(busy)return;
- busy=true;document.querySelectorAll('header button').forEach(b=>b.disabled=true);status('處理中…');
+ busy=true;document.querySelectorAll('.workspace-bar button, .app-header button').forEach(b=>b.disabled=true);status('處理中…');
  google.script.run.withSuccessHandler(result=>{
-  busy=false;document.querySelectorAll('header button').forEach(b=>b.disabled=false);
+  busy=false;document.querySelectorAll('.workspace-bar button, .app-header button').forEach(b=>b.disabled=false);
   status('就緒');if(callback)callback(result);
  }).withFailureHandler(e=>{
-  busy=false;document.querySelectorAll('header button').forEach(b=>b.disabled=false);
+  busy=false;document.querySelectorAll('.workspace-bar button, .app-header button').forEach(b=>b.disabled=false);
   status(e?.message||String(e),true);
  })[name](...(args||[]),authToken);
 }
@@ -258,6 +318,14 @@ function field(label,name,value,type='text',cls=''){
 function chooser(){
  $('teacher-select').innerHTML=boot.teachers.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+' ('+esc(t.id)+')</option>').join('');
  $('teacher-select').value=originalId;
+ const admin=authAccount?.role==='ADMIN';
+ const selected=boot.teachers.find(t=>t.id===originalId);
+ $('teacher-select').hidden=!admin;
+ $('selected-teacher').hidden=admin;
+ $('selected-teacher').textContent=selected?selected.name+' ('+selected.id+')':'未選擇教師';
+ $('teacher-state').textContent=selected?(selected.status==='PUBLISHED'?'已公開':'草稿'):'尚未選擇';
+ $('teacher-state').dataset.state=selected&&selected.status==='PUBLISHED'?'published':'draft';
+ $('admin-teacher-tools').hidden=!admin;
  updateTeacherOrderButtons();
 }
 function updateTeacherOrderButtons(){
@@ -266,13 +334,13 @@ function updateTeacherOrderButtons(){
  $('move-teacher-up').hidden=!admin;
  $('move-teacher-down').hidden=!admin;
  $('move-teacher-up').disabled=busy||idx<=0;
- $('move-teacher-down').disabled=busy||idx<0||idx>=((boot?.teachers?.length)||0)-1;
+ $('move-teacher-down').disabled=busy||idx<0||idx>=(boot?.teachers?.length||0)-1;
 }
 function renderTabs(){
  const items=[{key:'basic',zh:'基本資料',en:'Profile'},...boot.tabs];
- $('tabs').innerHTML='<div class="side-heading">內容分類</div>'+
+ $('tabs').innerHTML='<div class="side-heading"><span class="step-index">02</span> 編輯內容 <small>選擇區塊</small></div>'+
   items.map(t=>'<button type="button" data-tab="'+esc(t.key)+'" class="'+(t.key===active?'selected':'')+'">'+esc(t.zh||t.en)+'</button>').join('')+
-  '<button id="add-category-toggle" type="button" class="add-category">＋ 分類</button>'+
+  '<button id="add-category-toggle" type="button" class="add-category">＋ 新增內容區塊</button>'+
   '<form id="new-category-form" class="category-form" hidden>'+
   '<label>分類名稱<input id="new-category-zh" maxlength="150" required placeholder="例如：專利"></label>'+
   '<label>English<input id="new-category-en" maxlength="150" placeholder="Patents"></label>'+

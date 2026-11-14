@@ -39,6 +39,17 @@ body.auth-locked #login-screen{display:flex}
 .login-panel button{width:100%;padding:10px;margin-top:8px}
 .login-panel .login-error{min-height:20px;margin-top:12px;color:#ac3142;font-size:12px}
 .login-panel .resend-hint{font-size:12px;color:#647786;margin:7px 0 0}
+
+
+nav{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:0 17px;background:#f7f9fb}
+nav .nav-settings{display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+nav button{border:0;border-radius:0;padding:15px 13px 12px;border-bottom:3px solid transparent;background:transparent;color:#506a7d;font-weight:650}
+nav button:hover{background:#edf3f7}
+nav button.selected{background:transparent;color:#185378;border-color:#c49b50}
+nav button.nav-publish{padding:9px 14px;margin:6px 0;border:1px solid #145b85;border-radius:5px;background:#145b85;color:#fff;font-weight:750}
+nav button.nav-publish:hover,nav button.nav-publish.selected{background:#114868;color:#fff;border-color:#114868}
+@media(max-width:800px){nav{flex-wrap:wrap;padding:6px 13px}nav .nav-settings{width:100%}nav button{padding:10px}nav button.nav-publish{margin:0 0 6px}}
+
 </style></head>
 <body class="auth-locked">
 <div id="login-screen"><div class="login-panel">
@@ -53,12 +64,14 @@ body.auth-locked #login-screen{display:flex}
 </div></div>
 <header><h1>教師系統設定 / Faculty Settings</h1>
 <p>設定以 Google Sheets 列順序為準，不使用顯示順序數字，也不建立每筆內容 ID。</p></header>
-<nav>
-<button data-view="category" class="selected">教師分類</button>
-<button data-view="tab">個人頁 Tab</button>
-<button data-view="field">Tab 自訂欄位</button>
-<button data-view="teacher">教師分類指派</button>
-<button data-view="publish">發布網站</button>
+<nav aria-label="系辦設定導覽">
+  <div class="nav-settings">
+    <button data-view="category" class="selected">教師分組</button>
+    <button data-view="teacher">分組指派</button>
+    <button data-view="tab">個人頁區塊</button>
+    <button data-view="field">自訂欄位</button>
+  </div>
+  <button data-view="publish" class="nav-publish">發布全站資料</button>
 </nav>
 <div id="status" role="status">準備載入…</div><main id="app"></main>
 <script>
