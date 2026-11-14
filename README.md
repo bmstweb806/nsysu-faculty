@@ -72,18 +72,19 @@
 | --- | --- |
 | [gas/Code.gs](gas/Code.gs) | 唯一 `onOpen`、`doGet`、教師資料讀寫、新增教師、保留列順序 |
 | [gas/FacultyManager.html](gas/FacultyManager.html) | 簡化管理頁，左側「＋新增分類」、內容預設收合的單列項目、新項目排最前、拖拉／展開後調整高度 |
-| [gas/FacultyConfig.gs](gas/FacultyConfig.gs) | 分類、Tab、欄位設定及 JSON 發布 |
+| [gas/FacultyConfig.gs](gas/FacultyConfig.gs) | 分類、Tab、欄位設定及 JSON 發布（限管理員） |
+| [gas/FacultyAuth.gs](gas/FacultyAuth.gs) | Email 驗證碼、登入工作階段與權限控管 |
 | [gas/FacultyConfigManager.html](gas/FacultyConfigManager.html) | 直接管理分類、Tab、欄位的設定頁 |
 
 ### 安裝到 Apps Script
 
 1. 在 [V4 Google Sheets](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit) 點「擴充功能 → Apps Script」。
 2. 用本倉庫 `gas/Code.gs` 全文取代原本的 Code.gs。
-3. 把 `gas/FacultyConfig.gs` 貼到名稱為 `FacultyConfig` 的指令碼。
+3. 把 `gas/FacultyConfig.gs` 與 `gas/FacultyAuth.gs` 分別貼到同名的 Apps Script 指令碼，並依 V5 安裝步驟初始化 AUTH_SECRET。
 4. 把 `gas/FacultyManager.html` 與 `gas/FacultyConfigManager.html` 分別貼進同名的 Apps Script HTML 檔案。
 5. 在「專案設定 → 指令碼屬性」設定 `GITHUB_TOKEN`（GitHub fine-grained PAT，必須有此 repo Contents 寫入權限），**絕對不要將 Token 貼到 GitHub**。可選填 `GITHUB_REPO`。
 6. 儲存並重新整理 Google Sheets。試算表選單「教師資料管理」會有教師編輯器、分類／Tab／欄位設定、正式與預覽發布功能。
-7. 若使用獨立 Apps Script Web App，需在「部署 → 管理部署」更新成**新版本**：`/exec` 為教師編輯器，`/exec?page=config` 為設定管理頁。必須限制 Web App 僅授權管理者使用。
+7. 若使用獨立 Apps Script Web App，需在「部署 → 管理部署」更新成**新版本**：`/exec` 為教師編輯器，`/exec?page=config` 為系辦設定頁。請依 V5 說明設定 Web App 存取權，並透過 Email OTP 驗證與 GAS 伺服器端權限控管；不要將 Google Sheets 分享給教師。
 
 ⚠️ **僅更新 GitHub 原始碼不會更新已部署 GAS。** 目前 GitHub 主分支包含新版程式；需手動複製到 Apps Script 專案，儲存並重新部署。請勿混用前一版的含 `entry_id`／`sort_order` 函式。
 
