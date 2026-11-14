@@ -76,14 +76,15 @@ function ftvFields_(){
     show_public:ftvBool_(r.show_public)
   }));
 }
-function ftvGetBootstrap(){
+function ftvGetBootstrap(token){
+  const account=ftaSession_(token);
   const teachers=ftvTable_(FTV.teachers);ftvCheckColumns_(teachers,FTV.teacherColumns);
   return {
-    teachers:teachers.items.map(t=>({id:String(t.teacher_id),name:String(t.name_zh||t.teacher_id),status:String(t.publish_status)})),
+    teachers:teachers.items.filter(t=>account.role==='ADMIN'||String(t.teacher_id)===account.teacher_id).map(t=>({id:String(t.teacher_id),name:String(t.name_zh||t.teacher_id),status:String(t.publish_status)})),
     tabs:ftvDefinitions_().filter(d=>d.is_active),
     categories:ftvCategories_().filter(d=>d.is_active),
     fields:ftvFields_().filter(d=>d.is_active),
-    spreadsheetUrl:ftvSS_().getUrl()
+    spreadsheetUrl:account.role==='ADMIN'?ftvSS_().getUrl():''
   };
 }
 function ftvFindTeacher_(id){
@@ -93,14 +94,16 @@ function ftvFindTeacher_(id){
   if(!row.teacher_sheet)throw new Error('此教師缺少資料工作表');
   return {table:t,teacher:row};
 }
-function ftvGetTeacher(id){
+function ftvGetTeacher(id,token){
+  ftaRequire_(token,id);
   const found=ftvFindTeacher_(id);
   const entries=ftvTable_(String(found.teacher.teacher_sheet));
   ftvCheckColumns_(entries,FTV.entryColumns);
   return {teacher:found.teacher,entries:entries.items,
     revision:ftvRevision_(found.teacher,entries.items)};
 }
-function ftvCreateTeacher(requestedId){
+function ftvCreateTeacher(requestedId,token){
+  ftaAdmin_(token);
   return ftvLock_(()=>{
     const existing=ftvTable_(FTV.teachers);ftvCheckColumns_(existing,FTV.teacherColumns);
     const defaults=ftvCategories_().filter(c=>c.is_active);
@@ -140,11 +143,13 @@ function ftvEntry_(raw,allowed){
     visible_en:ftvBool_(raw.visible_en),field_values_json:JSON.stringify(fields),
     card_width:clamp(width,180,800),card_height:clamp(height,100,1200)};
 }
-function ftvSaveTeacher(payload){
+function ftvSaveTeacher(payload,token){
   if(!payload||!payload.teacher||!Array.isArray(payload.entries))throw new Error('資料格式錯誤');
+  const original=ftvId_(payload.originalTeacherId||payload.teacher.teacher_id);
+  const actor=ftaRequire_(token,original);
   return ftvLock_(()=>{
-    const original=ftvId_(payload.originalTeacherId||payload.teacher.teacher_id);
     const requested=ftvId_(payload.teacher.teacher_id);
+    if(actor.role!=='ADMIN'&&requested!==original)throw new Error('教師不能自行更改教師 ID');
     const found=ftvFindTeacher_(original),record=found.teacher;
     const entries=ftvTable_(String(record.teacher_sheet));
     ftvCheckColumns_(entries,FTV.entryColumns);
@@ -153,7 +158,7 @@ function ftvSaveTeacher(payload){
     if(found.table.items.some(t=>String(t.teacher_id).toLowerCase()===requested.toLowerCase()&&t._row!==record._row))
       throw new Error('教師 ID 重複');
     const allowed=new Set(ftvDefinitions_().map(x=>x.key)),cat=ftvCategories_();
-    const category=String(payload.teacher.category_key||record.category_key||'');
+    const category=actor.role==='ADMIN'?String(payload.teacher.category_key||record.category_key||''):String(record.category_key||'');
     if(!cat.some(c=>c.key===category&&c.is_active))throw new Error('分類不存在或未啟用');
     const out={...record,teacher_id:requested,category_key:category};
     const free=['name_zh','name_en','title_zh','title_en','unit_zh','unit_en','office_zh',
@@ -162,10 +167,10 @@ function ftvSaveTeacher(payload){
     if(!out.name_zh)throw new Error('中文姓名不可留空');
     if(out.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(out.email))throw new Error('Email 格式錯誤');
     for(const k of ['profile_url','photo_url'])if(out[k]&&!/^https?:\/\/\S+$/i.test(out[k]))throw new Error(k+' 網址格式錯誤');
-    out.publish_status=String(payload.teacher.publish_status||'DRAFT');
+    out.publish_status=actor.role==='ADMIN'?String(payload.teacher.publish_status||'DRAFT'):String(record.publish_status||'DRAFT');
     if(!['DRAFT','PUBLISHED'].includes(out.publish_status))throw new Error('發布狀態錯誤');
-    out.visible_zh=ftvBool_(payload.teacher.visible_zh);
-    out.visible_en=ftvBool_(payload.teacher.visible_en);
+    out.visible_zh=actor.role==='ADMIN'?ftvBool_(payload.teacher.visible_zh):ftvBool_(record.visible_zh);
+    out.visible_en=actor.role==='ADMIN'?ftvBool_(payload.teacher.visible_en):ftvBool_(record.visible_en);
     if(out.publish_status==='PUBLISHED'&&out.visible_en&&!out.name_en)throw new Error('公開英文版前需有英文姓名');
     if(payload.entries.length>1200)throw new Error('內容最多 1200 筆');
     const normalized=payload.entries.map(r=>ftvEntry_(r,allowed));
@@ -174,7 +179,7 @@ function ftvSaveTeacher(payload){
     found.table.sheet.getRange(record._row,1,1,found.table.cols.length)
       .setValues([found.table.cols.map(k=>out[k]===undefined?'':out[k])]);
     SpreadsheetApp.flush();
-    return ftvGetTeacher(requested);
+    return ftvGetTeacher(requested,token);
   });
 }
 function ftvSetup(){
