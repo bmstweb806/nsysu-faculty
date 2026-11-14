@@ -315,37 +315,89 @@
   window.addEventListener('resize', scheduleHeight);
   window.addEventListener('load', scheduleHeight);
 
+  async function getJson(url) {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) {
+      const err = new Error('HTTP ' + response.status);
+      err.httpStatus = response.status;
+      throw err;
+    }
+    return response.json();
+  }
+
+  // Transition fallback until a publisher has created the split JSON files.
+  async function loadLegacy() {
+    const json = await getJson(isPreview ? './data/faculty-preview.json' : './data/faculty.json');
+    if (!json || Number(json.schema_version) !== 3 || !Array.isArray(json.teachers) ||
+        !Array.isArray(json.tabs) || Boolean(json.preview) !== isPreview) {
+      throw new Error('Legacy faculty JSON schema mismatch');
+    }
+    root.replaceChildren();
+    languageToolbar();
+    const teachers = json.teachers.filter(available);
+    if (view === 'list') renderList(teachers, json);
+    else {
+      const id = String(params.get('teacher') || '').trim();
+      const teacher = teachers.find(t => String(t.id) === id);
+      if (!teacher) status(text.notFound);
+      else renderDetail(teacher, json.tabs, Array.isArray(json.fields) ? json.fields : []);
+    }
+  }
+
   async function init() {
     root.replaceChildren();
     languageToolbar();
     status(text.loading);
     try {
-      const response = await fetch(isPreview ? './data/faculty-preview.json' : './data/faculty.json',
-        { cache: 'no-store' });
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      const json = await response.json();
-      if (!json || Number(json.schema_version) !== 3 || !Array.isArray(json.teachers) || !Array.isArray(json.tabs)) {
-        throw new Error('V3 schema mismatch');
+      const prefix = isPreview ? './data/preview/' : './data/';
+      let index;
+      try {
+        index = await getJson(prefix + 'faculty-index.json');
+      } catch (err) {
+        if (err.httpStatus !== 404) throw err;
+        await loadLegacy();
+        return;
       }
-      if (Boolean(json.preview) !== isPreview) throw new Error('Preview/production mismatch');
+      if (!index || Number(index.schema_version) !== 4 ||
+          Boolean(index.preview) !== isPreview ||
+          !Array.isArray(index.teachers) || !Array.isArray(index.categories)) {
+        throw new Error('Faculty index schema mismatch');
+      }
       root.replaceChildren();
       languageToolbar();
-      // The order of teachers in the JSON is the physical Teachers sheet row order.
-      const teachers = json.teachers.filter(available);
+      // Index and per-teacher JSON keep the physical Teachers sheet order.
+      const teachers = index.teachers.filter(available);
       if (view === 'list') {
-        renderList(teachers, json);
+        renderList(teachers, index);
       } else {
         const id = String(params.get('teacher') || '').trim();
-        const teacher = teachers.find((t) => String(t.id) === id);
-        if (!teacher) status(text.notFound);
-        else renderDetail(teacher, json.tabs, Array.isArray(json.fields) ? json.fields : []);
+        const listed = teachers.find(t => String(t.id) === id);
+        if (!listed || !/^[A-Za-z0-9_-]{2,40}$/.test(id)) {
+          status(text.notFound);
+        } else {
+          const [profile, config] = await Promise.all([
+            getJson(prefix + 'teachers/' + encodeURIComponent(id) + '.json'),
+            getJson(prefix + 'faculty-config.json')
+          ]);
+          if (!profile || Number(profile.schema_version) !== 4 ||
+              Boolean(profile.preview) !== isPreview ||
+              !profile.teacher || profile.teacher.id !== id ||
+              !available(profile.teacher) ||
+              !config || Number(config.schema_version) !== 4 ||
+              Boolean(config.preview) !== isPreview ||
+              !Array.isArray(config.tabs) || !Array.isArray(config.fields)) {
+            throw new Error('Faculty profile/config schema mismatch');
+          }
+          renderDetail(profile.teacher, config.tabs, config.fields);
+        }
       }
     } catch (error) {
       root.replaceChildren();
       languageToolbar();
       status(text.error + (isPreview ? ' (' + error.message + ')' : ''));
+    } finally {
+      scheduleHeight();
     }
-    scheduleHeight();
   }
   init();
 })();

@@ -1,0 +1,90 @@
+{
+  "schema_version": 4,
+  "preview": true,
+  "teacher": {
+    "id": "ihyang",
+    "category_key": "full_time",
+    "name": {
+      "zh": "楊易軒",
+      "en": "Yang, I-Hsuan"
+    },
+    "title": {
+      "zh": "助理教授",
+      "en": "Assistant Professor"
+    },
+    "unit": {
+      "zh": "生物醫學科技學系",
+      "en": "Department of Biomedical Science and Technology"
+    },
+    "office": {
+      "zh": "IL3009",
+      "en": "IL3009"
+    },
+    "expertise": {
+      "zh": "生醫高分子的修飾及應用、醫用陶瓷及複合材料、組織工程與再生醫學、藥物傳遞系統",
+      "en": "Modification and application of biomedical polymers; Medical ceramics and composite materials; Tissue engineering and regenerative medicine; Drug delivery system"
+    },
+    "email": "ihyang@mail.nsysu.edu.tw",
+    "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358530,c26926.php?Lang=zh-tw",
+    "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/279/m/mczh-tw200x200_small358530_518165415427.png",
+    "publish_status": "PUBLISHED",
+    "visible": {
+      "zh": true,
+      "en": true
+    },
+    "sections": [
+      {
+        "key": "education",
+        "entries": [
+          {
+            "type": "list_item",
+            "title": {
+              "zh": "最高學歷",
+              "en": "Highest Degree"
+            },
+            "content": {
+              "zh": "國立臺灣大學醫學工程學系博士",
+              "en": "Ph.D., Department of Biomedical Engineering, National Taiwan University"
+            },
+            "url": "",
+            "visible": {
+              "zh": true,
+              "en": true
+            },
+            "fields": {},
+            "card_width": null,
+            "card_height": null
+          }
+        ]
+      },
+      {
+        "key": "experience",
+        "entries": []
+      },
+      {
+        "key": "courses",
+        "entries": []
+      },
+      {
+        "key": "projects",
+        "entries": []
+      },
+      {
+        "key": "journal",
+        "entries": []
+      },
+      {
+        "key": "conference",
+        "entries": []
+      },
+      {
+        "key": "honors",
+        "entries": []
+      },
+      {
+        "key": "service",
+        "entries": []
+      }
+    ]
+  }
+}

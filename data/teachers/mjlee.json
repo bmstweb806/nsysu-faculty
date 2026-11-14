@@ -1,0 +1,129 @@
+{
+  "schema_version": 4,
+  "preview": false,
+  "teacher": {
+    "id": "mjlee",
+    "category_key": "full_time",
+    "name": {
+      "zh": "李孟娟",
+      "en": "Lee, Mon-Juan"
+    },
+    "title": {
+      "zh": "副教授",
+      "en": "Associate Professor"
+    },
+    "unit": {
+      "zh": "生物醫學科技學系",
+      "en": "Department of Biomedical Science and Technology"
+    },
+    "office": {
+      "zh": "IL3006",
+      "en": "IL3006"
+    },
+    "expertise": {
+      "zh": "生物感測技術、藥物篩選平台、奈米生醫材料、幹細胞與再生醫學",
+      "en": "Biosensing technologies; Drug-screening platforms; Nanobiomaterials; Stem cells and regenerative medicine"
+    },
+    "email": "mjlee@mail.nsysu.edu.tw",
+    "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358593,c26926.php?Lang=zh-tw",
+    "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/458/m/mczh-tw200x200_small358593_463032235939.jpg",
+    "publish_status": "PUBLISHED",
+    "visible": {
+      "zh": true,
+      "en": true
+    },
+    "sections": [
+      {
+        "key": "education",
+        "entries": [
+          {
+            "type": "list_item",
+            "title": {
+              "zh": "最高學歷",
+              "en": "Highest Degree"
+            },
+            "content": {
+              "zh": "國立清華大學生命科學系博士",
+              "en": "PhD, Department of Life Science, National Tsing Hua University"
+            },
+            "url": "",
+            "visible": {
+              "zh": true,
+              "en": true
+            },
+            "fields": {},
+            "card_width": null,
+            "card_height": null
+          }
+        ]
+      },
+      {
+        "key": "experience",
+        "entries": []
+      },
+      {
+        "key": "courses",
+        "entries": []
+      },
+      {
+        "key": "projects",
+        "entries": [
+          {
+            "type": "list_item",
+            "title": {
+              "zh": "test",
+              "en": "test"
+            },
+            "content": {
+              "zh": "test",
+              "en": "test"
+            },
+            "url": "",
+            "visible": {
+              "zh": true,
+              "en": false
+            },
+            "fields": {},
+            "card_width": null,
+            "card_height": null
+          },
+          {
+            "type": "list_item",
+            "title": {
+              "zh": "test",
+              "en": "test"
+            },
+            "content": {
+              "zh": "test",
+              "en": "test"
+            },
+            "url": "",
+            "visible": {
+              "zh": true,
+              "en": false
+            },
+            "fields": {},
+            "card_width": null,
+            "card_height": null
+          }
+        ]
+      },
+      {
+        "key": "journal",
+        "entries": []
+      },
+      {
+        "key": "conference",
+        "entries": []
+      },
+      {
+        "key": "honors",
+        "entries": []
+      },
+      {
+        "key": "service",
+        "entries": []
+      }
+    ]
+  }
+}

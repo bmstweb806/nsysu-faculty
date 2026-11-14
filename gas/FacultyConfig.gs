@@ -151,39 +151,80 @@ function fcfgBuildJson_(preview){
   categories,tabs,fields,teachers
  };
 }
+/**
+ * Publish the complete public dataset in ONE GitHub commit, to avoid a mixed
+ * set of faculty-index / faculty-config / per-teacher files.
+ * All code below runs server-side, after an ADMIN session check.
+ */
+function fcfgGit_(endpoint,headers,method,data){
+ const options={method:method||'get',headers,muteHttpExceptions:true};
+ if(data!==undefined){options.contentType='application/json';options.payload=JSON.stringify(data);}
+ const response=UrlFetchApp.fetch(endpoint,options);
+ const status=response.getResponseCode();
+ if(status<200||status>=300){
+  throw new Error('GitHub API '+status+'：'+response.getContentText().slice(0,400));
+ }
+ return JSON.parse(response.getContentText());
+}
 function fcfgPublish_(preview){
  const properties=PropertiesService.getScriptProperties();
  const token=properties.getProperty('GITHUB_TOKEN');
  if(!token)throw new Error('缺少 GITHUB_TOKEN：請先在 Apps Script 指令碼屬性中設定');
  const repo=properties.getProperty('GITHUB_REPO')||'bmstweb806/nsysu-faculty';
  if(!/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(repo))throw new Error('GITHUB_REPO 格式錯誤');
- const path=preview?'data/faculty-preview.json':'data/faculty.json';
- const endpoint='https://api.github.com/repos/'+repo+'/contents/'+path;
+ const base='https://api.github.com/repos/'+repo;
  const headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json',
-   'X-GitHub-Api-Version':'2022-11-28','User-Agent':'NSYSU-Faculty-V4'};
- const current=UrlFetchApp.fetch(endpoint+'?ref=main',{
-   headers,muteHttpExceptions:true
- });
- const sc=current.getResponseCode();
- if(sc!==200&&sc!==404)throw new Error('GitHub JSON 讀取失敗：HTTP '+sc);
- const sha=sc===200?JSON.parse(current.getContentText()).sha:null;
- const data=fcfgBuildJson_(preview);
- const content=JSON.stringify(data,null,2)+'\n';
- const body={
-  message:preview?'Publish faculty preview (sheet row order)':'Publish faculty production (sheet row order)',
-  branch:'main',content:Utilities.base64Encode(
-    Utilities.newBlob(content,'application/json').getBytes())
+   'X-GitHub-Api-Version':'2022-11-28','User-Agent':'NSYSU-Faculty-V6'};
+ const full=fcfgBuildJson_(preview),root=preview?'data/preview/':'data/';
+ const listFields=['id','category_key','name','title','unit','expertise','email',
+                   'profile_url','photo_url','publish_status','visible'];
+ const files=[];
+ const file=(path,data)=>files.push({path,mode:'100644',type:'blob',
+                                    content:JSON.stringify(data,null,2)+'\n'});
+ const index={schema_version:4,preview:!!preview,categories:full.categories,
+   teachers:full.teachers.map(t=>{
+     const summary={};
+     listFields.forEach(k=>{summary[k]=t[k];});
+     return summary;
+   })
  };
- if(sha)body.sha=sha;
- const response=UrlFetchApp.fetch(endpoint,{
-  method:'put',headers,contentType:'application/json',
-  payload:JSON.stringify(body),muteHttpExceptions:true
+ const config={schema_version:4,preview:!!preview,tabs:full.tabs,fields:full.fields};
+ file(root+'faculty-index.json',index);
+ file(root+'faculty-config.json',config);
+ const activePaths={};
+ for(const teacher of full.teachers){
+   const id=ftvId_(teacher.id);
+   const path=root+'teachers/'+id+'.json';
+   if(activePaths[path])throw new Error('教師 ID 重複：'+id);
+   activePaths[path]=true;
+   file(path,{schema_version:4,preview:!!preview,teacher});
+ }
+ // The Git Trees API updates all files atomically with a single branch commit.
+ const oldRef=fcfgGit_(base+'/git/ref/heads/main',headers,'get');
+ const parent=oldRef.object.sha;
+ const parentCommit=fcfgGit_(base+'/git/commits/'+parent,headers,'get');
+ const treeSha=parentCommit.tree.sha;
+ const previous=fcfgGit_(base+'/git/trees/'+treeSha+'?recursive=1',headers,'get');
+ if(previous.truncated)throw new Error('GitHub 樹狀清單不完整，發布已中止');
+ const teacherPrefix=root+'teachers/';
+ for(const entry of previous.tree||[]){
+   if(entry.type==='blob'&&entry.path.indexOf(teacherPrefix)===0&&
+      /\.json$/.test(entry.path)&&!activePaths[entry.path]){
+     files.push({path:entry.path,mode:'100644',type:'blob',sha:null});
+   }
+ }
+ const nextTree=fcfgGit_(base+'/git/trees',headers,'post',
+                         {base_tree:treeSha,tree:files});
+ const nextCommit=fcfgGit_(base+'/git/commits',headers,'post',{
+   message:(preview?'Publish faculty preview V6':'Publish faculty production V6')+
+           ' (split JSON; Sheet row order)',
+   tree:nextTree.sha,parents:[parent]
  });
- if(![200,201].includes(response.getResponseCode()))
-  throw new Error('GitHub 更新失敗：HTTP '+response.getResponseCode()+
-    ' '+response.getContentText().slice(0,600));
- return {ok:true,path,teachers:data.teachers.length,
-  url:'https://github.com/'+repo+'/blob/main/'+path};
+ // Non-force update: if somebody else changed main, retry after reconciling.
+ fcfgGit_(base+'/git/refs/heads/main',headers,'patch',{sha:nextCommit.sha,force:false});
+ const path=root+'faculty-index.json';
+ return {ok:true,path,teachers:full.teachers.length,
+         files:files.length,url:'https://github.com/'+repo+'/blob/main/'+path};
 }
 function fcfgPublishProduction(token){ftaAdmin_(token);return fcfgPublish_(false);}
 function fcfgPublishPreview(token){ftaAdmin_(token);return fcfgPublish_(true);}

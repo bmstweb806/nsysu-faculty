@@ -1,0 +1,90 @@
+{
+  "schema_version": 4,
+  "preview": false,
+  "teacher": {
+    "id": "wklee",
+    "category_key": "full_time",
+    "name": {
+      "zh": "李唯愷",
+      "en": "Lee, Wei-Kai"
+    },
+    "title": {
+      "zh": "助理教授",
+      "en": "Assistant Professor"
+    },
+    "unit": {
+      "zh": "生物醫學科技學系",
+      "en": "Department of Biomedical Science and Technology"
+    },
+    "office": {
+      "zh": "IL3008",
+      "en": "IL3008"
+    },
+    "expertise": {
+      "zh": "醫學影像分析、人工智慧生醫應用、神經影像處理",
+      "en": "Medical image analysis; AI in biomedical application; Neuroimage"
+    },
+    "email": "wklee@mail.nsysu.edu.tw",
+    "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-369434,c26926.php?Lang=zh-tw",
+    "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/330/m/mczh-tw200x200_small369434_556842759490.jpg",
+    "publish_status": "PUBLISHED",
+    "visible": {
+      "zh": true,
+      "en": true
+    },
+    "sections": [
+      {
+        "key": "education",
+        "entries": [
+          {
+            "type": "list_item",
+            "title": {
+              "zh": "最高學歷",
+              "en": "Highest Degree"
+            },
+            "content": {
+              "zh": "國立陽明交通大學生物醫學影像暨放射科學系博士",
+              "en": "Ph.D., Department of Biomedical Imaging and Radiological Science, National Yang Ming Chiao Tung University"
+            },
+            "url": "",
+            "visible": {
+              "zh": true,
+              "en": true
+            },
+            "fields": {},
+            "card_width": null,
+            "card_height": null
+          }
+        ]
+      },
+      {
+        "key": "experience",
+        "entries": []
+      },
+      {
+        "key": "courses",
+        "entries": []
+      },
+      {
+        "key": "projects",
+        "entries": []
+      },
+      {
+        "key": "journal",
+        "entries": []
+      },
+      {
+        "key": "conference",
+        "entries": []
+      },
+      {
+        "key": "honors",
+        "entries": []
+      },
+      {
+        "key": "service",
+        "entries": []
+      }
+    ]
+  }
+}

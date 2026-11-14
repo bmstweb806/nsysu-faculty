@@ -1,0 +1,90 @@
+{
+  "schema_version": 4,
+  "preview": true,
+  "teacher": {
+    "id": "jxwu",
+    "category_key": "full_time",
+    "name": {
+      "zh": "巫建興",
+      "en": "Wu, Jian-Xing"
+    },
+    "title": {
+      "zh": "助理教授",
+      "en": "Assistant Professor"
+    },
+    "unit": {
+      "zh": "生物醫學科技學系",
+      "en": "Department of Biomedical Science and Technology"
+    },
+    "office": {
+      "zh": "IL3007",
+      "en": "IL3007"
+    },
+    "expertise": {
+      "zh": "生醫電子系統設計、機器學習與深度學習輔助診斷、無線感測網路技術與應用研發、三維光聲造影系統、醫用超音波",
+      "en": "Biomedical electronic systems design; Machine learning and deep learning-assisted diagnosis; Research and development of wireless sensor network technologies and applications; 3D photoacoustic imaging system; Medical ultrasound"
+    },
+    "email": "jxwu@mail.nsysu.edu.tw",
+    "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358529,c26926.php?Lang=zh-tw",
+    "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/369/m/mczh-tw200x200_small358529_855637415193.jpg",
+    "publish_status": "PUBLISHED",
+    "visible": {
+      "zh": true,
+      "en": true
+    },
+    "sections": [
+      {
+        "key": "education",
+        "entries": [
+          {
+            "type": "list_item",
+            "title": {
+              "zh": "最高學歷",
+              "en": "Highest Degree"
+            },
+            "content": {
+              "zh": "國立成功大學生物醫學工程學系博士",
+              "en": "Ph.D., Department of Biomedical Engineering, National Cheng Kung University"
+            },
+            "url": "",
+            "visible": {
+              "zh": true,
+              "en": true
+            },
+            "fields": {},
+            "card_width": null,
+            "card_height": null
+          }
+        ]
+      },
+      {
+        "key": "experience",
+        "entries": []
+      },
+      {
+        "key": "courses",
+        "entries": []
+      },
+      {
+        "key": "projects",
+        "entries": []
+      },
+      {
+        "key": "journal",
+        "entries": []
+      },
+      {
+        "key": "conference",
+        "entries": []
+      },
+      {
+        "key": "honors",
+        "entries": []
+      },
+      {
+        "key": "service",
+        "entries": []
+      }
+    ]
+  }
+}

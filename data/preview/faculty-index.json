@@ -1,0 +1,222 @@
+{
+  "schema_version": 4,
+  "preview": true,
+  "categories": [
+    {
+      "key": "full_time",
+      "zh": "專任教師",
+      "en": "Full-time Faculty",
+      "is_active": true
+    },
+    {
+      "key": "adjunct",
+      "zh": "合聘教師",
+      "en": "Adjunct Faculty",
+      "is_active": true
+    },
+    {
+      "key": "retired",
+      "zh": "榮退教師",
+      "en": "Retired Faculty",
+      "is_active": true
+    }
+  ],
+  "teachers": [
+    {
+      "id": "mjlee",
+      "category_key": "full_time",
+      "name": {
+        "zh": "李孟娟",
+        "en": "Lee, Mon-Juan"
+      },
+      "title": {
+        "zh": "副教授",
+        "en": "Associate Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "expertise": {
+        "zh": "生物感測技術、藥物篩選平台、奈米生醫材料、幹細胞與再生醫學",
+        "en": "Biosensing technologies; Drug-screening platforms; Nanobiomaterials; Stem cells and regenerative medicine"
+      },
+      "email": "mjlee@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358593,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/458/m/mczh-tw200x200_small358593_463032235939.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      }
+    },
+    {
+      "id": "jxwu",
+      "category_key": "full_time",
+      "name": {
+        "zh": "巫建興",
+        "en": "Wu, Jian-Xing"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "expertise": {
+        "zh": "生醫電子系統設計、機器學習與深度學習輔助診斷、無線感測網路技術與應用研發、三維光聲造影系統、醫用超音波",
+        "en": "Biomedical electronic systems design; Machine learning and deep learning-assisted diagnosis; Research and development of wireless sensor network technologies and applications; 3D photoacoustic imaging system; Medical ultrasound"
+      },
+      "email": "jxwu@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358529,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/369/m/mczh-tw200x200_small358529_855637415193.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      }
+    },
+    {
+      "id": "ihyang",
+      "category_key": "full_time",
+      "name": {
+        "zh": "楊易軒",
+        "en": "Yang, I-Hsuan"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "expertise": {
+        "zh": "生醫高分子的修飾及應用、醫用陶瓷及複合材料、組織工程與再生醫學、藥物傳遞系統",
+        "en": "Modification and application of biomedical polymers; Medical ceramics and composite materials; Tissue engineering and regenerative medicine; Drug delivery system"
+      },
+      "email": "ihyang@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358530,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/279/m/mczh-tw200x200_small358530_518165415427.png",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      }
+    },
+    {
+      "id": "hsuanwenlin",
+      "category_key": "full_time",
+      "name": {
+        "zh": "林萱文",
+        "en": "Lin, Hsuan-Wen"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "expertise": {
+        "zh": "生醫影像、分子生物學、神經科學",
+        "en": "Biomedical imaging; Molecular biology; Neuroscience"
+      },
+      "email": "hsuanwenlin@g-mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358531,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/596/m/mczh-tw200x200_small358531_631820115579.png",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      }
+    },
+    {
+      "id": "wklee",
+      "category_key": "full_time",
+      "name": {
+        "zh": "李唯愷",
+        "en": "Lee, Wei-Kai"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "expertise": {
+        "zh": "醫學影像分析、人工智慧生醫應用、神經影像處理",
+        "en": "Medical image analysis; AI in biomedical application; Neuroimage"
+      },
+      "email": "wklee@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-369434,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/330/m/mczh-tw200x200_small369434_556842759490.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      }
+    },
+    {
+      "id": "cyko",
+      "category_key": "adjunct",
+      "name": {
+        "zh": "柯瓊媛",
+        "en": "Chiung-Yuan Ko"
+      },
+      "title": {
+        "zh": "副教授（合聘學士後醫學系）",
+        "en": "Associate Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系（合聘學士後醫學系）",
+        "en": "School of Medicine (Joint Appointment)"
+      },
+      "expertise": {
+        "zh": "神經退化性疾病、神經分子生物學、腦癌抗藥性機轉",
+        "en": "Neurodegenerative diseases; Neuromolecular biology; Mechanisms of drug resistance in brain cancer"
+      },
+      "email": "cyko@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-370513,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/74/m/mczh-tw400x400_small370513_661645354369.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": false
+      }
+    },
+    {
+      "id": "yc2023",
+      "category_key": "adjunct",
+      "name": {
+        "zh": "陳彥樺",
+        "en": "Chen, Yen-Hua"
+      },
+      "title": {
+        "zh": "助理教授（合聘學士後醫學系）",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系（合聘學士後醫學系）",
+        "en": "School of Medicine (Joint Appointment)"
+      },
+      "expertise": {
+        "zh": "免疫學、微生物學、免疫代謝、氣喘、粒線體、基因調控",
+        "en": "Immunology; Microbiology; Immunometabolism; Asthma; Mitochondria; Gene regulation"
+      },
+      "email": "yc2023@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-370512,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/903/m/mczh-tw400x400_small370512_518710554400.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": false
+      }
+    }
+  ]
+}

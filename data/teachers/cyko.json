@@ -1,0 +1,90 @@
+{
+  "schema_version": 4,
+  "preview": false,
+  "teacher": {
+    "id": "cyko",
+    "category_key": "adjunct",
+    "name": {
+      "zh": "柯瓊媛",
+      "en": "Chiung-Yuan Ko"
+    },
+    "title": {
+      "zh": "副教授（合聘學士後醫學系）",
+      "en": "Associate Professor"
+    },
+    "unit": {
+      "zh": "生物醫學科技學系（合聘學士後醫學系）",
+      "en": "School of Medicine (Joint Appointment)"
+    },
+    "office": {
+      "zh": "",
+      "en": ""
+    },
+    "expertise": {
+      "zh": "神經退化性疾病、神經分子生物學、腦癌抗藥性機轉",
+      "en": "Neurodegenerative diseases; Neuromolecular biology; Mechanisms of drug resistance in brain cancer"
+    },
+    "email": "cyko@mail.nsysu.edu.tw",
+    "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-370513,c26926.php?Lang=zh-tw",
+    "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/74/m/mczh-tw400x400_small370513_661645354369.jpg",
+    "publish_status": "PUBLISHED",
+    "visible": {
+      "zh": true,
+      "en": false
+    },
+    "sections": [
+      {
+        "key": "education",
+        "entries": [
+          {
+            "type": "list_item",
+            "title": {
+              "zh": "最高學歷",
+              "en": "Highest Degree"
+            },
+            "content": {
+              "zh": "國立成功大學基礎醫學研究所博士",
+              "en": "Ph.D., Institute of Basic Medical Sciences, National Cheng Kung University"
+            },
+            "url": "",
+            "visible": {
+              "zh": true,
+              "en": false
+            },
+            "fields": {},
+            "card_width": null,
+            "card_height": null
+          }
+        ]
+      },
+      {
+        "key": "experience",
+        "entries": []
+      },
+      {
+        "key": "courses",
+        "entries": []
+      },
+      {
+        "key": "projects",
+        "entries": []
+      },
+      {
+        "key": "journal",
+        "entries": []
+      },
+      {
+        "key": "conference",
+        "entries": []
+      },
+      {
+        "key": "honors",
+        "entries": []
+      },
+      {
+        "key": "service",
+        "entries": []
+      }
+    ]
+  }
+}
