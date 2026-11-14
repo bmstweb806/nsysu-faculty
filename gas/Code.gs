@@ -178,6 +178,14 @@ function ftvSaveTeacher(payload,token){
     ftvWriteRows_(entries,normalized);
     found.table.sheet.getRange(record._row,1,1,found.table.cols.length)
       .setValues([found.table.cols.map(k=>out[k]===undefined?'':out[k])]);
+    // Preserve teacher account permissions when an admin renames a teacher ID.
+    if(requested!==original&&actor.role==='ADMIN'){
+      const permissions=ftvTable_(FTA.permissions);
+      ftvCheckColumns_(permissions,['email','role','teacher_id','is_active']);
+      const idColumn=permissions.cols.indexOf('teacher_id')+1;
+      permissions.items.filter(x=>String(x.teacher_id)===original)
+        .forEach(x=>permissions.sheet.getRange(x._row,idColumn).setValue(requested));
+    }
     SpreadsheetApp.flush();
     return ftvGetTeacher(requested,token);
   });
