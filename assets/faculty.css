@@ -55,3 +55,21 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 .structured-label{font-weight:700;color:var(--navy);margin:0}
 .structured-value{white-space:pre-line;margin:0}
 @media(max-width:520px){.structured-entry{grid-template-columns:1fr;gap:2px 0}.structured-label:not(:first-child){margin-top:8px}}
+
+/* Compact, individually adjustable academic cards */
+.entry-board{display:flex;flex-wrap:wrap;gap:11px;align-items:flex-start;padding:3px 0 10px}
+.public-entry-card{width:270px;min-width:200px;min-height:105px;max-width:100%;height:auto;max-height:90vh;position:relative;flex:0 0 auto;overflow:auto;resize:both;border:1px solid var(--line);border-radius:8px;background:#fff;padding:9px 12px 11px;box-shadow:0 1px 5px rgba(22,63,92,.055)}
+.public-entry-card:hover{border-color:#b2ccdd}
+.public-entry-card.is-dragging{opacity:.55}
+.public-drag-handle{display:inline-block;cursor:grab;user-select:none;font-size:18px;line-height:1;color:#8a9eac;margin:0 0 3px;padding:1px 5px;border-radius:5px}
+.public-drag-handle:hover{background:#eaf2f7;color:var(--marine)}
+.public-drag-handle:active{cursor:grabbing}
+.public-entry-body{font-size:14px;line-height:1.58}
+.public-entry-body .entry{margin-bottom:5px}
+.public-entry-body .entry-title{font-weight:700;font-size:14px}
+.public-entry-body .entry-line{white-space:pre-line;margin:0}
+.public-entry-body .structured-entry{display:block;background:transparent;border:0;padding:0;margin:0}
+.public-entry-body .structured-entry dt{font-size:12px;line-height:1.5;color:var(--navy);font-weight:700;margin:6px 0 1px}
+.public-entry-body .structured-entry dd{margin:0;white-space:pre-line}
+.public-entry-body .entry-link{font-size:12px}
+@media(max-width:450px){.entry-board{gap:8px}.public-entry-card{width:100%;min-width:0}}
