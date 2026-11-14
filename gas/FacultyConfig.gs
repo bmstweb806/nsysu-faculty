@@ -62,7 +62,7 @@ function fcfgUpsertConfig(kind,data,token){
   }else{
    table.sheet.appendRow(table.cols.map(c=>record[c]===undefined?'':record[c]));
   }
-  return fcfgGetConfig();
+  return fcfgGetConfig(token);
  });
 }
 /**
@@ -98,7 +98,7 @@ function fcfgSetTeacherCategory(id,categoryKey,token){
   const col=table.cols.indexOf('category_key');
   if(col<0)throw new Error('教師缺少 category_key');
   table.sheet.getRange(teacher._row,col+1).setValue(categoryKey);
-  return fcfgGetConfig();
+  return fcfgGetConfig(token);
  });
 }
 function fcfgLocale_(zh,en){return {zh:String(zh||''),en:String(en||'')};}
