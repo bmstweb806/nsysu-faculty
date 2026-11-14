@@ -60,7 +60,7 @@ function ftaCache_(){return CacheService.getScriptCache();}
 function ftaRequestCode(emailInput){
  const email=ftaEmail_(emailInput),cache=ftaCache_();
  // Do not reveal whether an address exists in the permission table.
- const response={ok:true,message:'如果帳號已啟用，驗證碼將寄送至該信箱。'};
+ const response={ok:true,message:'如果帳號已啟用，驗證碼將寄送至該信箱。',retryAfterSeconds:FTA.cooldownSeconds};
  return ftvLock_(()=>{
   const key=ftaHash_('mail:'+email);
   const blocked=cache.get('cool:'+key);
@@ -78,16 +78,16 @@ function ftaRequestCode(emailInput){
   const random=ftaRandom_(4);
   const code=String(((((random[0]<<24)>>>0)+(random[1]<<16)+(random[2]<<8)+random[3])>>>0)%1000000).padStart(6,'0');
   const challenge=ftaHex_(16);
-  const record={digest:ftaHash_(email+':'+challenge+':'+code),challenge,attempts:0};
+  const record={digest:ftaHash_(email+':'+challenge+':'+code),challenge,attempts:0,expiresAt:Date.now()+FTA.otpSeconds*1000};
   // No raw code stored in cache. Cache is temporary and is not an audit trail.
   cache.put('otp:'+key,JSON.stringify(record),FTA.otpSeconds);
-  cache.put('cool:'+key,'1',FTA.cooldownSeconds);
-  cache.put(countKey,String(count+1),3600);
   try{
    MailApp.sendEmail({
     to:email,subject:'中山大學醫學科技研究所｜教師資料管理驗證碼',
     body:'您的登入驗證碼：'+code+'\n有效時間：5 分鐘。\n若非本人操作，請忽略本郵件。'
    });
+   cache.put('cool:'+key,'1',FTA.cooldownSeconds);
+   cache.put(countKey,String(count+1),3600);
    props.setProperty(dailyKey,String(used+1));
   }catch(error){
    cache.remove('otp:'+key);
@@ -104,12 +104,15 @@ function ftaVerifyCode(emailInput,codeInput){
   const raw=cache.get(otpKey);
   if(!raw)throw new Error('驗證碼無效或已過期');
   const record=JSON.parse(raw);
+  // A failed attempt must never extend the original five-minute expiration.
+  const remainingSeconds=Math.ceil((Number(record.expiresAt||0)-Date.now())/1000);
+  if(remainingSeconds<=0){cache.remove(otpKey);throw new Error('驗證碼無效或已過期');}
   if(record.attempts>=FTA.maxAttempts){cache.remove(otpKey);throw new Error('驗證次數已達上限，請重新申請');}
   record.attempts++;
   const correct=record.digest===ftaHash_(email+':'+record.challenge+':'+code);
   if(!correct){
    if(record.attempts>=FTA.maxAttempts)cache.remove(otpKey);
-   else cache.put(otpKey,JSON.stringify(record),FTA.otpSeconds);
+   else cache.put(otpKey,JSON.stringify(record),remainingSeconds);
    throw new Error('驗證碼無效或已過期');
   }
   const account=ftaAccount_(email);
