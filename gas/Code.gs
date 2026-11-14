@@ -215,17 +215,24 @@ function onOpen(){
     .addItem('分類／Tab／欄位設定','fcfgOpenConfig')
     .addItem('驗證工作表結構','ftvSetup')
     .addSeparator()
-    .addItem('發布正式 JSON','ftvPublishProduction')
-    .addItem('發布預覽 JSON','ftvPublishPreview')
+    .addItem('開啟網站發布管理（Email 驗證）','ftvOpenPublishManager')
     .addToUi();
 }
+/**
+ * The spreadsheet menu cannot safely pass a browser OTP session token to GAS.
+ * Open the ADMIN-only config UI instead; it verifies email OTP and calls
+ * fcfgPublishProduction/Preview with the authenticated session token.
+ */
+function ftvOpenPublishManager(){
+  return fcfgOpenConfig();
+}
+/**
+ * Compatibility callbacks for stale Google Sheets menus.
+ * Never bypass server-side OTP by calling fcfgPublish* with no token.
+ */
 function ftvPublishProduction(){
-  const ui=SpreadsheetApp.getUi();
-  if(ui.alert('發布正式資料','確認將 PUBLISHED 教師內容發布到公開 GitHub？',ui.ButtonSet.YES_NO)===ui.Button.YES)
-    return fcfgPublishProduction();
+  return ftvOpenPublishManager();
 }
 function ftvPublishPreview(){
-  const ui=SpreadsheetApp.getUi();
-  if(ui.alert('發布草稿','預覽 JSON 也可被公開讀取，確認發布？',ui.ButtonSet.YES_NO)===ui.Button.YES)
-    return fcfgPublishPreview();
+  return ftvOpenPublishManager();
 }
