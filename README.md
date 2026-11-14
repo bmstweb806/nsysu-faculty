@@ -1,3 +1,34 @@
+## V6：教師 JSON 分檔＋Google Sheets 管理員快速登入（2026-11-14）
+
+### 公開資料拆分（已提交 GitHub）
+
+- `data/faculty-index.json`：供教師列表使用的輕量資料；含分類、教師基本資料和 Google Sheets 順序，**不含學術個人頁的 sections**。
+- `data/faculty-config.json`：個人頁共用 Tab、欄位定義。
+- `data/teachers/{teacher_id}.json`：每位老師獨立的完整個人頁資料。教師個人頁只下載自己的 JSON 和共用設定。
+- `data/preview/...`：對應的預覽版索引／設定／教師 JSON，會在 GitHub 上**公開可讀**，絕不可放需要保密的草稿資料。
+- 首次已由現有正式／預覽合併 JSON 產生七位老師的分檔；前端 `assets/faculty.js` 已改成優先讀取 V6 分檔。當分檔尚未發布且索引為 HTTP 404 時，才使用既有 V3 合併 JSON 退回顯示。
+- 目前正式索引原始檔約 **6.9 KB**，相較原本 **25.9 KB** 合併 JSON，列表頁減少約 74% 原始下載量；實際網路傳輸仍依壓縮與快取而異。
+- GAS `fcfgPublish_` 已改為使用 GitHub Git Trees + Commit API：**將整批 JSON 以同一個 Git commit 發布**，並刪除不再存在的個人檔。實際相同的個人檔內容不會因別位老師更新而改變。
+- **相容提醒**：舊的 `data/faculty.json` 和 `data/faculty-preview.json` 目前保留作為遷移退回來源，但新 V6 發布流程不再更新它們。整合新頁面請改讀分檔，勿長期依賴舊路徑。
+
+### 管理員 Google 帳號快速登入（已提交 GAS 原始碼）
+
+- **從 Google Sheet 選單進入管理頁**：GAS 使用 `Session.getActiveUser().getEmail()` 取得 Google 實際提供的帳號，並在伺服器重新對照 `UserPermissions` 中的 **ADMIN** 白名單。成功時為該使用者建立六小時 Session，頁面直接開啟管理介面，不再另外寄 OTP。
+- **若 Google 不提供可信 Email**（例如部分帳號或執行情境），即使正在登入 Google，也**不直接放行**，改顯示原有 Email OTP。
+- **公開 Web App 的 `/exec` 與 `/exec?page=config` 仍採 Email OTP**：因以擁有者身分執行的 GAS Web App 無法保證知道訪客的 Google 身分。不可使用 `Session.getEffectiveUser()` 來授權訪客。若要讓所有公開 `/exec` 訪客使用真正的 Google 登入，還需要額外設定 Google Identity Services／OAuth Client ID、可用的網域來源與伺服器端 ID Token 驗證；本版**尚未提供這項跨網站 Google SSO**。
+- 教師維持 Email 六位數 OTP；公開 API 均由伺服器 Session Token 與角色檢查保護，**不會因前端宣稱是 ADMIN 而取得權限**。
+- 管理員用試算表選單快速登入的前提是對方本身有使用該 Google Sheet 選單的存取權；請只把試算表及 GAS 編輯權分享給可信的系辦管理員。
+
+### 套用到正式 GAS
+
+1. 將最新的五個檔案 `gas/Code.gs`、`gas/FacultyConfig.gs`、`gas/FacultyAuth.gs`、`gas/FacultyManager.html`、`gas/FacultyConfigManager.html` 同步到既有 Apps Script。
+2. 已設定的 `AUTH_SECRET` 和 `GITHUB_TOKEN` **不需重設**。
+3. 更新 Web App 部署版本。先用 Sheets 選單登入管理員，確認能否自動辨識，若未辨識則使用原本 OTP；再用公開 `/exec` 驗證 OTP。
+4. 正式與預覽各執行一次發布，確認 GitHub 的 index、config、七位教師個別 JSON 及中英文頁面都正常。注意第一次發布使用了新的 GitHub API 寫入流程，需確認 Token 仍有 Repository Contents 寫入權限。
+5. 上線前確認每位老師個別資料沒有私人內容、教師登入不可讀取其他老師、非 ADMIN 不可發布。GitHub Pages 與 GAS Web App 的真實端到端操作尚待驗收。
+
+---
+
 ## V5.2：OTP 固定期限與重新寄送倒數（2026-11-14）
 
 - **驗證碼效期固定 5 分鐘**：由伺服器在產生驗證碼時記錄 `expiresAt`，每次驗證先確認是否已過期。輸錯驗證碼時重新寫入 ScriptCache，僅保留剩餘秒數，不延長原始期限；驗證成功即刪除。
