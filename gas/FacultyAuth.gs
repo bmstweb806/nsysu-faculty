@@ -10,8 +10,18 @@
  */
 const FTA = Object.freeze({
   permissions:'UserPermissions', otpSeconds:300, sessionSeconds:21600,
-  maxAttempts:3, cooldownSeconds:90, maxRequestsPerHour:5
+  maxAttempts:3, cooldownSeconds:90, maxRequestsPerHour:5, maxDailyEmails:60
 });
+/**
+ * Run ONCE from the Apps Script editor while signed in as the project owner.
+ * It creates a private script property; no secret is returned to the browser.
+ */
+function ftaInitializeSecret_(){
+ const props=PropertiesService.getScriptProperties();
+ if(props.getProperty('AUTH_SECRET'))return 'AUTH_SECRET 已存在';
+ props.setProperty('AUTH_SECRET',ftaHex_(48));
+ return 'AUTH_SECRET 已建立';
+}
 function ftaSecret_(){
  const secret=PropertiesService.getScriptProperties().getProperty('AUTH_SECRET');
  if(!secret||secret.length<32)throw new Error('管理員尚未設定 AUTH_SECRET（至少 32 字元）');
@@ -60,6 +70,11 @@ function ftaRequestCode(emailInput){
   if(count>=FTA.maxRequestsPerHour)return response;
   const account=ftaAccount_(email);
   if(!account)return response;
+  const props=PropertiesService.getScriptProperties();
+  const day=Utilities.formatDate(new Date(),'Etc/UTC','yyyyMMdd');
+  const dailyKey='FTA_MAIL_COUNT_'+day;
+  const used=Number(props.getProperty(dailyKey)||0);
+  if(used>=FTA.maxDailyEmails||MailApp.getRemainingDailyQuota()<1)return response;
   const random=ftaRandom_(4);
   const code=String(((((random[0]<<24)>>>0)+(random[1]<<16)+(random[2]<<8)+random[3])>>>0)%1000000).padStart(6,'0');
   const challenge=ftaHex_(16);
@@ -73,6 +88,7 @@ function ftaRequestCode(emailInput){
     to:email,subject:'中山大學醫學科技研究所｜教師資料管理驗證碼',
     body:'您的登入驗證碼：'+code+'\n有效時間：5 分鐘。\n若非本人操作，請忽略本郵件。'
    });
+   props.setProperty(dailyKey,String(used+1));
   }catch(error){
    cache.remove('otp:'+key);
    throw new Error('驗證信寄送失敗，請稍後重試或聯絡系辦');
