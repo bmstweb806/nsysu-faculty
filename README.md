@@ -1,3 +1,10 @@
+## V5.1：Google Sheets 發布選單安全修正（2026-11-14）
+
+- Google Sheets 的「教師資料管理 → 開啟網站發布管理（Email 驗證）」會開啟 `FacultyConfigManager`，必須以 ADMIN 信箱完成 OTP 登入，再按左側「發布網站」操作正式或預覽發布。
+- 原本的 `ftvPublishProduction` 和 `ftvPublishPreview` 已改為相容轉接函式：**只開啟須登入的發布管理視窗，不會繞過驗證直接發布**。更新版 `fcfgPublishProduction(token)`、`fcfgPublishPreview(token)` 在伺服器上檢查 ADMIN Session。
+- **本次已更新 GitHub 原始碼，尚未自動同步到正式 Apps Script**。正式環境仍須同步五個 GAS 檔案，初始化 `AUTH_SECRET`、更新 Web App 部署並測試。
+- 正式驗收：用 ADMIN 收取真實郵件驗證碼並發布預覽 JSON；用 TEACHER 驗證碼登入確認只看到自己、不可調用 ADMIN 發布功能；確認登出／錯誤驗證碼／過期驗證碼的行為。測試請避免發布未授權公開的草稿或私密教師內容。
+
 ## V5：Email 驗證碼登入與教師權限（2026-11-14）
 
 - [可操作登入預覽](https://bmstweb806.github.io/nsysu-faculty/admin-preview.html)（示範帳號：`demo.admin@example.com`／`demo.teacher@example.com`；示範驗證碼 `123456`，**僅限 GitHub Pages 預覽，正式版不接受此驗證碼**）
