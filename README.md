@@ -16,7 +16,7 @@
 2. **不使用 `display_order`、`sort_order` 或其他排序數字。** Google Sheets 的列順序就是顯示順序，包括教師、身分類別、Tab、欄位與老師的各筆學術內容。
 3. 教師每個內容項目存一列，`section_key` 表示屬於哪一個 Tab；`section_key`、`field_key`、`category_key` 是設定的欄位代碼，**不是每筆內容的 ID**。
 4. 研究專長位於 `Teachers.expertise_zh`／`expertise_en`，可直接使用換行或分隔符號，不需要逐項 ID。
-5. 管理網頁支援「＋新增」各 Tab 的內容項目、拖曳卡片改變順序，以及從右下角縮放卡片。**儲存**後，拖曳順序寫入 Google Sheets 的實際列順序，尺寸寫入 `card_width`／`card_height`。
+5. 教師管理後台的內容採**一列一項的收合清單**，開啟任何教師或 Tab 時所有項目預設收合，只顯示細長的標題列和箭頭。點箭頭才可編輯；左側可以按「＋新增分類」建立任意學術分類（內部代碼自動產生），現有學歷、經歷、研究計畫、學術著作等分類會保留；右上角「＋新增」的項目**自動插在該 Tab 第一筆**。後台也保留拖曳排列和展開後的高度調整，按「儲存變更」即寫回 Google Sheets 的列順序。
 6. **公開教師個人頁的學術內容採單欄清單（List）呈現，不顯示卡片、拖曳或縮放控制。** 只有具權限的 GAS 教師管理後台可操作卡片拖曳／縮放，並儲存順序至 Google Sheets。
 7. Google Sheets `FacultyCategories`、`TabDefinitions`、`FieldDefinitions` 是唯一設定來源。新增分類、Tab、欄位不用改 GAS 程式。
 
@@ -41,7 +41,7 @@
 | 檔案 | 用途 |
 | --- | --- |
 | [gas/Code.gs](gas/Code.gs) | 唯一 `onOpen`、`doGet`、教師資料讀寫、新增教師、保留列順序 |
-| [gas/FacultyManager.html](gas/FacultyManager.html) | 簡化管理頁，教師資料、各 Tab 的「＋新增」、卡片拖拉／縮放 |
+| [gas/FacultyManager.html](gas/FacultyManager.html) | 簡化管理頁，左側「＋新增分類」、內容預設收合的單列項目、新項目排最前、拖拉／展開後調整高度 |
 | [gas/FacultyConfig.gs](gas/FacultyConfig.gs) | 分類、Tab、欄位設定及 JSON 發布 |
 | [gas/FacultyConfigManager.html](gas/FacultyConfigManager.html) | 直接管理分類、Tab、欄位的設定頁 |
 
@@ -59,7 +59,7 @@
 
 ### 操作範例：新增研究計畫
 
-在管理後台選擇教師 → 點「研究計畫」Tab → 「＋新增研究計畫」 → 展開卡片輸入計畫內容、中英文欄位 → 若需要，拖動卡片左上角的 ⠿ 換位、從卡片右下角縮放 → 點「儲存變更」。資料會依目前排列寫入該教師工作表，**不用填寫任何排序數字**。
+在管理後台選擇教師 → 點左側「研究計畫」→ 已有項目預設是收合的一列窄條，按箭頭展開編輯。按「＋新增研究計畫」會**立即在最上面插入一筆並自動展開**；可輸入中英文內容，拖動 ⠿ 調整順序，按「儲存變更」同步到試算表。不用填 ID 或排序數字。若需要「專利」等新分類，按左側「＋新增分類」輸入中英文名稱即可（技術代碼由 GAS 自動產生）。
 
 ## JSON 與發布
 
@@ -94,3 +94,12 @@
 
 **請勿將 `admin-preview.html` 當成正式管理後台部署。** 它不會連線 Google Sheets、不含 GitHub Token、不會寫入資料。模擬儲存僅作用於當次頁面，重新整理後還原。正式後台仍需安裝 `gas/Code.gs`、`gas/FacultyConfig.gs` 與對應的 HTML 並限制登入權限。
 
+
+## 最新後台 UI 調整（2026-11-14）
+
+- 單欄、每筆獨立一列，預設**全部收合**：僅保留 42px 左右的標題細條、箭頭和拖曳把手。沒有任何設定欄位露出。
+- 點右側箭頭才展開內容；展開後可拖曳右下角調整編輯高度。
+- 左側原有分類從 `TabDefinitions` 讀取；可按「＋新增分類」即時建立新 Tab，不需要手動建立 ID。
+- 各分類內按「＋新增」，一律新增到該分類的**第一筆**，方便以最新資料為優先。
+- [互動預覽](https://bmstweb806.github.io/nsysu-faculty/admin-preview.html) 僅用本頁模擬資料，重新整理即可復原。
+- 這次只更新 GitHub 的 GAS 來源及後台預覽，**尚未安裝／重新部署到真實 Apps Script**；請同步複製最新 `gas/FacultyManager.html` 和 `gas/FacultyConfig.gs` 後部署。
