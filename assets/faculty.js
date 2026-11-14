@@ -248,17 +248,16 @@
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', btn.id);
       panel.hidden = i !== 0;
-      // Public page: compact read-only cards in the order published from Sheets.
-      // Dragging and resizing are editor-only features in FacultyManager.html.
-      const board = make('div', 'entry-board');
+      // Public profile: a single ordered reading list, exactly as published from Sheets.
+      // Only the GAS administration interface uses draggable/resizable cards.
+      const list = make('ul', 'faculty-entry-list');
+      const definedFields = fieldDefs.filter(f => f.section_key === tab.key);
       tab.entries.forEach((e) => {
-        const item = make('article', 'public-entry-card');
-        const content = make('div', 'public-entry-body');
-        renderEntry(e, content, fieldDefs.filter(f => f.section_key === tab.key));
-        item.append(content);
-        board.append(item);
+        const item = make('li', 'faculty-entry-list-item');
+        renderEntry(e, item, definedFields);
+        list.append(item);
       });
-      panel.append(board);
+      panel.append(list);
       buttons.push(btn);
       tablist.append(btn);
       panels.append(panel);
