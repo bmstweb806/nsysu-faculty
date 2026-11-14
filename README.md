@@ -82,3 +82,15 @@
 - 預覽檔也是公開的，不應儲存私人或未授權公開的敏感資料。
 - 變更教師 ID 後，外部舊教師個人頁連結不會自動轉址。
 - 以 Google Sheets 列順序為準，但同一教師的不同 `section_key` 會分別顯示在各自 Tab 中。
+
+
+## 教師後台 HTML 互動預覽
+
+- [直接開啟模擬後台（GitHub Pages）](https://bmstweb806.github.io/nsysu-faculty/admin-preview.html)
+- [預覽版 HTML 原始碼](admin-preview.html)
+- [正式 GAS 後台來源碼](gas/FacultyManager.html)
+
+`admin-preview.html` 由實際 `FacultyManager.html` 複製而來，包含靜態的公開資料快照和僅在瀏覽器記憶體中運作的模擬 GAS 呼叫。可以體驗選教師、編輯、各學術 Tab 的新增項目、卡片拖曳和縮放。
+
+**請勿將 `admin-preview.html` 當成正式管理後台部署。** 它不會連線 Google Sheets、不含 GitHub Token、不會寫入資料。模擬儲存僅作用於當次頁面，重新整理後還原。正式後台仍需安裝 `gas/Code.gs`、`gas/FacultyConfig.gs` 與對應的 HTML 並限制登入權限。
+
