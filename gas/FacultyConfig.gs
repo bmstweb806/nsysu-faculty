@@ -2,8 +2,9 @@
  * NSYSU Faculty V4 configuration, editable tab/field definitions, JSON export.
  * Lists are always ordered by Google Sheets row order. Only teacher_id is a record ID.
  */
-function fcfgGetConfig(){
- const base=ftvGetBootstrap();
+function fcfgGetConfig(token){
+ ftaAdmin_(token);
+ const base=ftvGetBootstrap(token);
  return {...base,categories:ftvCategories_(),tabs:ftvDefinitions_(),fields:ftvFields_(),
  teachers:ftvTable_(FTV.teachers).items.map(t=>({
    id:String(t.teacher_id),name:String(t.name_zh||t.teacher_id),
@@ -19,7 +20,8 @@ function fcfgGetAdminHtml(){
  return HtmlService.createHtmlOutputFromFile('FacultyConfigManager')
    .setTitle('NSYSU Faculty Configuration');
 }
-function fcfgUpsertConfig(kind,data){
+function fcfgUpsertConfig(kind,data,token){
+ ftaAdmin_(token);
  const config={
   category:{sheet:FTV.categories,key:['category_key'],labels:['category_key','name_zh','name_en','is_active']},
   tab:{sheet:FTV.tabs,key:['section_key'],labels:['section_key','title_zh','title_en','is_active','entry_layout']},
@@ -68,7 +70,8 @@ function fcfgUpsertConfig(kind,data){
  * editors never need to type or manage an ID for a category or content entry.
  * New tabs are appended at the bottom of TabDefinitions (sheet row order).
  */
-function fcfgCreateTab(nameZh,nameEn){
+function fcfgCreateTab(nameZh,nameEn,token){
+ ftaAdmin_(token);
  return ftvLock_(()=>{
   const zh=ftvTxt_(nameZh,150,'中文分類名稱');
   const en=ftvTxt_(nameEn,150,'英文分類名稱')||zh;
@@ -86,7 +89,8 @@ function fcfgCreateTab(nameZh,nameEn){
   return {key,zh,en,is_active:true,entry_layout:'list'};
  });
 }
-function fcfgSetTeacherCategory(id,categoryKey){
+function fcfgSetTeacherCategory(id,categoryKey,token){
+ ftaAdmin_(token);
  return ftvLock_(()=>{
   const active=ftvCategories_().some(c=>c.key===categoryKey&&c.is_active);
   if(!active)throw new Error('分類已停用或不存在');
@@ -181,5 +185,5 @@ function fcfgPublish_(preview){
  return {ok:true,path,teachers:data.teachers.length,
   url:'https://github.com/'+repo+'/blob/main/'+path};
 }
-function fcfgPublishProduction(){return fcfgPublish_(false);}
-function fcfgPublishPreview(){return fcfgPublish_(true);}
+function fcfgPublishProduction(token){ftaAdmin_(token);return fcfgPublish_(false);}
+function fcfgPublishPreview(token){ftaAdmin_(token);return fcfgPublish_(true);}
