@@ -157,6 +157,8 @@ body.auth-locked #login-screen{display:flex}
 <header>
 <h1>教師管理</h1><span id="account-name"></span><button id="logout" type="button">登出</button>
 <select id="teacher-select" aria-label="選擇教師"></select>
+<button id="move-teacher-up" type="button" hidden title="依 Teachers 試算表列順序向上移動，需重新發布網站">↑ 上移</button>
+<button id="move-teacher-down" type="button" hidden title="依 Teachers 試算表列順序向下移動，需重新發布網站">↓ 下移</button>
 <button id="new-teacher">＋ 教師</button>
 <button id="save" class="primary">儲存</button>
 <span id="status" role="status" aria-live="polite">載入中…</span>
@@ -254,6 +256,15 @@ function field(label,name,value,type='text',cls=''){
 function chooser(){
  $('teacher-select').innerHTML=boot.teachers.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+' ('+esc(t.id)+')</option>').join('');
  $('teacher-select').value=originalId;
+ updateTeacherOrderButtons();
+}
+function updateTeacherOrderButtons(){
+ const admin=authAccount?.role==='ADMIN';
+ const idx=boot?.teachers?.findIndex(t=>t.id===originalId)??-1;
+ $('move-teacher-up').hidden=!admin;
+ $('move-teacher-down').hidden=!admin;
+ $('move-teacher-up').disabled=busy||idx<=0;
+ $('move-teacher-down').disabled=busy||idx<0||idx>=((boot?.teachers?.length)||0)-1;
 }
 function renderTabs(){
  const items=[{key:'basic',zh:'基本資料',en:'Profile'},...boot.tabs];
@@ -523,10 +534,13 @@ document.addEventListener('pointerup',()=>{
  if(Math.abs(next-height)>5){model.entries[index].card_height=next;changed();}
 });
 function render(){if(!model){$('editor').textContent='請選擇教師';return;}if(active==='basic')renderProfile();else renderEntries();}
+let orderChangedNotice=false;
 function loadTeacher(id){
  invoke('ftvGetTeacher',[id],result=>{
   model=result;originalId=String(model.teacher.teacher_id);active='basic';dirty=false;
-  chooser();renderTabs();render();status('已載入');
+  chooser();renderTabs();render();
+  status(orderChangedNotice?'教師順序已更新，公開網站需重新發布 JSON':'已載入');
+  orderChangedNotice=false;
  });
 }
 function loadBootstrap(selectId){
@@ -541,6 +555,18 @@ $('teacher-select').addEventListener('change',e=>{
  if(!canLeave()){e.target.value=originalId;return;}
  loadTeacher(e.target.value);
 });
+function moveSelectedTeacher(direction){
+ if(busy||authAccount?.role!=='ADMIN'||!originalId||!boot||!canLeave())return;
+ const id=originalId;
+ invoke('ftvMoveTeacher',[id,direction],result=>{
+  boot=result;
+  dirty=false;
+  orderChangedNotice=true;
+  loadTeacher(id);
+ });
+}
+$('move-teacher-up').addEventListener('click',()=>moveSelectedTeacher('up'));
+$('move-teacher-down').addEventListener('click',()=>moveSelectedTeacher('down'));
 $('new-teacher').onclick=()=>{
  if(!canLeave())return;
  const id=prompt('請輸入新教師 ID（例如 BMST008）。只有教師需要 ID：');

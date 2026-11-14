@@ -87,6 +87,29 @@ function ftvGetBootstrap(token){
     spreadsheetUrl:account.role==='ADMIN'?ftvSS_().getUrl():''
   };
 }
+/**
+ * ADMIN-only teacher ordering. The Teachers sheet physical row order is the
+ * single source of truth; never create a display_order/sort_order column.
+ * Sheet.moveRows also preserves row metadata and cell validation.
+ */
+function ftvMoveTeacher(id,direction,token){
+  ftaAdmin_(token);
+  const requested=ftvId_(id);
+  if(direction!=='up'&&direction!=='down')throw new Error('教師排序方向無效');
+  return ftvLock_(()=>{
+    const table=ftvTable_(FTV.teachers);
+    ftvCheckColumns_(table,FTV.teacherColumns);
+    const pos=table.items.findIndex(t=>String(t.teacher_id)===requested);
+    if(pos<0)throw new Error('找不到教師：'+requested);
+    const other=pos+(direction==='up'?-1:1);
+    if(other<0||other>=table.items.length)return ftvGetBootstrap(token);
+    const source=table.items[pos]._row,adjacent=table.items[other]._row;
+    const destination=direction==='up'?adjacent:adjacent+1;
+    table.sheet.moveRows(table.sheet.getRange(source,1),destination);
+    SpreadsheetApp.flush();
+    return ftvGetBootstrap(token);
+  });
+}
 function ftvFindTeacher_(id){
   const t=ftvTable_(FTV.teachers);ftvCheckColumns_(t,FTV.teacherColumns);
   const row=t.items.find(r=>String(r.teacher_id)===String(id));
@@ -120,7 +143,13 @@ function ftvCreateTeacher(requestedId,token){
     const newTeacher=Object.fromEntries(existing.cols.map(k=>[k,'']));
     Object.assign(newTeacher,{teacher_id:id,teacher_sheet:sheetName,name_zh:'新教師（請修改）',
       publish_status:'DRAFT',visible_zh:true,visible_en:false,category_key:defaults[0].key});
-    existing.sheet.appendRow(existing.cols.map(k=>newTeacher[k]));
+    // Do NOT appendRow(): preformatted checkbox columns can extend lastRow to
+    // row 1000 even though the last actual teacher is near the top.
+    const nextRow=existing.items.reduce((n,t)=>Math.max(n,t._row),1)+1;
+    if(nextRow>existing.sheet.getMaxRows())
+      existing.sheet.insertRowsAfter(existing.sheet.getMaxRows(),nextRow-existing.sheet.getMaxRows());
+    existing.sheet.getRange(nextRow,1,1,existing.cols.length)
+      .setValues([existing.cols.map(k=>newTeacher[k]===undefined?'':newTeacher[k])]);
     return {id,sheet:sheetName};
   });
 }

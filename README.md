@@ -1,3 +1,14 @@
+## V6.3：修復新教師工作表與教師排序（2026-11-15）
+
+- **已直接修復正式 Google Sheet**：`Teachers!A1001:S1001` 原有新教師 `T001`，但缺少 `T001_教師資料` 工作表。已建立缺少的工作表與標準 12 欄表頭、將 T001 整列移至 `Teachers` 第 9 列，設定分類 `full_time`，保持 `DRAFT` 狀態。其餘七位教師資料與順序不變。
+- **修正新增教師位置**：`ftvCreateTeacher` 不再用 `appendRow()`（可能被預先填滿的 FALSE 核取方塊誤導而新增至第 1001 列）；改寫在最後一位有實際 `teacher_id` 的列之後。
+- **新增 ADMIN 教師排序操作**：`FacultyManager.html` 的教師下拉選單旁有「↑ 上移」「↓ 下移」。後端 `ftvMoveTeacher` 驗證 ADMIN Session，再用 `Sheet.moveRows` 移動 `Teachers` 整列，不新增 `display_order` 或 `sort_order` 欄位，並保留列格式與資料驗證。教師登入看不到排序按鈕。
+- `Teachers` 列順序會決定每個教師分類內的公開顯示順序。若跨不同分類移動，公開列表仍以分類分組，因此分類間移動可能不會改變視覺順序。
+- **套用方式**：已修復的 Google Sheet 立即有效。新排序按鈕與未來新增教師的修正，仍須同步最新版 `gas/Code.gs` 和 `gas/FacultyManager.html` 至既有 Apps Script；從 Sheets 選單開啟的後台儲存程式並重新整理試算表即可。公開 `/exec` 需另外部署 Web App 新版本。
+- **發布規則**：調整順序或編輯教師資料後，還必須由 ADMIN 執行一次正式 JSON 發布，GitHub Pages 與 RPage 才會更新。新教師 T001 目前仍是草稿，不會出現在正式列表。
+
+---
+
 ## V6.2：/exec 嘗試辨識 Google 管理員身分（2026-11-15）
 
 - GAS `doGet(e)` 與 `fcfgGetAdminHtml()` 改為呼叫 `ftaSheetAdminHtml_`，與 Google Sheets 選單採用相同的可信身分辨識程序。
