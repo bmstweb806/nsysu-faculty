@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--blue:#17618c;--ink:#263847;--muted:#647786;--line:#d8e2e9;--soft:#f4f8fa}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font:14px/1.45 Arial,"Noto Sans TC",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;background:#fff;border:1px solid #b8cddc;border-radius:7px;padding:7px 11px;color:var(--blue)}
+button:hover{background:#eaf3f8}button.primary{color:#fff;background:var(--blue);border-color:var(--blue)}button:disabled{opacity:.45;cursor:wait}
+header{background:#123e5b;color:#fff;padding:12px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+header h1{font-size:18px;margin:0 auto 0 0}
+header select{background:white;color:var(--ink);padding:8px;border-radius:7px;max-width:220px}
+#status{padding:8px 18px;color:#175b80;border-bottom:1px solid var(--line);min-height:36px}
+#status.error{color:#a72134;background:#fff3f3}
+#layout{display:grid;grid-template-columns:205px minmax(0,1fr);min-height:500px}
+aside{border-right:1px solid var(--line);padding:13px;background:var(--soft)}
+aside button{display:block;width:100%;text-align:left;margin:0 0 6px;border:0;background:none;padding:10px 11px;color:#2d4a60}
+aside button.selected{background:var(--blue);color:#fff;font-weight:700}
+main{padding:15px 18px;max-height:calc(100vh - 130px);overflow:auto;min-height:420px}
+.topline{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:9px}
+h2{font-size:19px;margin:0}p.hint{color:var(--muted);font-size:12px;margin:6px 0 13px}
+label{font-size:12px;color:#435c70;font-weight:600}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+input,textarea,select{width:100%;padding:8px;border:1px solid #b5c6d3;border-radius:6px;background:#fff;color:var(--ink)}
+textarea{resize:vertical;min-height:65px}
+.profile-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.profile-form .long{grid-column:span 2}
+.profile-form .wide{grid-column:1/-1}
+.check{display:inline-flex;gap:6px;align-items:center;margin:4px 10px 4px 0}
+.check input{width:auto}
+.card-board{display:flex;align-items:flex-start;align-content:flex-start;gap:11px;flex-wrap:wrap;margin:9px 0 18px}
+.entry-card{position:relative;flex:0 0 auto;width:300px;height:190px;min-width:230px;min-height:120px;max-width:100%;max-height:90vh;resize:both;overflow:auto;border:1px solid #b9cfde;border-radius:9px;background:white;box-shadow:0 2px 7px #0c3b5810}
+.entry-card.dragging{opacity:.45}.entry-card.target{outline:2px dashed var(--blue);outline-offset:2px}
+.card-top{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding:7px;background:var(--soft);position:sticky;top:0;z-index:1}
+.grab{cursor:grab;user-select:none;color:#356987;font-size:20px;line-height:1;padding:2px 5px;border-radius:5px}
+.grab:active{cursor:grabbing}
+.card-title{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-top button{padding:4px 7px;font-size:12px}
+.card-content{padding:10px}
+.summary{white-space:pre-wrap;max-height:65px;overflow:hidden;color:#687986;font-size:13px;margin:6px 0}
+.card-form{display:grid;grid-template-columns:1fr;gap:9px}
+.card-form .field{gap:3px}
+.card-form textarea{min-height:58px}
+.card-form details{border-top:1px solid var(--line);padding-top:8px}
+.card-form summary{cursor:pointer;color:var(--blue);font-weight:600}
+.card-more{display:grid;grid-template-columns:1fr;gap:8px;padding:8px 0}
+.empty{padding:20px;border:1px dashed #bdcfdc;background:var(--soft);border-radius:9px;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:7px}
+@media(max-width:750px){#layout{grid-template-columns:1fr}aside{display:flex;flex-wrap:wrap;gap:5px;padding:8px;border-right:0;border-bottom:1px solid var(--line)}aside button{display:inline-block;width:auto;margin:0;padding:7px}main{max-height:none}.profile-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){main{padding:12px}.profile-form{grid-template-columns:1fr}.profile-form .long{grid-column:auto}.entry-card{width:100%;height:215px}}
+
+/* Preview marker, isolated from the production Apps Script app. */
+.preview-banner{background:#fff5db;color:#654c00;border-bottom:1px solid #dfc786;padding:12px 17px;font-size:13px;line-height:1.55}
+.preview-banner strong{display:block;font-size:15px}
+.preview-banner a{color:#175b80}
+</style>
+<meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+<div class="preview-banner"><strong>管理介面預覽｜僅供操作示範</strong>此頁使用目前公開 JSON 的資料快照，所有新增、修改、拖曳與縮放都只在本頁模擬；不會寫入 Google Sheets，也不會發布到網站。重新整理後回到原始示範資料。<br>正式管理程式：<a href="https://github.com/bmstweb806/nsysu-faculty/blob/main/gas/FacultyManager.html" target="_blank" rel="noopener">FacultyManager.html</a></div>
+<header>
+<h1>教師資料編輯器 / Faculty Manager</h1>
+<select id="teacher-select" aria-label="選擇教師"></select>
+<button id="new-teacher">＋ 新增教師</button>
+<button id="save" class="primary">儲存變更</button>
+</header>
+<div id="status" role="status">讀取資料中…</div>
+<div id="layout"><aside id="tabs"></aside><main id="editor"></main></div>
+<script>
+
+'use strict';
+/* Preview only. This page never opens a Google Sheets/GAS connection. */
+(function () {
+  const published = {"categories":[{"key":"full_time","zh":"專任教師","en":"Full-time Faculty","is_active":true},{"key":"adjunct","zh":"合聘教師","en":"Adjunct Faculty","is_active":true},{"key":"retired","zh":"榮退教師","en":"Retired Faculty","is_active":true}],"tabs":[{"key":"education","zh":"學歷","en":"Education","is_active":true,"entry_layout":"list"},{"key":"experience","zh":"經歷","en":"Experience","is_active":true,"entry_layout":"list"},{"key":"courses","zh":"授課課程","en":"Courses Taught","is_active":true,"entry_layout":"list"},{"key":"projects","zh":"研究計畫","en":"Research Projects","is_active":true,"entry_layout":"list"},{"key":"journal","zh":"學術著作－期刊","en":"Journal Publications","is_active":true,"entry_layout":"list"},{"key":"conference","zh":"學術著作－研討會","en":"Conference Publications","is_active":true,"entry_layout":"list"},{"key":"honors","zh":"榮譽與獎項","en":"Honors and Awards","is_active":true,"entry_layout":"list"},{"key":"service","zh":"學術服務","en":"Academic Service","is_active":true,"entry_layout":"list"}],"fields":[{"section_key":"education","key":"degree","zh":"學位","en":"Degree","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"education","key":"institution","zh":"學校","en":"Institution","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"education","key":"department","zh":"系所","en":"Department","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"education","key":"graduation_year","zh":"畢業年度","en":"Graduation Year","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"experience","key":"position","zh":"職務","en":"Position","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"experience","key":"organization","zh":"任職單位","en":"Organization","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"experience","key":"start_date","zh":"開始日期","en":"Start Date","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"experience","key":"end_date","zh":"結束日期","en":"End Date","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"courses","key":"academic_year","zh":"學年度","en":"Academic Year","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"courses","key":"semester","zh":"學期","en":"Semester","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"courses","key":"course_name","zh":"課程名稱","en":"Course Name","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"courses","key":"course_code","zh":"課程代碼","en":"Course Code","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"courses","key":"credits","zh":"學分數","en":"Credits","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"projects","key":"project_title","zh":"計畫名稱","en":"Project Title","type":"textarea","required":false,"is_active":true,"show_public":true},{"section_key":"projects","key":"funding_agency","zh":"補助／委託單位","en":"Funding Agency","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"projects","key":"project_number","zh":"計畫編號","en":"Project Number","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"projects","key":"period","zh":"執行期間","en":"Project Period","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"projects","key":"role","zh":"擔任角色","en":"Role","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"journal","key":"authors","zh":"作者","en":"Authors","type":"textarea","required":false,"is_active":true,"show_public":true},{"section_key":"journal","key":"paper_title","zh":"論文名稱","en":"Article Title","type":"textarea","required":false,"is_active":true,"show_public":true},{"section_key":"journal","key":"journal_name","zh":"期刊名稱","en":"Journal","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"journal","key":"year","zh":"出版年度","en":"Publication Year","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"journal","key":"volume_issue","zh":"卷期","en":"Volume / Issue","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"journal","key":"pages","zh":"頁碼","en":"Pages","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"journal","key":"doi","zh":"DOI","en":"DOI","type":"url","required":false,"is_active":true,"show_public":true},{"section_key":"conference","key":"authors","zh":"作者","en":"Authors","type":"textarea","required":false,"is_active":true,"show_public":true},{"section_key":"conference","key":"paper_title","zh":"論文名稱","en":"Paper Title","type":"textarea","required":false,"is_active":true,"show_public":true},{"section_key":"conference","key":"conference_name","zh":"研討會名稱","en":"Conference Name","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"conference","key":"conference_date","zh":"會議日期","en":"Conference Date","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"conference","key":"venue","zh":"會議地點","en":"Venue","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"honors","key":"award_name","zh":"獎項","en":"Award","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"honors","key":"awarding_body","zh":"頒獎單位","en":"Awarding Organization","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"honors","key":"award_date","zh":"獲獎日期","en":"Award Date","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"service","key":"position","zh":"服務職務","en":"Service Role","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"service","key":"organization","zh":"服務單位","en":"Organization","type":"text","required":false,"is_active":true,"show_public":true},{"section_key":"service","key":"period","zh":"服務期間","en":"Service Period","type":"text","required":false,"is_active":true,"show_public":true}],"teachers":[{"id":"mjlee","name":{"zh":"李孟娟","en":"Lee, Mon-Juan"},"title":{"zh":"副教授","en":"Associate Professor"},"unit":{"zh":"生物醫學科技學系","en":"Department of Biomedical Science and Technology"},"office":{"zh":"IL3006","en":"IL3006"},"expertise":{"zh":"生物感測技術、藥物篩選平台、奈米生醫材料、幹細胞與再生醫學","en":"Biosensing technologies; Drug-screening platforms; Nanobiomaterials; Stem cells and regenerative medicine"},"email":"mjlee@mail.nsysu.edu.tw","photo_url":"https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/458/m/mczh-tw200x200_small358593_463032235939.jpg","profile_url":"https://bmst.nsysu.edu.tw/p/405-1351-358593,c26926.php?Lang=zh-tw","category_key":"full_time","visible":{"zh":true,"en":true},"publish_status":"PUBLISHED","sections":[{"key":"education","entries":[{"type":"list_item","title":{"zh":"最高學歷","en":"Highest Degree"},"content":{"zh":"國立清華大學生命科學系博士","en":"PhD, Department of Life Science, National Tsing Hua University"},"url":"","visible":{"zh":true,"en":true},"fields":{},"card_width":null,"card_height":null}]},{"key":"experience","entries":[]},{"key":"courses","entries":[]},{"key":"projects","entries":[{"type":"list_item","title":{"zh":"test","en":"test"},"content":{"zh":"test","en":"test"},"url":"","visible":{"zh":true,"en":false},"fields":{},"card_width":null,"card_height":null},{"type":"list_item","title":{"zh":"test","en":"test"},"content":{"zh":"test","en":"test"},"url":"","visible":{"zh":true,"en":false},"fields":{},"card_width":null,"card_height":null}]},{"key":"journal","entries":[]},{"key":"conference","entries":[]},{"key":"honors","entries":[]},{"key":"service","entries":[]}]},{"id":"jxwu","name":{"zh":"巫建興","en":"Wu, Jian-Xing"},"title":{"zh":"助理教授","en":"Assistant Professor"},"unit":{"zh":"生物醫學科技學系","en":"Department of Biomedical Science and Technology"},"office":{"zh":"IL3007","en":"IL3007"},"expertise":{"zh":"生醫電子系統設計、機器學習與深度學習輔助診斷、無線感測網路技術與應用研發、三維光聲造影系統、醫用超音波","en":"Biomedical electronic systems design; Machine learning and deep learning-assisted diagnosis; Research and development of wireless sensor network technologies and applications; 3D photoacoustic imaging system; Medical ultrasound"},"email":"jxwu@mail.nsysu.edu.tw","photo_url":"https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/369/m/mczh-tw200x200_small358529_855637415193.jpg","profile_url":"https://bmst.nsysu.edu.tw/p/405-1351-358529,c26926.php?Lang=zh-tw","category_key":"full_time","visible":{"zh":true,"en":true},"publish_status":"PUBLISHED","sections":[{"key":"education","entries":[{"type":"list_item","title":{"zh":"最高學歷","en":"Highest Degree"},"content":{"zh":"國立成功大學生物醫學工程學系博士","en":"Ph.D., Department of Biomedical Engineering, National Cheng Kung University"},"url":"","visible":{"zh":true,"en":true},"fields":{},"card_width":null,"card_height":null}]},{"key":"experience","entries":[]},{"key":"courses","entries":[]},{"key":"projects","entries":[]},{"key":"journal","entries":[]},{"key":"conference","entries":[]},{"key":"honors","entries":[]},{"key":"service","entries":[]}]},{"id":"ihyang","name":{"zh":"楊易軒","en":"Yang, I-Hsuan"},"title":{"zh":"助理教授","en":"Assistant Professor"},"unit":{"zh":"生物醫學科技學系","en":"Department of Biomedical Science and Technology"},"office":{"zh":"IL3009","en":"IL3009"},"expertise":{"zh":"生醫高分子的修飾及應用、醫用陶瓷及複合材料、組織工程與再生醫學、藥物傳遞系統","en":"Modification and application of biomedical polymers; Medical ceramics and composite materials; Tissue engineering and regenerative medicine; Drug delivery system"},"email":"ihyang@mail.nsysu.edu.tw","photo_url":"https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/279/m/mczh-tw200x200_small358530_518165415427.png","profile_url":"https://bmst.nsysu.edu.tw/p/405-1351-358530,c26926.php?Lang=zh-tw","category_key":"full_time","visible":{"zh":true,"en":true},"publish_status":"PUBLISHED","sections":[{"key":"education","entries":[{"type":"list_item","title":{"zh":"最高學歷","en":"Highest Degree"},"content":{"zh":"國立臺灣大學醫學工程學系博士","en":"Ph.D., Department of Biomedical Engineering, National Taiwan University"},"url":"","visible":{"zh":true,"en":true},"fields":{},"card_width":null,"card_height":null}]},{"key":"experience","entries":[]},{"key":"courses","entries":[]},{"key":"projects","entries":[]},{"key":"journal","entries":[]},{"key":"conference","entries":[]},{"key":"honors","entries":[]},{"key":"service","entries":[]}]},{"id":"hsuanwenlin","name":{"zh":"林萱文","en":"Lin, Hsuan-Wen"},"title":{"zh":"助理教授","en":"Assistant Professor"},"unit":{"zh":"生物醫學科技學系","en":"Department of Biomedical Science and Technology"},"office":{"zh":"IL3006","en":"IL3006"},"expertise":{"zh":"生醫影像、分子生物學、神經科學","en":"Biomedical imaging; Molecular biology; Neuroscience"},"email":"hsuanwenlin@g-mail.nsysu.edu.tw","photo_url":"https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/596/m/mczh-tw200x200_small358531_631820115579.png","profile_url":"https://bmst.nsysu.edu.tw/p/405-1351-358531,c26926.php?Lang=zh-tw","category_key":"full_time","visible":{"zh":true,"en":true},"publish_status":"PUBLISHED","sections":[{"key":"education","entries":[{"type":"list_item","title":{"zh":"最高學歷","en":"Highest Degree"},"content":{"zh":"國立清華大學生物科技所博士","en":"Ph.D., Institute of Biotechnology, National Tsing Hua University"},"url":"","visible":{"zh":true,"en":true},"fields":{},"card_width":null,"card_height":null}]},{"key":"experience","entries":[]},{"key":"courses","entries":[]},{"key":"projects","entries":[]},{"key":"journal","entries":[]},{"key":"conference","entries":[]},{"key":"honors","entries":[]},{"key":"service","entries":[]}]},{"id":"wklee","name":{"zh":"李唯愷","en":"Lee, Wei-Kai"},"title":{"zh":"助理教授","en":"Assistant Professor"},"unit":{"zh":"生物醫學科技學系","en":"Department of Biomedical Science and Technology"},"office":{"zh":"IL3008","en":"IL3008"},"expertise":{"zh":"醫學影像分析、人工智慧生醫應用、神經影像處理","en":"Medical image analysis; AI in biomedical application; Neuroimage"},"email":"wklee@mail.nsysu.edu.tw","photo_url":"https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/330/m/mczh-tw200x200_small369434_556842759490.jpg","profile_url":"https://bmst.nsysu.edu.tw/p/405-1351-369434,c26926.php?Lang=zh-tw","category_key":"full_time","visible":{"zh":true,"en":true},"publish_status":"PUBLISHED","sections":[{"key":"education","entries":[{"type":"list_item","title":{"zh":"最高學歷","en":"Highest Degree"},"content":{"zh":"國立陽明交通大學生物醫學影像暨放射科學系博士","en":"Ph.D., Department of Biomedical Imaging and Radiological Science, National Yang Ming Chiao Tung University"},"url":"","visible":{"zh":true,"en":true},"fields":{},"card_width":null,"card_height":null}]},{"key":"experience","entries":[]},{"key":"courses","entries":[]},{"key":"projects","entries":[]},{"key":"journal","entries":[]},{"key":"conference","entries":[]},{"key":"honors","entries":[]},{"key":"service","entries":[]}]},{"id":"cyko","name":{"zh":"柯瓊媛","en":"Chiung-Yuan Ko"},"title":{"zh":"副教授（合聘學士後醫學系）","en":"Associate Professor"},"unit":{"zh":"生物醫學科技學系（合聘學士後醫學系）","en":"School of Medicine (Joint Appointment)"},"office":{"zh":"","en":""},"expertise":{"zh":"神經退化性疾病、神經分子生物學、腦癌抗藥性機轉","en":"Neurodegenerative diseases; Neuromolecular biology; Mechanisms of drug resistance in brain cancer"},"email":"cyko@mail.nsysu.edu.tw","photo_url":"https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/74/m/mczh-tw400x400_small370513_661645354369.jpg","profile_url":"https://bmst.nsysu.edu.tw/p/405-1351-370513,c26926.php?Lang=zh-tw","category_key":"adjunct","visible":{"zh":true,"en":false},"publish_status":"PUBLISHED","sections":[{"key":"education","entries":[{"type":"list_item","title":{"zh":"最高學歷","en":"Highest Degree"},"content":{"zh":"國立成功大學基礎醫學研究所博士","en":"Ph.D., Institute of Basic Medical Sciences, National Cheng Kung University"},"url":"","visible":{"zh":true,"en":false},"fields":{},"card_width":null,"card_height":null}]},{"key":"experience","entries":[]},{"key":"courses","entries":[]},{"key":"projects","entries":[]},{"key":"journal","entries":[]},{"key":"conference","entries":[]},{"key":"honors","entries":[]},{"key":"service","entries":[]}]},{"id":"yc2023","name":{"zh":"陳彥樺","en":"Chen, Yen-Hua"},"title":{"zh":"助理教授（合聘學士後醫學系）","en":"Assistant Professor"},"unit":{"zh":"生物醫學科技學系（合聘學士後醫學系）","en":"School of Medicine (Joint Appointment)"},"office":{"zh":"","en":""},"expertise":{"zh":"免疫學、微生物學、免疫代謝、氣喘、粒線體、基因調控","en":"Immunology; Microbiology; Immunometabolism; Asthma; Mitochondria; Gene regulation"},"email":"yc2023@mail.nsysu.edu.tw","photo_url":"https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/903/m/mczh-tw400x400_small370512_518710554400.jpg","profile_url":"https://bmst.nsysu.edu.tw/p/405-1351-370512,c26926.php?Lang=zh-tw","category_key":"adjunct","visible":{"zh":true,"en":false},"publish_status":"PUBLISHED","sections":[{"key":"education","entries":[{"type":"list_item","title":{"zh":"最高學歷","en":"Highest Degree"},"content":{"zh":"美國哥倫比亞大學微生物學與免疫學博士","en":"Ph.D. in Microbiology & Immunology, Columbia University (New York, USA)"},"url":"","visible":{"zh":true,"en":false},"fields":{},"card_width":null,"card_height":null}]},{"key":"experience","entries":[]},{"key":"courses","entries":[]},{"key":"projects","entries":[]},{"key":"journal","entries":[]},{"key":"conference","entries":[]},{"key":"honors","entries":[]},{"key":"service","entries":[]}]}]};
+  const clone = x => JSON.parse(JSON.stringify(x));
+  const state = published.teachers.map(t => ({
+    teacher: {
+      teacher_id: String(t.id),
+      name_zh: t.name?.zh || '', name_en: t.name?.en || '',
+      title_zh: t.title?.zh || '', title_en: t.title?.en || '',
+      unit_zh: t.unit?.zh || '', unit_en: t.unit?.en || '',
+      office_zh: t.office?.zh || '', office_en: t.office?.en || '',
+      expertise_zh: t.expertise?.zh || '', expertise_en: t.expertise?.en || '',
+      email: t.email || '', photo_url: t.photo_url || '',
+      profile_url: t.profile_url || '', category_key: t.category_key || '',
+      publish_status: t.publish_status || 'DRAFT',
+      visible_zh: t.visible?.zh === true, visible_en: t.visible?.en === true
+    },
+    entries: (t.sections || []).flatMap(section =>
+      (section.entries || []).map(e => ({
+        section_key: section.key, entry_type: e.type || 'list_item',
+        title_zh: e.title?.zh || '', title_en: e.title?.en || '',
+        content_zh: e.content?.zh || '', content_en: e.content?.en || '',
+        link_url: e.url || '',
+        visible_zh: e.visible?.zh === true, visible_en: e.visible?.en === true,
+        field_values_json: JSON.stringify(e.fields || {}),
+        card_width: e.card_width || 290, card_height: e.card_height || 190
+      }))
+    ),
+    version: 1
+  }));
+  function pick(id) {
+    const record = state.find(x => x.teacher.teacher_id === id);
+    if (!record) throw Error('找不到示範教師 ID：' + id);
+    return record;
+  }
+  function getTeacher(id) {
+    const r = pick(id);
+    return clone({ teacher: r.teacher, entries: r.entries, revision: String(r.version) });
+  }
+  const handlers = {
+    ftvGetBootstrap() {
+      return clone({
+        teachers: state.map(r => ({
+          id: r.teacher.teacher_id,
+          name: r.teacher.name_zh,
+          status: r.teacher.publish_status
+        })),
+        tabs: published.tabs.filter(x => x.is_active !== false),
+        categories: published.categories.filter(x => x.is_active !== false),
+        fields: published.fields.filter(x => x.is_active !== false),
+        spreadsheetUrl: ''
+      });
+    },
+    ftvGetTeacher: getTeacher,
+    ftvCreateTeacher(value) {
+      const id = String(value || '').trim();
+      if (!/^[A-Za-z0-9_-]{2,40}$/.test(id)) throw Error('請輸入 2–40 碼教師 ID');
+      if (state.some(r => r.teacher.teacher_id.toLowerCase() === id.toLowerCase()))
+        throw Error('教師 ID 已存在');
+      state.push({
+        teacher: {
+          teacher_id: id, name_zh: '示範新教師', name_en: '',
+          title_zh: '', title_en: '', unit_zh: '', unit_en: '',
+          office_zh: '', office_en: '', expertise_zh: '', expertise_en: '',
+          email: '', photo_url: '', profile_url: '',
+          category_key: published.categories[0]?.key || '',
+          publish_status: 'DRAFT', visible_zh: true, visible_en: false
+        },
+        entries: [], version: 1
+      });
+      return { id, sheet: id + '_教師資料' };
+    },
+    ftvSaveTeacher(payload) {
+      const originalId = String(payload.originalTeacherId || '');
+      const record = pick(originalId);
+      if (String(record.version) !== String(payload.revision))
+        throw Error('示範資料版本已變更');
+      const nextId = String(payload.teacher.teacher_id || '').trim();
+      if (!/^[A-Za-z0-9_-]{2,40}$/.test(nextId)) throw Error('教師 ID 格式不正確');
+      if (state.some(x => x !== record && x.teacher.teacher_id.toLowerCase() === nextId.toLowerCase()))
+        throw Error('教師 ID 重複');
+      record.teacher = clone(payload.teacher);
+      record.entries = clone(payload.entries);
+      record.version++;
+      return getTeacher(nextId);
+    }
+  };
+  window.google = {
+    script: {
+      run: {
+        withSuccessHandler(success) {
+          return {
+            withFailureHandler(failure) {
+              return new Proxy({}, {
+                get(_target, method) {
+                  return (...args) => Promise.resolve().then(() => {
+                    try {
+                      if (typeof handlers[method] !== 'function')
+                        throw Error('示範版未提供功能：' + String(method));
+                      success(handlers[method](...args));
+                    } catch (e) { failure(e); }
+                  });
+                }
+              });
+            }
+          };
+        }
+      }
+    }
+  };
+})();
+
+</script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let boot=null,model=null,originalId='',active='basic',dirty=false,busy=false;
+let resizing=null,dragged=null;
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
+function status(message,error=false){$('status').textContent=message;$('status').classList.toggle('error',error)}
+function invoke(name,args,callback){
+ if(busy)return;
+ busy=true;document.querySelectorAll('header button').forEach(b=>b.disabled=true);status('處理中…');
+ google.script.run.withSuccessHandler(result=>{
+  busy=false;document.querySelectorAll('header button').forEach(b=>b.disabled=false);
+  status('就緒');if(callback)callback(result);
+ }).withFailureHandler(e=>{
+  busy=false;document.querySelectorAll('header button').forEach(b=>b.disabled=false);
+  status(e?.message||String(e),true);
+ })[name](...(args||[]));
+}
+function changed(){dirty=true;status('尚未儲存 • 拖曳後按「儲存變更」才能同步 Google Sheets');}
+function canLeave(){return !dirty||confirm('有尚未儲存的變更，確定捨棄？');}
+function field(label,name,value,type='text',cls=''){
+ const id='profile-'+name;
+ if(type==='textarea')return '<label class="field '+cls+'">'+esc(label)+'<textarea data-profile="'+esc(name)+'">'+esc(value)+'</textarea></label>';
+ return '<label class="field '+cls+'">'+esc(label)+'<input data-profile="'+esc(name)+'" type="'+type+'" value="'+esc(value)+'"></label>';
+}
+function chooser(){
+ $('teacher-select').innerHTML=boot.teachers.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+' ('+esc(t.id)+')</option>').join('');
+ $('teacher-select').value=originalId;
+}
+function renderTabs(){
+ const items=[{key:'basic',zh:'基本資料',en:'Profile'},...boot.tabs];
+ $('tabs').innerHTML=items.map(t=>'<button data-tab="'+esc(t.key)+'" class="'+(t.key===active?'selected':'')+'">'+esc(t.zh||t.en)+'</button>').join('');
+ $('tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{active=b.dataset.tab;renderTabs();render();});
+}
+function renderProfile(){
+ const t=model.teacher;
+ $('editor').innerHTML='<div class="topline"><h2>教師基本資料</h2><span class="hint">唯一識別碼：教師 ID</span></div>'+
+ '<p class="hint">教師名單順序直接依 Teachers 工作表列順序；研究專長不需要個別 ID。</p>'+
+ '<div class="profile-form">'+
+ field('教師 ID（可修改）','teacher_id',t.teacher_id)+
+ field('中文姓名','name_zh',t.name_zh)+field('English Name','name_en',t.name_en)+
+ field('中文職稱','title_zh',t.title_zh)+field('English Title','title_en',t.title_en)+
+ field('分類','category_key',t.category_key)+
+ field('中文單位','unit_zh',t.unit_zh)+field('English Unit','unit_en',t.unit_en)+
+ field('中文研究室','office_zh',t.office_zh)+field('English Office','office_en',t.office_en)+
+ field('中文研究專長','expertise_zh',t.expertise_zh,'textarea','long')+
+ field('Research Interests','expertise_en',t.expertise_en,'textarea','long')+
+ field('Email','email',t.email,'email')+field('官方網址','profile_url',t.profile_url,'url')+
+ field('教師照片網址','photo_url',t.photo_url,'url')+
+ '<label class="field">發布狀態<select data-profile="publish_status"><option>DRAFT</option><option>PUBLISHED</option></select></label>'+
+ '<div class="field"><span>語言顯示</span><label class="check"><input type="checkbox" data-profile="visible_zh">顯示中文</label>'+
+ '<label class="check"><input type="checkbox" data-profile="visible_en">Show English</label></div></div>';
+ const categoryInput=$('editor').querySelector('[data-profile="category_key"]');
+ const cSelect=document.createElement('select');cSelect.dataset.profile='category_key';
+ for(const c of boot.categories){const option=document.createElement('option');option.value=c.key;option.textContent=c.zh+' / '+c.en;cSelect.appendChild(option);}
+ cSelect.value=t.category_key;categoryInput.replaceWith(cSelect);
+ const st=$('editor').querySelector('[data-profile="publish_status"]');st.value=t.publish_status||'DRAFT';
+ for(const k of ['visible_zh','visible_en'])$('editor').querySelector('[data-profile="'+k+'"]').checked=t[k]===true;
+ $('editor').querySelectorAll('[data-profile]').forEach(el=>{
+  el.addEventListener('input',()=>{
+   t[el.dataset.profile]=el.type==='checkbox'?el.checked:el.value;changed();
+  });
+  el.addEventListener('change',()=>{
+   t[el.dataset.profile]=el.type==='checkbox'?el.checked:el.value;changed();
+  });
+ });
+}
+function blankEntry(tab){
+ return {section_key:tab,entry_type:'list_item',title_zh:'',title_en:'',content_zh:'',content_en:'',
+ link_url:'',visible_zh:true,visible_en:true,field_values_json:'{}',card_width:290,card_height:190};
+}
+function sectionIndexes(){return model.entries.map((e,i)=>e.section_key===active?i:-1).filter(i=>i>=0);}
+function entryField(index,key,label,value,type='text'){
+ return '<label class="field">'+esc(label)+(type==='textarea'?
+  '<textarea data-index="'+index+'" data-key="'+esc(key)+'">'+esc(value)+'</textarea>':
+  '<input type="'+(type==='url'?'url':type==='number'?'number':'text')+'" data-index="'+index+'" data-key="'+esc(key)+'" value="'+esc(value)+'">')+'</label>';
+}
+function card(entry,index,number){
+ let values={};
+ try{values=JSON.parse(entry.field_values_json||'{}')}catch(_){}
+ const title=entry.title_zh||entry.title_en||entry.content_zh||'未命名項目';
+ const defs=boot.fields.filter(f=>f.section_key===active&&f.is_active);
+ const custom=defs.map(f=>{
+  const vals=values[f.key]||{};
+  return entryField(index,'field:'+f.key+':zh',f.zh,vals.zh||'',f.type)+
+         entryField(index,'field:'+f.key+':en',f.en,vals.en||'',f.type);
+ }).join('');
+ const w=Number(entry.card_width)||290,h=Number(entry.card_height)||190;
+ return '<article class="entry-card" data-index="'+index+'" style="width:'+Math.max(230,Math.min(800,w))+'px;height:'+Math.max(120,Math.min(1200,h))+'px">'+
+ '<div class="card-top"><span draggable="true" class="grab" title="拖曳改變順序" aria-label="拖曳排序">⠿</span>'+
+ '<span class="card-title">'+number+'. '+esc(title.slice(0,70))+'</span>'+
+ '<button data-toggle="'+index+'">編輯</button><button data-remove="'+index+'">刪除</button></div>'+
+ '<div class="card-content"><p class="summary">'+esc((entry.content_zh||entry.content_en||'點擊「編輯」填寫中英文內容').slice(0,115))+'</p>'+
+ '<div class="card-form" hidden>'+
+ entryField(index,'title_zh','中文標題',entry.title_zh)+entryField(index,'title_en','English title',entry.title_en)+
+ entryField(index,'content_zh','中文內容',entry.content_zh,'textarea')+
+ entryField(index,'content_en','English content',entry.content_en,'textarea')+
+ entryField(index,'link_url','相關連結',entry.link_url,'url')+
+ '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_zh" '+(entry.visible_zh===true?'checked':'')+'>中文公開</label>'+
+ '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_en" '+(entry.visible_en===true?'checked':'')+'>English visible</label>'+
+ '<label class="field">顯示方式<select data-index="'+index+'" data-key="entry_type"><option value="list_item" '+(entry.entry_type==='list_item'?'selected':'')+'>清單</option><option value="text" '+(entry.entry_type==='text'?'selected':'')+'>段落</option></select></label>'+
+ (custom?'<details><summary>自訂欄位（中英文）</summary><div class="card-more">'+custom+'</div></details>':'')+
+ '</div></div></article>';
+}
+function updateField(index,key,value){
+ const entry=model.entries[index];if(!entry)return;
+ if(key.startsWith('field:')){
+  const [_,fieldKey,lang]=key.split(':');let fields={};
+  try{fields=JSON.parse(entry.field_values_json||'{}')}catch(_){}
+  fields[fieldKey]={...(fields[fieldKey]||{}),[lang]:value};
+  entry.field_values_json=JSON.stringify(fields);
+ }else entry[key]=value;
+ changed();
+}
+function renderEntries(){
+ const tab=boot.tabs.find(t=>t.key===active);
+ const indexes=sectionIndexes();
+ $('editor').innerHTML='<div class="topline"><h2>'+esc(tab?.zh||active)+' / '+esc(tab?.en||'')+'</h2>'+
+ '<div class="actions"><button class="primary" id="add-entry">＋ 新增'+esc(tab?.zh||'項目')+'</button></div></div>'+
+ '<p class="hint">不用項目 ID、不用排序欄。拖曳左上角 ⠿ 改變排列；拖動卡片右下角可以縮放；「編輯」展開詳細內容。儲存後會把新順序寫回 Sheet。</p>'+
+ (indexes.length?'<section class="card-board" id="cards">'+indexes.map((i,n)=>card(model.entries[i],i,n+1)).join('')+'</section>':
+ '<p class="empty">這個分頁尚無資料。按「＋ 新增」即可建立。</p>');
+ $('add-entry').onclick=()=>{
+  model.entries.push(blankEntry(active));changed();renderEntries();
+  const element=$('cards')?.lastElementChild;const b=element?.querySelector('[data-toggle]');if(b)b.click();
+ };
+ const cards=$('cards');if(!cards)return;
+ cards.addEventListener('input',e=>{
+  const el=e.target.closest('[data-key]');
+  if(!el)return;updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
+ });
+ cards.addEventListener('change',e=>{
+  const el=e.target.closest('[data-key]');
+  if(!el)return;updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
+ });
+ cards.querySelectorAll('[data-toggle]').forEach(btn=>btn.onclick=()=>{
+  const box=btn.closest('.entry-card'),form=box.querySelector('.card-form'),sum=box.querySelector('.summary');
+  form.hidden=!form.hidden;sum.hidden=!form.hidden;btn.textContent=form.hidden?'編輯':'收合';
+ });
+ cards.querySelectorAll('[data-remove]').forEach(btn=>btn.onclick=()=>{
+  if(confirm('確定刪除這筆資料？儲存後才會寫回試算表。')){
+   model.entries.splice(Number(btn.dataset.remove),1);changed();renderEntries();
+  }
+ });
+ cards.querySelectorAll('.grab').forEach(handle=>{
+  handle.addEventListener('dragstart',event=>{
+   dragged=Number(handle.closest('.entry-card').dataset.index);
+   handle.closest('.entry-card').classList.add('dragging');
+   event.dataTransfer.effectAllowed='move';
+   event.dataTransfer.setData('text/plain',String(dragged));
+  });
+  handle.addEventListener('dragend',()=>{
+   dragged=null;cards.querySelectorAll('.entry-card').forEach(el=>el.classList.remove('dragging','target'));
+  });
+ });
+ cards.querySelectorAll('.entry-card').forEach(el=>{
+  el.addEventListener('dragover',event=>{if(dragged===null)return;event.preventDefault();el.classList.add('target');});
+  el.addEventListener('dragleave',()=>el.classList.remove('target'));
+  el.addEventListener('drop',event=>{
+   event.preventDefault();el.classList.remove('target');
+   const target=Number(el.dataset.index);
+   if(dragged===null||dragged===target)return;
+   const positions=sectionIndexes(),list=positions.map(p=>model.entries[p]);
+   const from=positions.indexOf(dragged),to=positions.indexOf(target);
+   if(from<0||to<0)return;
+   const item=list.splice(from,1)[0];list.splice(to,0,item);
+   positions.forEach((p,i)=>model.entries[p]=list[i]);
+   dragged=null;changed();renderEntries();
+  });
+  // Persist the size only after a deliberate pointer action on the native resize corner.
+  el.addEventListener('pointerdown',event=>{
+   const rect=el.getBoundingClientRect();
+   if(rect.right-event.clientX<=26&&rect.bottom-event.clientY<=26)
+    resizing={element:el,index:Number(el.dataset.index),w:rect.width,h:rect.height};
+  });
+ });
+}
+document.addEventListener('pointerup',()=>{
+ if(!resizing)return;
+ const {element,index,w,h}=resizing;resizing=null;
+ if(!element.isConnected)return;
+ const rect=element.getBoundingClientRect();
+ if(Math.abs(rect.width-w)>5||Math.abs(rect.height-h)>5){
+  model.entries[index].card_width=Math.round(rect.width);
+  model.entries[index].card_height=Math.round(rect.height);
+  changed();
+ }
+});
+function render(){if(!model){$('editor').textContent='請選擇教師';return;}if(active==='basic')renderProfile();else renderEntries();}
+function loadTeacher(id){
+ invoke('ftvGetTeacher',[id],result=>{
+  model=result;originalId=String(model.teacher.teacher_id);active='basic';dirty=false;
+  chooser();renderTabs();render();status('已載入 '+(model.teacher.name_zh||originalId));
+ });
+}
+function loadBootstrap(selectId){
+ invoke('ftvGetBootstrap',[],result=>{
+  boot=result;originalId=selectId||boot.teachers[0]?.id||'';
+  chooser();
+  if(originalId)loadTeacher(originalId);
+  else{status('尚未建立教師');renderTabs();render();}
+ });
+}
+$('teacher-select').addEventListener('change',e=>{
+ if(!canLeave()){e.target.value=originalId;return;}
+ loadTeacher(e.target.value);
+});
+$('new-teacher').onclick=()=>{
+ if(!canLeave())return;
+ const id=prompt('請輸入新教師 ID（例如 BMST008）。只有教師需要 ID：');
+ if(id===null)return;
+ if(!id.trim()){status('教師 ID 不可空白',true);return;}
+ invoke('ftvCreateTeacher',[id.trim()],result=>{dirty=false;loadBootstrap(result.id);});
+};
+$('save').onclick=()=>{
+ if(!model||busy)return;
+ const payload={originalTeacherId:originalId,teacher:model.teacher,entries:model.entries,revision:model.revision};
+ invoke('ftvSaveTeacher',[payload],result=>{
+  dirty=false;model=result;originalId=String(result.teacher.teacher_id);
+  loadBootstrap(originalId);status('示範儲存完成：資料只保留在這個預覽頁面，不會更新 Google Sheets');
+ });
+};
+window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
+loadBootstrap();
+</script>
+</body>
+</html>
