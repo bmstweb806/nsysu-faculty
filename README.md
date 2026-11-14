@@ -17,7 +17,7 @@
 3. 教師每個內容項目存一列，`section_key` 表示屬於哪一個 Tab；`section_key`、`field_key`、`category_key` 是設定的欄位代碼，**不是每筆內容的 ID**。
 4. 研究專長位於 `Teachers.expertise_zh`／`expertise_en`，可直接使用換行或分隔符號，不需要逐項 ID。
 5. 管理網頁支援「＋新增」各 Tab 的內容項目、拖曳卡片改變順序，以及從右下角縮放卡片。**儲存**後，拖曳順序寫入 Google Sheets 的實際列順序，尺寸寫入 `card_width`／`card_height`。
-6. **公開教師個人頁只呈現靜態閱讀卡片，不能拖動或縮放。** 只有具權限的 GAS 教師管理後台可操作卡片拖曳／縮放，並儲存順序至 Google Sheets。
+6. **公開教師個人頁的學術內容採單欄清單（List）呈現，不顯示卡片、拖曳或縮放控制。** 只有具權限的 GAS 教師管理後台可操作卡片拖曳／縮放，並儲存順序至 Google Sheets。
 7. Google Sheets `FacultyCategories`、`TabDefinitions`、`FieldDefinitions` 是唯一設定來源。新增分類、Tab、欄位不用改 GAS 程式。
 
 ## Google Sheets 工作表
