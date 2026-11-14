@@ -56,7 +56,7 @@ var arg=params.get('Lang')||params.get('lang')||'';
 var lang=/^en/i.test(arg)?'en':(/^zh/i.test(arg)?'zh':root.getAttribute('data-lang')||'zh');
 var other=lang==='en'?'zh':'en';
 var mode=root.getAttribute('data-view')||'list';
-var tId=root.getAttribute('data-teacher')||'';
+var tId=params.get('teacher')||root.getAttribute('data-teacher')||'';
 var words=lang==='en'?{loading:'Loading faculty information…',empty:'No published faculty are currently available.',error:'Unable to load faculty information.',notFound:'Faculty profile not found.',profile:'View profile',site:'Official profile',email:'Email',office:'Office',expertise:'Research interests',back:'Back to faculty directory',photo:'No photograph',none:'No additional profile information.'}:{loading:'教師資料載入中…',empty:'目前尚無已發布的教師資料。',error:'教師資料暫時無法載入。',notFound:'找不到此教師，或此語言版本尚未公開。',profile:'查看個人資料',site:'官方教師頁面',email:'電子郵件',office:'研究室',expertise:'研究專長',back:'返回教師列表',photo:'暫無照片',none:'目前尚無其他資料。'};
 var serial=Math.random().toString(36).slice(2,9);
 function node(tag,cls,txt){var el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined&&txt!==null)el.textContent=String(txt);return el;}

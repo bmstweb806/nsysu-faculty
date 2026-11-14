@@ -1,3 +1,20 @@
+## V6.1：RPage 風格調整與原生 HTML 嵌入（2026-11-15）
+
+- 已更新 `assets/faculty.css`，採中山大學 RPage 學術型版面方向：深藍文字與頁籤、金色細邊、白色教師資料區、細框線與適度留白。中文與英文資料、行動版和教師頁籤功能不變。
+- **RPage 原生嵌入（HTML + CSS + JS 合併、無 iframe、無額外頁面標題）**：
+  - `rpage/faculty-list-zh.html`：中文教師列表。
+  - `rpage/faculty-list-en.html`：英文教師列表。
+  - `rpage/teacher-profile-zh.html`：中文教師個人頁。
+  - `rpage/teacher-profile-en.html`：英文教師個人頁。
+- 四份 HTML 均可整段貼到 RPage 的 HTML 原始碼區，使用 `data/faculty-index.json`；個人頁另外讀取 `data/teachers/{teacher_id}.json` 與 `data/faculty-config.json`。
+- 個人頁 `data-teacher="mjlee"` 可改成其他教師 ID，或從頁面網址的 `?teacher=教師ID` 動態取得。
+- 列表頁預設連到 GitHub Pages 的教師個人頁；若要讓連結留在 RPage，請在最外層 `div` 將 `data-profile-page=""` 改為**實際存在**的 RPage 個人資料頁 URL。此時會附加 `teacher` 與 RPage `Lang` 參數，個人頁會依 `teacher` 讀取對應教師。
+- 嵌入碼只使用 `.bmst-faculty-embed` 範圍內的樣式，不覆蓋 RPage 的選單、頁首或頁尾。使用前需確認站台的 RPage 編輯器不會過濾 `<script>`，且瀏覽器可跨網域讀取公開 GitHub Pages JSON。
+- **參考站台 `rpb217.nsysu.edu.tw` 本次無法透過工具取得即時 CSS 或畫面**，因此這是依 NSYSU 學術型 RPage 視覺語彙所做的相容改版，並非對該站逐像素複製；若需要精確比對，需參考實際截圖。
+- 更新 GitHub 上的 RPage 嵌入範本，並不會自動修改已貼到 RPage 後台的 HTML。須重新貼上新範本後才會套用。正式 RPage 上線測試仍須執行。
+
+---
+
 ## V6：教師 JSON 分檔＋Google Sheets 管理員快速登入（2026-11-14）
 
 ### 公開資料拆分（已提交 GitHub）
