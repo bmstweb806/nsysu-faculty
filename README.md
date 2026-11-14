@@ -1,205 +1,84 @@
-# NSYSU Faculty V3 / 國立中山大學雙語教師網頁
+# NSYSU Faculty — 雙語教師管理系統
 
-本儲存庫是教師公開網站前端（GitHub Pages）。教師資料由 [NSYSU_Faculty_Database_V3](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit) 管理，再透過 **Google Apps Script (GAS)** 發布成 JSON 到 `data/`。
+使用 Google Sheets 管理資料、Apps Script 提供網頁後台並發布 JSON、GitHub Pages 呈現中英文教師列表和個人頁。**V4 簡化版：只有教師需要 ID；內容順序直接使用試算表列順序。**
 
-## 網頁 / Pages
+## 線上網頁
 
-| 用途 | 網址 |
+- [中文教師名單](https://bmstweb806.github.io/nsysu-faculty/faculty-list.html?lang=zh)
+- [English faculty directory](https://bmstweb806.github.io/nsysu-faculty/faculty-list.html?lang=en)
+- [單一教師（中文示例）](https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&lang=zh)
+- [單一教師（English example）](https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&lang=en)
+- [V3/V4 Google Sheets 資料庫](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit)
+
+## 重要設計原則
+
+1. **只有 `Teachers.teacher_id` 是教師的識別碼。** 教師的個別學歷、研究計畫、著作和其他內容都沒有 `entry_id`。
+2. **不使用 `display_order`、`sort_order` 或其他排序數字。** Google Sheets 的列順序就是顯示順序，包括教師、身分類別、Tab、欄位與老師的各筆學術內容。
+3. 教師每個內容項目存一列，`section_key` 表示屬於哪一個 Tab；`section_key`、`field_key`、`category_key` 是設定的欄位代碼，**不是每筆內容的 ID**。
+4. 研究專長位於 `Teachers.expertise_zh`／`expertise_en`，可直接使用換行或分隔符號，不需要逐項 ID。
+5. 管理網頁支援「＋新增」各 Tab 的內容項目、拖曳卡片改變順序，以及從右下角縮放卡片。**儲存**後，拖曳順序寫入 Google Sheets 的實際列順序，尺寸寫入 `card_width`／`card_height`。
+6. 公開網頁也可在本次瀏覽中拖動與縮放卡片，但不會改到 Google Sheets；只有具權限的 GAS 管理後台能儲存變更。
+7. Google Sheets `FacultyCategories`、`TabDefinitions`、`FieldDefinitions` 是唯一設定來源。新增分類、Tab、欄位不用改 GAS 程式。
+
+## Google Sheets 工作表
+
+| 工作表 | 功能 |
 | --- | --- |
-| 中文教師列表 | https://bmstweb806.github.io/nsysu-faculty/faculty-list.html?lang=zh |
-| English faculty directory | https://bmstweb806.github.io/nsysu-faculty/faculty-list.html?lang=en |
-| 中文教師個人頁面 | https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&lang=zh |
-| English faculty profile | https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&lang=en |
-| 草稿列表預覽 | https://bmstweb806.github.io/nsysu-faculty/faculty-list.html?lang=zh&preview=1 |
-| 草稿教師預覽 | https://bmstweb806.github.io/nsysu-faculty/preview.html?teacher=mjlee&lang=zh |
+| `Teachers` | 教師 ID、姓名、職稱、研究專長、中英文顯示及分類（直接依列順序排序） |
+| `FacultyCategories` | 專任、合聘、榮退等分類；名稱及順序自由修改 |
+| `TabDefinitions` | 個人頁的任意分頁，包括學歷、經歷、課程、研究計畫等 |
+| `FieldDefinitions` | 各 Tab 的自訂欄位（雙語名稱、輸入類型、是否公開、是否必填） |
+| 各老師自己的 `*_教師資料` | 每列一筆內容，使用 `section_key` 分類，其餘按列順序顯示 |
 
-URL 的 `teacher` 參數對應 `Teachers.teacher_id`；`lang` 為 `zh` 或 `en`。
+在教師個別工作表中主要編輯的欄位：
 
-### 檔案結構
+`section_key, entry_type, title_zh, title_en, content_zh, content_en, link_url, visible_zh, visible_en`。
 
-- `index.html`：中英文列表入口
-- `faculty-list.html`：雙語教師列表（卡片式）
-- `faculty.html`：雙語教師詳情（八個固定順序內容 Tab）
-- `preview.html`：未正式發布的草稿預覽頁面（noindex）
-- `assets/faculty.css`：共同 Rpage 嵌入排版
-- `assets/faculty.js`：雙語 JSON 讀取、篩選與動態高度
-- `data/faculty.json`：正式 JSON
-- `data/faculty-preview.json`：測試預覽 JSON（也是**公開**可存取）
+以下為管理程式使用的技術欄位，預設已隱藏：`field_values_json, card_width, card_height`。如要手動查看，可以在 Google Sheets 取消隱藏欄位。教師工作表 `teacher_sheet` 也已隱藏，ID 修改不會重新命名工作表，避免既有資料斷線。
 
-## 資料結構
+## GAS 完整來源（已上傳 GitHub）
 
-`Teachers` 工作表有 `teacher_id`、`teacher_sheet`、`name_zh`、`name_en`、`title_zh`、`title_en`、`unit_zh`、`unit_en`、`office_zh`、`office_en`、`expertise_zh`、`expertise_en`、`email`、`profile_url`、`photo_url`、`display_order`、`publish_status`、`visible_zh`、`visible_en`。
+| 檔案 | 用途 |
+| --- | --- |
+| [gas/Code.gs](gas/Code.gs) | 唯一 `onOpen`、`doGet`、教師資料讀寫、新增教師、保留列順序 |
+| [gas/FacultyManager.html](gas/FacultyManager.html) | 簡化管理頁，教師資料、各 Tab 的「＋新增」、卡片拖拉／縮放 |
+| [gas/FacultyConfig.gs](gas/FacultyConfig.gs) | 分類、Tab、欄位設定及 JSON 發布 |
+| [gas/FacultyConfigManager.html](gas/FacultyConfigManager.html) | 直接管理分類、Tab、欄位的設定頁 |
 
-每個老師有自己的一張 `<teacher_id>_教師資料` 工作表；實際名稱以 `teacher_sheet` 欄為準，修改 ID 不應移動或重新命名教師資料工作表。
+### 安裝到 Apps Script
 
-每張教師資料工作表的欄位：
-`entry_id, section_key, entry_type, title_zh, title_en, content_zh, content_en, link_url, sort_order, visible_zh, visible_en`。
+1. 在 [V4 Google Sheets](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit) 點「擴充功能 → Apps Script」。
+2. 用本倉庫 `gas/Code.gs` 全文取代原本的 Code.gs。
+3. 把 `gas/FacultyConfig.gs` 貼到名稱為 `FacultyConfig` 的指令碼。
+4. 把 `gas/FacultyManager.html` 與 `gas/FacultyConfigManager.html` 分別貼進同名的 Apps Script HTML 檔案。
+5. 在「專案設定 → 指令碼屬性」設定 `GITHUB_TOKEN`（GitHub fine-grained PAT，必須有此 repo Contents 寫入權限），**絕對不要將 Token 貼到 GitHub**。可選填 `GITHUB_REPO`。
+6. 儲存並重新整理 Google Sheets。試算表選單「教師資料管理」會有教師編輯器、分類／Tab／欄位設定、正式與預覽發布功能。
+7. 若使用獨立 Apps Script Web App，需在「部署 → 管理部署」更新成**新版本**：`/exec` 為教師編輯器，`/exec?page=config` 為設定管理頁。必須限制 Web App 僅授權管理者使用。
 
-`TabDefinitions` 依序有：`education`、`experience`、`courses`、`projects`、`journal`、`conference`、`honors`、`service`。沒有任何已公開內容的 Tab 不顯示。
+⚠️ **僅更新 GitHub 原始碼不會更新已部署 GAS。** 目前 GitHub 主分支包含新版程式；需手動複製到 Apps Script 專案，儲存並重新部署。請勿混用前一版的含 `entry_id`／`sort_order` 函式。
 
-## 發布步驟
+### 操作範例：新增研究計畫
 
-1. 在 V3 Google 試算表綁定的 Apps Script 中安裝 **V3 Code.gs** 和 **FacultyManager.html**。
-2. 在 Apps Script 的「專案設定 → 指令碼屬性」設定 `GITHUB_TOKEN`；Token 必須有本儲存庫 Contents 寫入權限。不要將 Token 寫進程式碼或本儲存庫。
-3. 進入試算表選單「教師資料管理 V3 → 發布預覽 JSON」，GAS 將建立/更新 `data/faculty-preview.json`（包含 DRAFT 教師，這是公開測試資料）。
-4. 核對草稿列表及個人頁後，將審核通過的教師設為 `PUBLISHED`，再點選「發布正式 JSON」產生 `data/faculty.json`。
-5. 使用中英文 Rpage 編輯器分別嵌入列表 iframe。
+在管理後台選擇教師 → 點「研究計畫」Tab → 「＋新增研究計畫」 → 展開卡片輸入計畫內容、中英文欄位 → 若需要，拖動卡片左上角的 ⠿ 換位、從卡片右下角縮放 → 點「儲存變更」。資料會依目前排列寫入該教師工作表，**不用填寫任何排序數字**。
 
-**目前正式及預覽 JSON 均為空白 V3 初始化檔。** 先前從中英文系網建立的 7 位教師在 Google Sheets 均標記為 `DRAFT`，因此尚未在網站正式顯示。更新後台資料不會自動推送到 GitHub；需執行 GAS 發布功能。
+## JSON 與發布
 
-### Rpage 嵌入
+- `data/faculty.json`：正式資料，包含 `PUBLISHED` 教師。
+- `data/faculty-preview.json`：測試資料，包含草稿與已發布教師；這份 JSON 同樣為公開存取。
+- 這兩份 JSON 的 `teachers`、`categories`、`tabs`、`fields` 與各教師的 `entries` 都按照 Google Sheets 列順序輸出。
+- 新版 `fcfgPublishProduction`、`fcfgPublishPreview` 是唯一正確的發布入口。修改 Sheet 之後必須再次發布 JSON 才會更新 GitHub Pages。
+- 目前公開 JSON 已更新為簡化資料結構，保留 7 位教師。
 
-中文：
+## Rpage 嵌入單一教師
 
-```html
-<iframe id="nsysu-faculty" src="https://bmstweb806.github.io/nsysu-faculty/faculty-list.html?lang=zh" title="教師列表" style="width:100%;height:700px;border:0;display:block" loading="lazy"></iframe>
-<script>
-window.addEventListener('message', function(e) {
-  const frame = document.getElementById('nsysu-faculty');
-  if (e.origin !== 'https://bmstweb806.github.io' || e.source !== frame.contentWindow) return;
-  if (e.data && e.data.type === 'NSYSU_FACULTY_HEIGHT') {
-    const h = Number(e.data.height);
-    if (Number.isFinite(h) && h >= 100 && h < 30000) frame.style.height = h + 'px';
-  }
-});
-</script>
-```
+- [rpage/teacher-profile-zh.html](rpage/teacher-profile-zh.html)
+- [rpage/teacher-profile-en.html](rpage/teacher-profile-en.html)
 
-英文只需將 `src` 改為 `https://bmstweb806.github.io/nsysu-faculty/faculty-list.html?lang=en`，`title` 改為 `Faculty directory`。每個 iframe 的 `id` 應避免重複；若同頁嵌入多個，請分別使用對應 ID 和 listener。
+檔案只含 `<style>`、嵌入區塊和 `<script>`，可以複製到 Rpage HTML 原始碼編輯器，並修改 `teacher=mjlee` 為其他教師 ID。iframe 高度會配合頁面自動調整；若 Rpage 過濾 JavaScript，使用原本的固定高度。
 
-### 注意
+## 權限與注意事項
 
-- 只顯示 `visible_zh` / `visible_en` 為 TRUE 且該語言姓名有內容的教師。
-- 正式檔只接受 `publish_status=PUBLISHED`。
-- 如果英文項目沒有內容，英文個人頁不會直接使用中文替代；沒有可見項目的分頁會隱藏。
-- 教師 ID 修改後，舊版 `?teacher=...` URL 不會自動重新導向。
-- GitHub Pages 及預覽 JSON **皆屬公開資源**，不要放未授權公開的敏感或私人資料。
-
-
-## V3 可設定教師分類、Tab 與內容欄位（2026-11）
-
-Google Sheets 資料庫：[NSYSU_Faculty_Database_V3](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit)
-
-### Google Sheets 設定表
-
-| 工作表 | 管理用途 |
-|---|---|
-| `FacultyCategories` | 教師分類：代碼、中英文名稱、排序、啟用狀態 |
-| `Teachers` | 每位教師的 `category_key` 指向分類代碼；七位現有教師已分類 |
-| `TabDefinitions` | 個人頁 Tab：代碼、中英文名稱、排序、固定與啟用狀態 |
-| `FieldDefinitions` | 每個 Tab 的欄位：代碼、中英文名稱、欄位類型、排序、必填、啟用與公開 |
-| `<teacher_sheet>` | 教師個別資料；`field_values_json` 儲存自訂欄位值 |
-
-預設分類：`full_time`（專任教師／Full-time Faculty）、`adjunct`（合聘教師／Adjunct Faculty）、`retired`（榮退教師／Retired Faculty）。類別新增、命名與順序均可在試算表修改。
-
-內容欄位可以使用 `text`、`textarea`、`url`、`number`、`date`。新增欄位只要在 `FieldDefinitions` 建立對應 `section_key`、`field_key` 與中英文名稱，**不必修改渲染用 JavaScript 或發布用 GAS**。新增 Tab 同樣可在 `TabDefinitions` 新增一列。
-
-例如 `projects` 新增 `funding_agency`（補助／委託單位／Funding Agency），就會在管理編輯介面出現中文及英文欄位；其內容以 `field_values_json` 儲存，例如：
-
-```json
-{"funding_agency":{"zh":"國家科學及技術委員會","en":"National Science and Technology Council"}}
-```
-
-### 安裝動態管理介面到既有 V3 Apps Script
-
-本 GitHub 儲存庫的以下檔案 **不會自動安裝到 Google Apps Script**：
-
-- [gas/FacultyConfig.gs](gas/FacultyConfig.gs)：可設定的管理/資料操作功能，及覆蓋式 V3 JSON 發布。
-- [gas/FacultyConfigManager.html](gas/FacultyConfigManager.html)：分類、Tab、欄位、教師內容編輯與發布的網頁管理介面。
-
-安裝到與 V3 Sheet 綁定的 Apps Script 專案：
-
-1. 建立 Script 檔 `FacultyConfig`，貼上 `gas/FacultyConfig.gs` 全文。
-2. 建立 HTML 檔 `FacultyConfigManager`，貼上 `gas/FacultyConfigManager.html` 全文。
-3. 在 **既有** 的 `onOpen()` 選單串接：
-   ```javascript
-   .addItem('分類／Tab／欄位設定（V3）', 'fcfgOpenConfig')
-   .addItem('更新新版預覽 JSON', 'fcfgPublishPreview')
-   .addItem('更新新版正式 JSON', 'fcfgPublishProduction')
-   ```
-   注意須加入原本 `createMenu(...)` 鏈中，且必須在 `.addToUi()` 之前，不要建立第二個 `onOpen()`。
-4. 儲存並重新整理試算表，從選單開啟動態管理介面。
-5. 若你原有獨立 Web App `doGet(e)`，可在它的開頭添加：
-   ```javascript
-   if (e && e.parameter && e.parameter.page === 'config') {
-     return fcfgGetAdminHtml();
-   }
-   ```
-   重新部署後，在原本 Web App 網址後加上 `?page=config` 可開啟設定管理介面。**請務必限制 Web App 存取權限**。
-
-### JSON
-
-`data/faculty.json`（正式）、`data/faculty-preview.json`（預覽）新增以下設定：
-
-- `categories`：網站的分組名稱、順序與狀態。
-- `tabs`：各老師個人頁面的標籤名稱、順序、啟用狀態。
-- `fields`：各 Tab 中要如何顯示結構化欄位的名稱、順序、公開狀態。
-- `teachers[].category_key`：教師所屬分類。
-- `teachers[].sections[].entries[].fields`：每個內容項目的雙語欄位值。
-
-**設定更新後仍須透過新版發布函式發布 JSON** 才會反映在 GitHub Pages。GitHub Pages 不會直接存取私人 Google Sheets。設定表及前端已更新；新的 GAS 功能需要先安裝並授權。
-
-## 完整 GAS 來源程式（推薦安裝順序）
-
-目前以 `gas/` 資料夾作為此專案的 **Apps Script 可複製來源碼**。四個檔案都已放在 GitHub，無機密金鑰：
-
-| GitHub 檔案 | Apps Script 中建立的類型／名稱 | 功能 |
-|---|---|---|
-| [gas/Code.gs](gas/Code.gs) | 指令碼 `Code` | 唯一 `onOpen`、唯一 `doGet`、新增教師、自訂／修改教師 ID、雙語基本資料管理、連接 `FacultyConfig` 進行發布 |
-| [gas/FacultyManager.html](gas/FacultyManager.html) | HTML `FacultyManager` | 教師基本資料、中英文內容、個人頁 Tab、教師身分類別 |
-| [gas/FacultyConfig.gs](gas/FacultyConfig.gs) | 指令碼 `FacultyConfig` | 教師分類、動態 Tab／欄位定義、結構化內容編輯與新版 JSON 發布 |
-| [gas/FacultyConfigManager.html](gas/FacultyConfigManager.html) | HTML `FacultyConfigManager` | 動態分類、Tab、欄位管理與內容編輯操作介面 |
-
-安裝到 [V3 Google Sheets](https://docs.google.com/spreadsheets/d/1GcASm8dqMEIwhUMI9oncipCSllrml0NSY-DqjlGcD88/edit) 所綁定的 Apps Script 專案時：
-
-1. 將 `gas/Code.gs` 複製到專案中的 `Code.gs`（取代現有舊版 Code.gs）；確認只有一個 `onOpen()` 和 `doGet(e)`。
-2. 新增指令碼 `FacultyConfig.gs`，貼上同名 GitHub 來源。
-3. 新增 HTML `FacultyManager.html` 與 `FacultyConfigManager.html`，貼上各自內容。這是 **GAS HTML**，不是 GitHub Pages 根目錄的 `faculty.html`。
-4. 在 Apps Script「專案設定 → 指令碼屬性」設定 `GITHUB_TOKEN`，僅放在 Apps Script Properties；**不要提交 Token 到 GitHub**。
-5. 儲存並重新整理試算表，從「教師資料管理 V3」開啟「中英文分頁編輯器」或「教師分類／Tab／欄位設定」。
-6. 若使用獨立 Web App，請部署**新版本**；後台預設 `/exec` 為教師編輯器，`/exec?page=config` 為動態設定介面。請將存取限制設定為管理者，不要公開可修改資料的 Web App。
-
-### 請注意
-
-- `Code.gs` 依賴 `FacultyConfig.gs`，兩者要**一起安裝**。此版本保留單一 `onOpen()` 與 `doGet(e)`。
-- `Code.gs` 中 `ftvPublishPreview()`、`ftvPublishProduction()` 已改為呼叫設定驅動的 `fcfgPublishPreview()`、`fcfgPublishProduction()`。不要再貼上舊的固定八個 Tab 發布函式，否則可能覆蓋 JSON 設定。
-- `FacultyManager.html` 是基礎雙語編輯介面，`FacultyConfigManager.html` 提供完整的自訂欄位編輯，並保存 `field_values_json`。
-- `FacultyCategories`、`TabDefinitions`、`FieldDefinitions` 是**設定資料來源**；網站仍需透過 GAS 發布更新 JSON，才會顯示最新設定。
-- GitHub `gas/` 檔案只是程式碼版本控管，**不會自動同步成已部署的 Apps Script**。
-
-## 無 Hardcode 的分類、Tab 與欄位設定（最新規則）
-
-`gas/Code.gs` 已移除原先 `FTV.definitions` 寫死的 8 個 Tab 清單，也不再把 `full_time` 寫死為預設身分。**設定資料的唯一來源是 Google Sheets**：
-
-- `FacultyCategories`：新增、重新命名、排序、停用教師類別，並決定新增教師可用的預設類別（取啟用分類中排序最前者）。
-- `TabDefinitions`：新增、重新命名、排序、停用任何 Tab（如學歷、研究計畫、新增的專利等）。
-- `FieldDefinitions`：決定各 Tab 需要的中英文欄位、類型、排列順序與顯示狀態。
-- `Teachers.category_key`：每位教師所屬的身分類別。
-
-`ftvSetup()` **只會建立空白資料結構，不會內建或覆寫分類、Tab、欄位的預設值**。第一次建立空白資料庫後，請在上述設定表輸入至少一筆啟用分類和 Tab 才能建立教師；既有 V3 試算表則不需要重新初始化。
-
-新增設定或更動欄位後，需在管理後台發布新版 JSON，GitHub Pages 才會跟著更新。欄位代碼（`section_key`, `field_key`, `category_key`）建立後應保持穩定；只修改名稱、排序與顯示狀態，以免既有教師資料失去對應。
-
-## Rpage 單一教師個人頁嵌入範本
-
-此儲存庫已提供兩個 **Rpage 內容編輯器可直接貼上** 的片段：
-
-- [rpage/teacher-profile-zh.html](rpage/teacher-profile-zh.html) — 中文單一教師
-- [rpage/teacher-profile-en.html](rpage/teacher-profile-en.html) — English faculty profile
-
-這兩個檔案不是完整網頁，僅包含 `<style>`、`<div>`（內含 `<iframe>`）以及 `<script>`，**沒有** `<html>`、`<head>`、`<body>`。
-
-### 使用步驟
-
-1. 開啟上面的 GitHub 檔案，按 **Raw** 複製全文。
-2. 貼到對應中／英文 Rpage 頁面的 HTML 原始碼編輯器。
-3. 在 `<iframe src="…">` 內把 `teacher=mjlee` 換成 `Teachers.teacher_id` 的實際值，例如 `teacher=jxwu`。
-4. 中文使用 `lang=zh`，英文使用 `lang=en`。
-5. 儲存 Rpage 頁面並檢查是否保留 `<script>`、是否有 iframe 內容。若 Rpage 移除腳本，仍可透過固定高度（預設 760px）顯示，但不會自動調整。
-
-個人頁網址格式：
-`https://bmstweb806.github.io/nsysu-faculty/faculty.html?teacher=mjlee&lang=zh`
-
-這些片段會核對 `event.origin`，並以 `event.source === iframe.contentWindow` 配對，避免同頁多個 iframe 互相影響。若同頁包含多個教師，直接重複片段即可，監聽器會自動避免重複註冊。
-
-請注意：GitHub Pages 直接瀏覽的是 `faculty.html`，不是 `rpage/teacher-profile-zh.html`。後者是要**複製到 Rpage 編輯器**的原始碼；上傳到 GitHub 不會自動更新中山大學 Rpage。
+- GAS 後台能編輯資料及發布內容，請勿開放「任何人」使用。
+- 預覽檔也是公開的，不應儲存私人或未授權公開的敏感資料。
+- 變更教師 ID 後，外部舊教師個人頁連結不會自動轉址。
+- 以 Google Sheets 列順序為準，但同一教師的不同 `section_key` 會分別顯示在各自 Tab 中。
