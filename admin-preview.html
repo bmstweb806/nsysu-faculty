@@ -31,36 +31,55 @@ textarea{resize:vertical;min-height:65px}
 .profile-form .wide{grid-column:1/-1}
 .check{display:inline-flex;gap:6px;align-items:center;margin:4px 10px 4px 0}
 .check input{width:auto}
-.card-board{display:flex;align-items:flex-start;align-content:flex-start;gap:11px;flex-wrap:wrap;margin:9px 0 18px}
-.entry-card{position:relative;flex:0 0 auto;width:300px;height:190px;min-width:230px;min-height:120px;max-width:100%;max-height:90vh;resize:both;overflow:auto;border:1px solid #b9cfde;border-radius:9px;background:white;box-shadow:0 2px 7px #0c3b5810}
-.entry-card.dragging{opacity:.45}.entry-card.target{outline:2px dashed var(--blue);outline-offset:2px}
-.card-top{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding:7px;background:var(--soft);position:sticky;top:0;z-index:1}
-.grab{cursor:grab;user-select:none;color:#356987;font-size:20px;line-height:1;padding:2px 5px;border-radius:5px}
+.card-board{display:flex;flex-direction:column;gap:8px;margin:10px 0 18px}
+.entry-card{width:100%;min-width:0;height:auto;border:1px solid #cddce5;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 1px 3px #0c3b5808}
+.entry-card.dragging{opacity:.5}.entry-card.target{outline:2px dashed var(--blue);outline-offset:2px}
+.entry-card.is-open{border-color:#a6c7dc;box-shadow:0 2px 9px #0c3b5810}
+.card-top{height:42px;min-height:42px;display:flex;align-items:center;gap:9px;background:#f7f9fa;padding:0 11px}
+.entry-card.is-open .card-top{background:#ebf3f8}
+.grab{cursor:grab;user-select:none;color:#708b9b;font-size:19px;line-height:1;padding:5px;border-radius:5px}
 .grab:active{cursor:grabbing}
-.card-title{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.card-top button{padding:4px 7px;font-size:12px}
-.card-content{padding:10px}
-.summary{white-space:pre-wrap;max-height:65px;overflow:hidden;color:#687986;font-size:13px;margin:6px 0}
-.card-form{display:grid;grid-template-columns:1fr;gap:9px}
-.card-form .field{gap:3px}
-.card-form textarea{min-height:58px}
-.card-form details{border-top:1px solid var(--line);padding-top:8px}
+.card-title{font-size:14px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:36px;height:32px;border:0;background:transparent;padding:3px 6px;color:#315a75}
+.card-toggle:hover{background:#dcebf3}
+.card-toggle .caret{font-size:15px;display:inline-block;transition:transform .15s ease}
+.card-toggle[aria-expanded="true"] .caret{transform:rotate(90deg)}
+.card-content{border-top:1px solid #d8e4ec;padding:14px 16px 18px;background:#fff;overflow:auto;resize:vertical;min-height:190px;max-height:78vh;height:auto}
+.card-content[hidden]{display:none!important}
+.card-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 15px}
+.card-form>.field:has(textarea){grid-column:auto}
+.card-form .field{gap:4px}
+.card-form textarea{min-height:75px}
+.card-form details{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px}
 .card-form summary{cursor:pointer;color:var(--blue);font-weight:600}
-.card-more{display:grid;grid-template-columns:1fr;gap:8px;padding:8px 0}
+.card-more{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;padding:10px 0}
+.card-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.card-actions .danger{border-color:#e0b8be;color:#a52e40}
+[hidden]{display:none!important}
+aside .side-heading{font-size:12px;color:#728697;font-weight:700;padding:5px 10px 9px}
+aside .add-category{width:100%;border:1px dashed #96b5c9;background:#fff;color:var(--blue);text-align:center;font-weight:700;margin-top:9px}
+aside .category-form{border:1px solid var(--line);border-radius:8px;background:#fff;padding:12px 10px;display:grid;gap:9px;margin-top:10px}
+aside .category-form label{display:grid;gap:3px}
+aside .category-form input{padding:7px}
+aside .category-form .row{display:flex;gap:5px}
+aside .category-form .row button{width:auto;margin:0;border:1px solid #b8cddc;background:#fff;text-align:center}
+aside .category-form .row .primary{background:var(--blue);color:white}
 .empty{padding:20px;border:1px dashed #bdcfdc;background:var(--soft);border-radius:9px;color:var(--muted)}
 .actions{display:flex;flex-wrap:wrap;gap:7px}
 @media(max-width:750px){#layout{grid-template-columns:1fr}aside{display:flex;flex-wrap:wrap;gap:5px;padding:8px;border-right:0;border-bottom:1px solid var(--line)}aside button{display:inline-block;width:auto;margin:0;padding:7px}main{max-height:none}.profile-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:480px){main{padding:12px}.profile-form{grid-template-columns:1fr}.profile-form .long{grid-column:auto}.entry-card{width:100%;height:215px}}
-
-/* Preview marker, isolated from the production Apps Script app. */
-.preview-banner{background:#fff5db;color:#654c00;border-bottom:1px solid #dfc786;padding:12px 17px;font-size:13px;line-height:1.55}
+@media(max-width:480px){main{padding:12px}.profile-form{grid-template-columns:1fr}.profile-form .long{grid-column:auto}.card-form,.card-more{grid-template-columns:1fr}.card-content{padding:11px}}
+/* Preview-only banner */
+.preview-banner{background:#fff3d6;color:#755000;padding:10px 18px;font-size:13px;border-bottom:1px solid #e7c779;line-height:1.55}
 .preview-banner strong{display:block;font-size:15px}
 .preview-banner a{color:#175b80}
 </style>
 <meta name="robots" content="noindex,nofollow">
 </head>
 <body>
-<div class="preview-banner"><strong>管理介面預覽｜僅供操作示範</strong>此頁使用目前公開 JSON 的資料快照，所有新增、修改、拖曳與縮放都只在本頁模擬；不會寫入 Google Sheets，也不會發布到網站。重新整理後回到原始示範資料。<br>正式管理程式：<a href="https://github.com/bmstweb806/nsysu-faculty/blob/main/gas/FacultyManager.html" target="_blank" rel="noopener">FacultyManager.html</a></div>
+<div class="preview-banner"><strong>教師後台預覽（僅示範）</strong>
+可操作：左側新增分類、每個分類新增項目（插最上方）、箭頭展開／收合、拖曳排序和展開後調整高度。所有操作只存在當次頁面，**不會修改 Google Sheets**；重新整理即還原。
+<a href="https://github.com/bmstweb806/nsysu-faculty/blob/main/gas/FacultyManager.html" target="_blank" rel="noopener">正式後台程式碼</a>
+</div>
 <header>
 <h1>教師資料編輯器 / Faculty Manager</h1>
 <select id="teacher-select" aria-label="選擇教師"></select>
@@ -125,6 +144,17 @@ textarea{resize:vertical;min-height:65px}
         spreadsheetUrl: ''
       });
     },
+    fcfgCreateTab(nameZh, nameEn) {
+      const zh = String(nameZh || '').trim();
+      const en = String(nameEn || '').trim() || zh;
+      if (!zh) throw Error('請輸入分類中文名稱');
+      if (published.tabs.some(x => x.zh === zh))
+        throw Error('已有同名分類');
+      const key = 'section_' + Math.random().toString(36).slice(2, 14);
+      const tab = {key, zh, en, is_active: true, entry_layout: 'list'};
+      published.tabs.push(tab);
+      return clone(tab);
+    },
     ftvGetTeacher: getTeacher,
     ftvCreateTeacher(value) {
       const id = String(value || '').trim();
@@ -184,6 +214,7 @@ textarea{resize:vertical;min-height:65px}
   };
 })();
 
+
 </script>
 <script>
 'use strict';
@@ -216,8 +247,33 @@ function chooser(){
 }
 function renderTabs(){
  const items=[{key:'basic',zh:'基本資料',en:'Profile'},...boot.tabs];
- $('tabs').innerHTML=items.map(t=>'<button data-tab="'+esc(t.key)+'" class="'+(t.key===active?'selected':'')+'">'+esc(t.zh||t.en)+'</button>').join('');
- $('tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{active=b.dataset.tab;renderTabs();render();});
+ $('tabs').innerHTML='<div class="side-heading">教師資料分類</div>'+
+  items.map(t=>'<button type="button" data-tab="'+esc(t.key)+'" class="'+(t.key===active?'selected':'')+'">'+esc(t.zh||t.en)+'</button>').join('')+
+  '<button id="add-category-toggle" type="button" class="add-category">＋ 新增分類</button>'+
+  '<form id="new-category-form" class="category-form" hidden>'+
+  '<label>分類名稱（中文）<input id="new-category-zh" maxlength="150" required placeholder="例如：專利、專書"></label>'+
+  '<label>English name（可留空）<input id="new-category-en" maxlength="150" placeholder="Patents"></label>'+
+  '<div class="row"><button class="primary" type="submit">建立分類</button>'+
+  '<button id="cancel-category" type="button">取消</button></div></form>';
+ $('tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{
+   active=b.dataset.tab;renderTabs();render();
+ });
+ const form=$('new-category-form');
+ $('add-category-toggle').onclick=()=>{
+   form.hidden=false;$('add-category-toggle').hidden=true;
+   $('new-category-zh').focus();
+ };
+ $('cancel-category').onclick=()=>{form.hidden=true;$('add-category-toggle').hidden=false;};
+ form.addEventListener('submit',e=>{
+   e.preventDefault();
+   const zh=$('new-category-zh').value.trim(),en=$('new-category-en').value.trim();
+   if(!zh){status('請輸入分類名稱',true);return;}
+   invoke('fcfgCreateTab',[zh,en],tab=>{
+     boot.tabs.push(tab);active=tab.key;
+     renderTabs();render();
+     status('分類「'+tab.zh+'」已建立在 Google Sheets；重新發布 JSON 後才會出現在公開網站');
+   });
+ });
 }
 function renderProfile(){
  const t=model.teacher;
@@ -265,29 +321,36 @@ function entryField(index,key,label,value,type='text'){
 function card(entry,index,number){
  let values={};
  try{values=JSON.parse(entry.field_values_json||'{}')}catch(_){}
- const title=entry.title_zh||entry.title_en||entry.content_zh||'未命名項目';
+ const title=entry.title_zh||entry.title_en||entry.content_zh||entry.content_en||'未命名項目';
  const defs=boot.fields.filter(f=>f.section_key===active&&f.is_active);
  const custom=defs.map(f=>{
-  const vals=values[f.key]||{};
-  return entryField(index,'field:'+f.key+':zh',f.zh,vals.zh||'',f.type)+
-         entryField(index,'field:'+f.key+':en',f.en,vals.en||'',f.type);
+  const val=values[f.key]||{};
+  return entryField(index,'field:'+f.key+':zh',f.zh,val.zh||'',f.type)+
+         entryField(index,'field:'+f.key+':en',f.en,val.en||'',f.type);
  }).join('');
- const w=Number(entry.card_width)||290,h=Number(entry.card_height)||190;
- return '<article class="entry-card" data-index="'+index+'" style="width:'+Math.max(230,Math.min(800,w))+'px;height:'+Math.max(120,Math.min(1200,h))+'px">'+
- '<div class="card-top"><span draggable="true" class="grab" title="拖曳改變順序" aria-label="拖曳排序">⠿</span>'+
- '<span class="card-title">'+number+'. '+esc(title.slice(0,70))+'</span>'+
- '<button data-toggle="'+index+'">編輯</button><button data-remove="'+index+'">刪除</button></div>'+
- '<div class="card-content"><p class="summary">'+esc((entry.content_zh||entry.content_en||'點擊「編輯」填寫中英文內容').slice(0,115))+'</p>'+
- '<div class="card-form" hidden>'+
- entryField(index,'title_zh','中文標題',entry.title_zh)+entryField(index,'title_en','English title',entry.title_en)+
- entryField(index,'content_zh','中文內容',entry.content_zh,'textarea')+
- entryField(index,'content_en','English content',entry.content_en,'textarea')+
- entryField(index,'link_url','相關連結',entry.link_url,'url')+
- '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_zh" '+(entry.visible_zh===true?'checked':'')+'>中文公開</label>'+
- '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_en" '+(entry.visible_en===true?'checked':'')+'>English visible</label>'+
- '<label class="field">顯示方式<select data-index="'+index+'" data-key="entry_type"><option value="list_item" '+(entry.entry_type==='list_item'?'selected':'')+'>清單</option><option value="text" '+(entry.entry_type==='text'?'selected':'')+'>段落</option></select></label>'+
- (custom?'<details><summary>自訂欄位（中英文）</summary><div class="card-more">'+custom+'</div></details>':'')+
- '</div></div></article>';
+ const savedHeight=Number(entry.card_height);
+ const heightStyle=Number.isFinite(savedHeight)&&savedHeight>=260
+   ?' style="height:'+Math.min(1200,Math.round(savedHeight))+'px"':'';
+ return '<article class="entry-card" data-index="'+index+'">'+
+  '<div class="card-top">'+
+  '<span class="grab" draggable="true" title="拖曳調整排列順序" aria-label="拖曳排序">⠿</span>'+
+  '<span class="card-title">'+number+'. '+esc(title.slice(0,100))+'</span>'+
+  '<button type="button" class="card-toggle" data-toggle="'+index+'" aria-expanded="false" aria-label="展開或收合 '+esc(title.slice(0,40))+'"><span class="caret">▶</span></button>'+
+  '</div>'+
+  '<div class="card-content" hidden'+heightStyle+'>'+
+  '<div class="card-form">'+
+  entryField(index,'title_zh','中文標題',entry.title_zh)+entryField(index,'title_en','English title',entry.title_en)+
+  entryField(index,'content_zh','中文內容',entry.content_zh,'textarea')+
+  entryField(index,'content_en','English content',entry.content_en,'textarea')+
+  entryField(index,'link_url','相關連結',entry.link_url,'url')+
+  '<label class="field">顯示方式<select data-index="'+index+'" data-key="entry_type">'+
+  '<option value="list_item" '+(entry.entry_type==='list_item'?'selected':'')+'>清單</option>'+
+  '<option value="text" '+(entry.entry_type==='text'?'selected':'')+'>段落</option></select></label>'+
+  '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_zh" '+(entry.visible_zh===true?'checked':'')+'>中文公開</label>'+
+  '<label class="check"><input type="checkbox" data-index="'+index+'" data-key="visible_en" '+(entry.visible_en===true?'checked':'')+'>English visible</label>'+
+  (custom?'<details><summary>更多自訂欄位（中英文）</summary><div class="card-more">'+custom+'</div></details>':'')+
+  '<div class="card-actions"><button type="button" class="danger" data-remove="'+index+'">刪除這筆內容</button></div>'+
+  '</div></div></article>';
 }
 function updateField(index,key,value){
  const entry=model.entries[index];if(!entry)return;
@@ -303,75 +366,97 @@ function renderEntries(){
  const tab=boot.tabs.find(t=>t.key===active);
  const indexes=sectionIndexes();
  $('editor').innerHTML='<div class="topline"><h2>'+esc(tab?.zh||active)+' / '+esc(tab?.en||'')+'</h2>'+
- '<div class="actions"><button class="primary" id="add-entry">＋ 新增'+esc(tab?.zh||'項目')+'</button></div></div>'+
- '<p class="hint">不用項目 ID、不用排序欄。拖曳左上角 ⠿ 改變排列；拖動卡片右下角可以縮放；「編輯」展開詳細內容。儲存後會把新順序寫回 Sheet。</p>'+
- (indexes.length?'<section class="card-board" id="cards">'+indexes.map((i,n)=>card(model.entries[i],i,n+1)).join('')+'</section>':
- '<p class="empty">這個分頁尚無資料。按「＋ 新增」即可建立。</p>');
+  '<div class="actions"><button class="primary" id="add-entry" type="button">＋ 新增'+esc(tab?.zh||'項目')+'</button></div></div>'+
+  '<p class="hint">所有內容預設收合。按右側箭頭展開編輯，拖曳左側 ⠿ 調整順序。新項目一律放最上方；按「儲存變更」才會同步 Google Sheets。</p>'+
+  (indexes.length?'<section class="card-board" id="cards">'+indexes.map((i,n)=>card(model.entries[i],i,n+1)).join('')+'</section>':
+  '<p class="empty">這個分類尚無內容，按右上角「＋ 新增」即可開始。</p>');
  $('add-entry').onclick=()=>{
-  model.entries.push(blankEntry(active));changed();renderEntries();
-  const element=$('cards')?.lastElementChild;const b=element?.querySelector('[data-toggle]');if(b)b.click();
+   const positions=sectionIndexes();
+   const insertAt=positions.length?positions[0]:0;
+   model.entries.splice(insertAt,0,blankEntry(active));
+   changed();renderEntries();
+   // Existing rows start closed. A newly created row opens immediately for editing.
+   const first=$('cards')?.querySelector('[data-toggle]');
+   if(first){first.click();$('cards').querySelector('[data-key="title_zh"]')?.focus();}
  };
- const cards=$('cards');if(!cards)return;
- cards.addEventListener('input',e=>{
-  const el=e.target.closest('[data-key]');
-  if(!el)return;updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
+ const board=$('cards');if(!board)return;
+ board.addEventListener('input',e=>{
+   const el=e.target.closest('[data-key]');
+   if(!el)return;
+   updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
+   const k=el.dataset.key;
+   if(k==='title_zh'||k==='title_en'||k==='content_zh'||k==='content_en'){
+     const item=el.closest('.entry-card');
+     const r=model.entries[Number(el.dataset.index)];
+     const title=r.title_zh||r.title_en||r.content_zh||r.content_en||'未命名項目';
+     const position=[...board.children].indexOf(item)+1;
+     item.querySelector('.card-title').textContent=position+'. '+title.slice(0,100);
+   }
  });
- cards.addEventListener('change',e=>{
-  const el=e.target.closest('[data-key]');
-  if(!el)return;updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
+ board.addEventListener('change',e=>{
+   const el=e.target.closest('[data-key]');
+   if(!el)return;
+   updateField(Number(el.dataset.index),el.dataset.key,el.type==='checkbox'?el.checked:el.value);
  });
- cards.querySelectorAll('[data-toggle]').forEach(btn=>btn.onclick=()=>{
-  const box=btn.closest('.entry-card'),form=box.querySelector('.card-form'),sum=box.querySelector('.summary');
-  form.hidden=!form.hidden;sum.hidden=!form.hidden;btn.textContent=form.hidden?'編輯':'收合';
+ board.querySelectorAll('[data-toggle]').forEach(btn=>btn.onclick=()=>{
+   const item=btn.closest('.entry-card'),body=item.querySelector('.card-content');
+   const open=btn.getAttribute('aria-expanded')==='true';
+   body.hidden=open;
+   btn.setAttribute('aria-expanded',String(!open));
+   item.classList.toggle('is-open',!open);
+   btn.setAttribute('aria-label',open?'展開內容':'收合內容');
  });
- cards.querySelectorAll('[data-remove]').forEach(btn=>btn.onclick=()=>{
-  if(confirm('確定刪除這筆資料？儲存後才會寫回試算表。')){
-   model.entries.splice(Number(btn.dataset.remove),1);changed();renderEntries();
-  }
+ board.querySelectorAll('[data-remove]').forEach(btn=>btn.onclick=()=>{
+   if(confirm('確定刪除這筆內容？儲存後才會寫回 Google Sheets。')){
+     model.entries.splice(Number(btn.dataset.remove),1);
+     changed();renderEntries();
+   }
  });
- cards.querySelectorAll('.grab').forEach(handle=>{
-  handle.addEventListener('dragstart',event=>{
-   dragged=Number(handle.closest('.entry-card').dataset.index);
-   handle.closest('.entry-card').classList.add('dragging');
-   event.dataTransfer.effectAllowed='move';
-   event.dataTransfer.setData('text/plain',String(dragged));
-  });
-  handle.addEventListener('dragend',()=>{
-   dragged=null;cards.querySelectorAll('.entry-card').forEach(el=>el.classList.remove('dragging','target'));
-  });
+ board.querySelectorAll('.grab').forEach(handle=>{
+   handle.addEventListener('dragstart',event=>{
+     dragged=Number(handle.closest('.entry-card').dataset.index);
+     handle.closest('.entry-card').classList.add('dragging');
+     event.dataTransfer.effectAllowed='move';
+     event.dataTransfer.setData('text/plain',String(dragged));
+   });
+   handle.addEventListener('dragend',()=>{
+     dragged=null;
+     board.querySelectorAll('.entry-card').forEach(x=>x.classList.remove('dragging','target'));
+   });
  });
- cards.querySelectorAll('.entry-card').forEach(el=>{
-  el.addEventListener('dragover',event=>{if(dragged===null)return;event.preventDefault();el.classList.add('target');});
-  el.addEventListener('dragleave',()=>el.classList.remove('target'));
-  el.addEventListener('drop',event=>{
-   event.preventDefault();el.classList.remove('target');
-   const target=Number(el.dataset.index);
-   if(dragged===null||dragged===target)return;
-   const positions=sectionIndexes(),list=positions.map(p=>model.entries[p]);
-   const from=positions.indexOf(dragged),to=positions.indexOf(target);
-   if(from<0||to<0)return;
-   const item=list.splice(from,1)[0];list.splice(to,0,item);
-   positions.forEach((p,i)=>model.entries[p]=list[i]);
-   dragged=null;changed();renderEntries();
-  });
-  // Persist the size only after a deliberate pointer action on the native resize corner.
-  el.addEventListener('pointerdown',event=>{
-   const rect=el.getBoundingClientRect();
-   if(rect.right-event.clientX<=26&&rect.bottom-event.clientY<=26)
-    resizing={element:el,index:Number(el.dataset.index),w:rect.width,h:rect.height};
-  });
+ board.querySelectorAll('.entry-card').forEach(item=>{
+   item.addEventListener('dragover',e=>{
+     if(dragged===null)return;
+     e.preventDefault();item.classList.add('target');
+   });
+   item.addEventListener('dragleave',()=>item.classList.remove('target'));
+   item.addEventListener('drop',e=>{
+     e.preventDefault();item.classList.remove('target');
+     const target=Number(item.dataset.index);
+     if(dragged===null||dragged===target)return;
+     const positions=sectionIndexes();
+     const list=positions.map(p=>model.entries[p]);
+     const from=positions.indexOf(dragged),to=positions.indexOf(target);
+     if(from<0||to<0)return;
+     const moved=list.splice(from,1)[0];list.splice(to,0,moved);
+     positions.forEach((p,i)=>model.entries[p]=list[i]);
+     dragged=null;changed();renderEntries();
+   });
+   const body=item.querySelector('.card-content');
+   body.addEventListener('pointerdown',e=>{
+     if(body.hidden)return;
+     const box=body.getBoundingClientRect();
+     if(box.right-e.clientX<=22&&box.bottom-e.clientY<=22)
+       resizing={element:body,index:Number(item.dataset.index),height:box.height};
+   });
  });
 }
 document.addEventListener('pointerup',()=>{
  if(!resizing)return;
- const {element,index,w,h}=resizing;resizing=null;
+ const {element,index,height}=resizing;resizing=null;
  if(!element.isConnected)return;
- const rect=element.getBoundingClientRect();
- if(Math.abs(rect.width-w)>5||Math.abs(rect.height-h)>5){
-  model.entries[index].card_width=Math.round(rect.width);
-  model.entries[index].card_height=Math.round(rect.height);
-  changed();
- }
+ const next=Math.round(element.getBoundingClientRect().height);
+ if(Math.abs(next-height)>5){model.entries[index].card_height=next;changed();}
 });
 function render(){if(!model){$('editor').textContent='請選擇教師';return;}if(active==='basic')renderProfile();else renderEntries();}
 function loadTeacher(id){
@@ -404,7 +489,7 @@ $('save').onclick=()=>{
  const payload={originalTeacherId:originalId,teacher:model.teacher,entries:model.entries,revision:model.revision};
  invoke('ftvSaveTeacher',[payload],result=>{
   dirty=false;model=result;originalId=String(result.teacher.teacher_id);
-  loadBootstrap(originalId);status('示範儲存完成：資料只保留在這個預覽頁面，不會更新 Google Sheets');
+  loadBootstrap(originalId);status('示範資料已儲存（僅本頁暫存，不會修改 Google Sheets）');
  });
 };
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
