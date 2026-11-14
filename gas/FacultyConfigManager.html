@@ -28,8 +28,28 @@ input,select,textarea{width:100%;min-width:0;background:#fff;border-radius:6px;b
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:7px 0}
 table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:9px;border-bottom:1px solid var(--line)}th{background:var(--soft)}
 @media(max-width:650px){.grid{grid-template-columns:1fr}main{max-height:none}}
+body.auth-locked>header,body.auth-locked>nav,body.auth-locked>#status,body.auth-locked>#app{display:none!important}
+#login-screen{display:none;min-height:100vh;align-items:center;justify-content:center;background:#f3f7fa;padding:20px}
+body.auth-locked #login-screen{display:flex}
+.login-panel{width:100%;max-width:390px;background:#fff;border:1px solid #dce6ed;border-radius:13px;box-shadow:0 12px 40px #123e5b14;padding:30px}
+.login-panel h2{margin:0 0 6px;font-size:22px;color:#123e5b}
+.login-panel p{margin:0 0 20px;font-size:13px;color:#728596}
+.login-panel label{display:grid;gap:6px;font-size:13px;font-weight:600;margin:12px 0}
+.login-panel input{width:100%;padding:11px 12px;border:1px solid #bfd1dd;border-radius:7px}
+.login-panel button{width:100%;padding:10px;margin-top:8px}
+.login-panel .login-error{min-height:20px;margin-top:12px;color:#ac3142;font-size:12px}
 </style></head>
-<body>
+<body class="auth-locked">
+<div id="login-screen"><div class="login-panel">
+<h2>系辦管理</h2><p>Administrator · Email 驗證碼登入</p>
+<form id="otp-request-form">
+<label>電子郵件<input id="login-email" type="email" autocomplete="email" required></label>
+<button class="primary" type="submit">寄送驗證碼</button></form>
+<form id="otp-verify-form" hidden>
+<label>6 位數驗證碼<input id="login-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label>
+<button class="primary" type="submit">驗證並登入</button></form>
+<div id="login-error" class="login-error" role="status"></div>
+</div></div>
 <header><h1>教師系統設定 / Faculty Settings</h1>
 <p>設定以 Google Sheets 列順序為準，不使用顯示順序數字，也不建立每筆內容 ID。</p></header>
 <nav>
@@ -42,13 +62,36 @@ table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:9px;bord
 <div id="status" role="status">準備載入…</div><main id="app"></main>
 <script>
 'use strict';
-let config=null,view='category',editing=null,busy=false;
+let config=null,view='category',editing=null,busy=false,authToken='',loginBusy=false;
+function loginMessage(msg,error=false){
+ const el=$('login-error');el.textContent=msg;el.style.color=error?'#ac3142':'#42778d';
+}
+function loginCall(name,args,callback){
+ if(loginBusy)return;loginBusy=true;
+ google.script.run.withSuccessHandler(r=>{loginBusy=false;callback(r)})
+ .withFailureHandler(e=>{loginBusy=false;loginMessage(e?.message||String(e),true)})[name](...args);
+}
+$('otp-request-form').onsubmit=e=>{
+ e.preventDefault();loginMessage('寄送中…');
+ loginCall('ftaRequestCode',[$('login-email').value.trim()],r=>{
+  $('otp-verify-form').hidden=false;loginMessage(r.message);$('login-code').focus();
+ });
+};
+$('otp-verify-form').onsubmit=e=>{
+ e.preventDefault();loginMessage('驗證中…');
+ loginCall('ftaVerifyCode',[$('login-email').value.trim(),$('login-code').value.trim()],r=>{
+  if(r.account.role!=='ADMIN'){loginMessage('只有系辦管理員可以使用此頁',true);return;}
+  authToken=r.token;document.body.classList.remove('auth-locked');
+  run('fcfgGetConfig',[],result=>{config=result;render()});
+ });
+};
+
 const $=id=>document.getElementById(id),escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[c]));
 function status(msg,isError=false){$('status').textContent=msg;$('status').classList.toggle('error',isError)}
 function run(name,args,cb){
  if(busy)return;busy=true;status('處理中…');
  google.script.run.withSuccessHandler(r=>{busy=false;status('已完成');if(cb)cb(r)})
- .withFailureHandler(e=>{busy=false;status(e?.message||String(e),true)})[name](...(args||[]));
+ .withFailureHandler(e=>{busy=false;status(e?.message||String(e),true)})[name](...(args||[]),authToken);
 }
 function source(kind){return kind==='category'?config.categories:kind==='tab'?config.tabs:config.fields}
 function label(k){return {category:'教師分類',tab:'個人頁 Tab',field:'自訂欄位'}[k]||k}
@@ -136,5 +179,5 @@ function render(){
  else renderPublish();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{view=b.dataset.view;editing=null;render()});
-run('fcfgGetConfig',[],r=>{config=r;render()});
+// Wait for admin OTP login before loading configuration.
 </script></body></html>
