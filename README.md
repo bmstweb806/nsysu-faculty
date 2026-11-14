@@ -1,3 +1,33 @@
+## V5：Email 驗證碼登入與教師權限（2026-11-14）
+
+- [可操作登入預覽](https://bmstweb806.github.io/nsysu-faculty/admin-preview.html)（示範帳號：`demo.admin@example.com`／`demo.teacher@example.com`；示範驗證碼 `123456`，**僅限 GitHub Pages 預覽，正式版不接受此驗證碼**）
+- GAS 新增 [gas/FacultyAuth.gs](gas/FacultyAuth.gs)：真實 OTP 郵件、短效工作階段、角色檢查、寄信限制與帳號管理。
+- Google Sheets 新增 `UserPermissions`：`email, role, teacher_id, is_active`。已根據現有教師資料建立七位教師的對應紀錄，並以 `bmstweb806@gmail.com` 為初始系辦管理員。**啟用前請核對老師實際能收信的地址**，特別是 `g-mail.nsysu.edu.tw`。
+- 教師登入後只會看到自己的資料。GAS 在 `ftvGetBootstrap`、`ftvGetTeacher`、`ftvSaveTeacher` 等函式再次檢查登入憑證，教師不能改教師 ID、分類、發布狀態及語言公開設定。
+- 系辦 ADMIN 可管理所有教師、分類、欄位和正式／預覽 JSON 發布。新增教師、修改教師 ID、修改分類與發布都必須有 ADMIN 工作階段。
+- 教師修改資料後仍須系辦發布 JSON，公開網站才會更新。
+
+### 必須完成的正式安裝
+
+1. 在既有試算表「擴充功能 → Apps Script」將 GitHub `gas/` 下**五個檔案**全部同步到同名 GAS 專案檔案：`Code.gs`、`FacultyConfig.gs`、`FacultyAuth.gs`、`FacultyManager.html`、`FacultyConfigManager.html`。**不要混用舊版**；舊版函式未加入權限檢查。
+2. 在 Apps Script 編輯器以專案擁有者帳號執行一次 `ftaInitializeSecret_`，授權所需權限。此函式會建立至少 32 字元的 `AUTH_SECRET` Script Property，**不會將秘密寫入 GitHub**。
+3. 在「專案設定 → 指令碼屬性」確認 `AUTH_SECRET` 已存在，並確認 `GITHUB_TOKEN` 僅存於 Script Properties。不要把密碼、OTP、工作階段 Token 或 GitHub Token 放在 Sheets、HTML 或 GitHub。
+4. 核對 `UserPermissions` 每一列 Email 與教師 ID，必要時修改；保留至少一位有效的 ADMIN。**請勿把試算表的編輯權分享給老師**，老師只能透過 Web App 編輯。
+5. 部署 Apps Script Web App：**以擁有者身分執行**；存取權需允許老師的非 Google Workspace 帳號使用。不同帳號／部署政策可用的存取選項可能不同；若無法允許無 Google 帳號者使用，需改用可公開連線的獨立驗證後端，不能直接把管理函式放到 GitHub Pages。
+6. 管理後台網址 `/exec`，系辦分類設定網址 `/exec?page=config`。以系辦信箱實測寄送 OTP、管理所有教師、發布；再用一位老師信箱實測只能編輯自己的資料。
+7. 正式驗證碼為隨機六位數，5 分鐘到期，最多錯 3 次；90 秒寄送冷卻、每信箱每小時最多 5 次、全系統每日最多 60 封（仍受 Apps Script 寄信配額限制）。登入工作階段最多 6 小時，登出後會撤銷快取憑證。**這些安全機制尚需在實際 GAS 部署中進行端到端測試。**
+
+### 安全邊界
+
+- 公開 GitHub Pages 的 `admin-preview.html` 是**純模擬**，不連 Google Sheets、不寄信、不會取得正式權限；請勿拿來當正式登入入口。
+- 正式 OTP、權限與工作階段由 GAS 伺服器處理。所有具權限的 Web App API 都需攜帶工作階段 Token；伺服器會在每次呼叫時重新檢查 `UserPermissions`。
+- GAS 編輯器與原始 Google Sheets 必須只分享給系辦可信任的管理員；具有 Apps Script 專案編輯權的人可以修改程式碼，這不受 Web App 權限限制。
+- `CacheService` 是暫存機制，若快取提前被清除，使用者需要重新登入；不是永久的工作階段資料庫。
+- 老師登入信箱不一定要與公開個人頁的 `email` 相同，權限一律以 `UserPermissions` 為準。
+
+
+---
+
 # NSYSU Faculty — 雙語教師管理系統
 
 使用 Google Sheets 管理資料、Apps Script 提供網頁後台並發布 JSON、GitHub Pages 呈現中英文教師列表和個人頁。**V4 簡化版：只有教師需要 ID；內容順序直接使用試算表列順序。**
