@@ -63,6 +63,29 @@ function fcfgUpsertConfig(kind,data){
   return fcfgGetConfig();
  });
 }
+/**
+ * One-click sidebar Tab creation. The internal section_key is generated here;
+ * editors never need to type or manage an ID for a category or content entry.
+ * New tabs are appended at the bottom of TabDefinitions (sheet row order).
+ */
+function fcfgCreateTab(nameZh,nameEn){
+ return ftvLock_(()=>{
+  const zh=ftvTxt_(nameZh,150,'中文分類名稱');
+  const en=ftvTxt_(nameEn,150,'英文分類名稱')||zh;
+  if(!zh)throw new Error('請填寫分類名稱');
+  const table=ftvTable_(FTV.tabs);
+  ftvCheckColumns_(table,['section_key','title_zh','title_en','is_active','entry_layout']);
+  if(table.items.some(x=>String(x.title_zh).trim()===zh))
+    throw new Error('已有同名分類，請在左側選擇既有分類');
+  let key;
+  do {
+   key='section_'+Utilities.getUuid().replace(/-/g,'').slice(0,12).toLowerCase();
+  } while(table.items.some(x=>String(x.section_key)===key));
+  const item={section_key:key,title_zh:zh,title_en:en,is_active:true,entry_layout:'list'};
+  table.sheet.appendRow(table.cols.map(k=>item[k]===undefined?'':item[k]));
+  return {key,zh,en,is_active:true,entry_layout:'list'};
+ });
+}
 function fcfgSetTeacherCategory(id,categoryKey){
  return ftvLock_(()=>{
   const active=ftvCategories_().some(c=>c.key===categoryKey&&c.is_active);
