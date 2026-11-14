@@ -26,9 +26,30 @@ label{font-size:12px;color:#435c70;font-weight:600}
 .field{display:flex;flex-direction:column;gap:5px;min-width:0}
 input,textarea,select{width:100%;padding:8px;border:1px solid #b5c6d3;border-radius:6px;background:#fff;color:var(--ink)}
 textarea{resize:vertical;min-height:65px}
-.profile-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.profile-form .long{grid-column:span 2}
-.profile-form .wide{grid-column:1/-1}
+.profile-sheet{max-width:1040px;display:flex;flex-direction:column;gap:22px}
+.profile-section{padding:0 0 22px;border-bottom:1px solid var(--line)}
+.profile-section:last-child{border-bottom:0;padding-bottom:12px}
+.profile-section-heading{display:flex;align-items:center;gap:12px;margin:0 0 15px}
+.profile-section-heading h3{margin:0;font-size:15px;font-weight:700;color:#23485f;letter-spacing:.01em}
+.profile-section-heading::after{content:"";height:1px;background:#e4edf2;flex:1}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 18px;align-items:start}
+.profile-grid .field{width:100%}
+.profile-grid .field input,.profile-grid .field select{min-height:39px}
+.profile-grid .field textarea{min-height:120px;resize:vertical;line-height:1.6}
+.profile-grid .span-full{grid-column:1/-1}
+.profile-identity-layout{display:grid;grid-template-columns:114px minmax(0,1fr);gap:22px;align-items:start}
+.profile-photo{width:114px;height:143px;background:#eff4f7;border:1px solid #dbe5eb;border-radius:9px;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.profile-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
+.profile-photo img[hidden]{display:none!important}
+.profile-photo-placeholder{font-size:12px;color:#91a1ad}
+.profile-photo-placeholder[hidden]{display:none!important}
+.profile-media-caption{margin-top:6px;font-size:11px;color:#8799a5;text-align:center}
+.profile-publish{display:grid;grid-template-columns:minmax(180px,280px) 1fr;gap:20px;align-items:end}
+.profile-visibility{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.profile-visibility .check{display:inline-flex;align-items:center;gap:9px;margin:0;min-height:40px;border:1px solid #d4e1e9;border-radius:7px;padding:8px 12px;background:#f8fbfd;color:#344e61;font-weight:600;font-size:13px}
+.profile-visibility .check input{width:16px;height:16px;margin:0;accent-color:var(--blue)}
+@media(max-width:850px){.profile-identity-layout{grid-template-columns:92px minmax(0,1fr);gap:15px}.profile-photo{width:92px;height:118px}.profile-section{padding-bottom:20px}}
+@media(max-width:560px){.profile-grid,.profile-publish{grid-template-columns:1fr}.profile-identity-layout{grid-template-columns:1fr}.profile-photo-column{display:flex;align-items:center;gap:12px}.profile-photo{width:76px;height:90px}.profile-media-caption{margin:0;text-align:left}.profile-sheet{gap:18px}.profile-section{padding-bottom:18px}}
 .check{display:inline-flex;gap:6px;align-items:center;margin:4px 10px 4px 0}
 .check input{width:auto}
 .card-board{display:flex;flex-direction:column;gap:8px;margin:10px 0 18px}
@@ -104,7 +125,6 @@ main{padding:24px 28px;max-height:calc(100vh - 90px)}
  #status{width:100%;text-align:right}
 }
 
-/* Preview: compact, distinct, not a tutorial */
 .preview-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f6f9fa;color:#637988;border-bottom:1px solid #e0e8ee;padding:6px 20px;font-size:12px}
 .preview-banner strong{font-size:12px;font-weight:700;color:#3f667d}
 .preview-banner a{color:#17618c;text-decoration:none}
@@ -251,6 +271,7 @@ main{padding:24px 28px;max-height:calc(100vh - 90px)}
 
 
 
+
 </script>
 <script>
 'use strict';
@@ -317,34 +338,82 @@ function renderTabs(){
 }
 function renderProfile(){
  const t=model.teacher;
+ const heading=name=>'<div class="profile-section-heading"><h3>'+esc(name)+'</h3></div>';
  $('editor').innerHTML='<div class="topline"><h2>基本資料</h2></div>'+
- '<div class="profile-form">'+
- field('教師 ID（可修改）','teacher_id',t.teacher_id)+
- field('中文姓名','name_zh',t.name_zh)+field('English Name','name_en',t.name_en)+
- field('中文職稱','title_zh',t.title_zh)+field('English Title','title_en',t.title_en)+
- field('分類','category_key',t.category_key)+
- field('中文單位','unit_zh',t.unit_zh)+field('English Unit','unit_en',t.unit_en)+
- field('中文研究室','office_zh',t.office_zh)+field('English Office','office_en',t.office_en)+
- field('中文研究專長','expertise_zh',t.expertise_zh,'textarea','long')+
- field('Research Interests','expertise_en',t.expertise_en,'textarea','long')+
- field('Email','email',t.email,'email')+field('官方網址','profile_url',t.profile_url,'url')+
- field('教師照片網址','photo_url',t.photo_url,'url')+
- '<label class="field">發布狀態<select data-profile="publish_status"><option>DRAFT</option><option>PUBLISHED</option></select></label>'+
- '<div class="field"><span>語言顯示</span><label class="check"><input type="checkbox" data-profile="visible_zh">顯示中文</label>'+
- '<label class="check"><input type="checkbox" data-profile="visible_en">Show English</label></div></div>';
- const categoryInput=$('editor').querySelector('[data-profile="category_key"]');
- const cSelect=document.createElement('select');cSelect.dataset.profile='category_key';
- for(const c of boot.categories){const option=document.createElement('option');option.value=c.key;option.textContent=c.zh+' / '+c.en;cSelect.appendChild(option);}
- cSelect.value=t.category_key;categoryInput.replaceWith(cSelect);
- const st=$('editor').querySelector('[data-profile="publish_status"]');st.value=t.publish_status||'DRAFT';
- for(const k of ['visible_zh','visible_en'])$('editor').querySelector('[data-profile="'+k+'"]').checked=t[k]===true;
+ '<div class="profile-sheet">'+
+ '<section class="profile-section">'+heading('教師身分')+
+ '<div class="profile-identity-layout">'+
+ '<div class="profile-photo-column"><div class="profile-photo">'+
+ '<img id="profile-photo-preview" alt="教師照片" hidden>'+
+ '<span class="profile-photo-placeholder" id="profile-photo-placeholder">尚無照片</span></div>'+
+ '<div class="profile-media-caption">照片預覽</div></div>'+
+ '<div class="profile-grid">'+
+ field('中文姓名','name_zh',t.name_zh)+
+ field('English Name','name_en',t.name_en)+
+ field('中文職稱','title_zh',t.title_zh)+
+ field('English Title','title_en',t.title_en)+
+ field('教師 ID','teacher_id',t.teacher_id)+
+ '<label class="field">教師分類<select data-profile="category_key"></select></label>'+
+ '</div></div></section>'+
+ '<section class="profile-section">'+heading('任職資訊')+
+ '<div class="profile-grid">'+
+ field('中文單位','unit_zh',t.unit_zh)+
+ field('English Unit','unit_en',t.unit_en)+
+ field('中文研究室','office_zh',t.office_zh)+
+ field('English Office','office_en',t.office_en)+
+ '</div></section>'+
+ '<section class="profile-section">'+heading('研究專長')+
+ '<div class="profile-grid">'+
+ field('中文','expertise_zh',t.expertise_zh,'textarea')+
+ field('English','expertise_en',t.expertise_en,'textarea')+
+ '</div></section>'+
+ '<section class="profile-section">'+heading('聯絡與連結')+
+ '<div class="profile-grid">'+
+ field('Email','email',t.email,'email')+
+ field('官方教師頁面','profile_url',t.profile_url,'url')+
+ field('照片網址','photo_url',t.photo_url,'url','span-full')+
+ '</div></section>'+
+ '<section class="profile-section">'+heading('發布設定')+
+ '<div class="profile-publish">'+
+ '<label class="field">狀態<select data-profile="publish_status">'+
+ '<option value="DRAFT">草稿 / Draft</option>'+
+ '<option value="PUBLISHED">已發布 / Published</option></select></label>'+
+ '<div class="profile-visibility">'+
+ '<label class="check"><input type="checkbox" data-profile="visible_zh">中文顯示</label>'+
+ '<label class="check"><input type="checkbox" data-profile="visible_en">English</label>'+
+ '</div></div></section>'+
+ '</div>';
+ const cat=$('editor').querySelector('[data-profile="category_key"]');
+ for(const c of boot.categories){
+   const option=document.createElement('option');
+   option.value=c.key;option.textContent=c.zh+' / '+c.en;
+   cat.appendChild(option);
+ }
+ cat.value=t.category_key;
+ const statusSelect=$('editor').querySelector('[data-profile="publish_status"]');
+ statusSelect.value=t.publish_status||'DRAFT';
+ for(const k of ['visible_zh','visible_en']){
+   $('editor').querySelector('[data-profile="'+k+'"]').checked=t[k]===true;
+ }
+ const image=$('profile-photo-preview'),placeholder=$('profile-photo-placeholder');
+ function showPhoto(url){
+   const source=String(url||'').trim();
+   image.hidden=true;placeholder.hidden=false;
+   image.removeAttribute('src');
+   if(!/^https?:\/\/\S+$/i.test(source))return;
+   image.onload=()=>{image.hidden=false;placeholder.hidden=true;};
+   image.onerror=()=>{image.hidden=true;placeholder.hidden=false;};
+   image.src=source;
+ }
+ showPhoto(t.photo_url);
  $('editor').querySelectorAll('[data-profile]').forEach(el=>{
-  el.addEventListener('input',()=>{
-   t[el.dataset.profile]=el.type==='checkbox'?el.checked:el.value;changed();
-  });
-  el.addEventListener('change',()=>{
-   t[el.dataset.profile]=el.type==='checkbox'?el.checked:el.value;changed();
-  });
+   function update(){
+     t[el.dataset.profile]=el.type==='checkbox'?el.checked:el.value;
+     if(el.dataset.profile==='photo_url')showPhoto(el.value);
+     changed();
+   }
+   el.addEventListener('input',update);
+   if(el.tagName==='SELECT'||el.type==='checkbox')el.addEventListener('change',update);
  });
 }
 function blankEntry(tab){
