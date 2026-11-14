@@ -223,6 +223,14 @@ body.auth-locked>.teacher-picker{display:none!important}
 @media(max-width:720px){.teacher-picker{padding:20px 13px 28px}.pick-row{grid-template-columns:22px minmax(0,1fr) auto;gap:8px;padding:12px}.pick-tools{grid-column:2/4;justify-content:flex-end}.pick-state{grid-column:3}.pick-handle{grid-row:1/3}.picker-head{align-items:flex-start}}
 @media(max-width:460px){.picker-head{flex-direction:column;align-items:stretch}.picker-head #new-teacher{align-self:flex-start}.picker-head h2{font-size:21px}}
 
+
+/* Consistent six-dot drag grip: precisely two columns by three rows. */
+.drag-dots{display:inline-grid;grid-template-columns:repeat(2,4px);grid-template-rows:repeat(3,4px);gap:3px;place-content:center;vertical-align:middle;color:inherit;pointer-events:none}
+.drag-dots i{display:block;width:4px;height:4px;border-radius:50%;background:currentColor}
+.pick-handle{display:inline-flex;align-items:center;justify-content:center;min-width:25px;min-height:34px}
+.grab{display:inline-flex;align-items:center;justify-content:center;min-width:29px;min-height:30px}
+.pick-row[draggable="true"] .pick-handle:hover,.grab:hover{color:#175d87}
+
 </style>
 <meta name="robots" content="noindex,nofollow">
 </head>
@@ -247,7 +255,7 @@ body.auth-locked>.teacher-picker{display:none!important}
 </header>
 <section id="teacher-picker" class="teacher-picker" hidden>
   <div class="picker-head"><div><span class="picker-kicker">教師資料庫 / STEP 01</span><h2>選擇要編輯的教師</h2><p>一次只能編輯一位老師，點選老師即可進入資料頁面。</p></div><button id="new-teacher" type="button">＋ 新增教師</button></div>
-  <p id="drag-guide" class="drag-guide">⠿ 拖曳老師卡片調整順序；也可以按 ↑ ↓ 來排序。</p>
+  <p id="drag-guide" class="drag-guide"><span class="drag-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span> <span>拖曳六點把手調整教師順序；也可以按 ↑ ↓ 來排序。</span></p>
   <ol id="teacher-list" class="teacher-pick-list" aria-label="教師排列清單"></ol>
   <p id="drag-hint" class="drag-hint">排列會寫回 Teachers 工作表。公開網站的順序需由系辦重新發布 JSON 後才會更新。</p>
 </section>
@@ -552,7 +560,7 @@ function renderPicker(){
  $('new-teacher').hidden=!admin;$('drag-guide').hidden=!admin;$('drag-hint').hidden=!admin;
  if(!boot||!boot.teachers.length){list.innerHTML='<li class="empty">目前尚無教師資料</li>';return;}
  list.innerHTML=boot.teachers.map((t,i)=>'<li class="pick-row" data-id="'+esc(t.id)+'" draggable="'+(admin?'true':'false')+'">'+
- '<span class="pick-handle" aria-hidden="true">'+(admin?'⠿':'•')+'</span>'+
+ '<span class="pick-handle" aria-hidden="true">'+(admin?"<span class=\"drag-dots\" aria-hidden=\"true\"><i></i><i></i><i></i><i></i><i></i><i></i></span>":'')+'</span>'+
  '<div><div class="pick-name">'+esc(t.name)+'</div><div class="pick-id">'+esc(t.id)+'</div></div>'+
  '<span class="pick-state" data-state="'+(t.status==='PUBLISHED'?'published':'draft')+'">'+(t.status==='PUBLISHED'?'已公開':'草稿')+'</span>'+
  '<div class="pick-tools">'+(admin?
@@ -763,7 +771,7 @@ function card(entry,index,number){
    ?' style="height:'+Math.min(1200,Math.round(savedHeight))+'px"':'';
  return '<article class="entry-card" data-index="'+index+'">'+
   '<div class="card-top">'+
-  '<span class="grab" draggable="true" title="拖曳調整排列順序" aria-label="拖曳排序">⠿</span>'+
+  '<span class="grab" draggable="true" title="拖曳調整排列順序" aria-label="拖曳排序"><span class="drag-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>'+
   '<span class="card-title">'+number+'. '+esc(title.slice(0,100))+'</span>'+
   '<button type="button" class="card-toggle" data-toggle="'+index+'" aria-expanded="false" aria-label="展開或收合 '+esc(title.slice(0,40))+'"><span class="caret">▶</span></button>'+
   '</div>'+
