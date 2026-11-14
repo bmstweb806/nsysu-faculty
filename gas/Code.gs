@@ -110,6 +110,31 @@ function ftvMoveTeacher(id,direction,token){
     return ftvGetBootstrap(token);
   });
 }
+/**
+ * ADMIN-only teacher drag ordering. Uses the physical Teachers row order.
+ */
+function ftvReorderTeachers(orderedIds,token){
+ ftaAdmin_(token);
+ if(!Array.isArray(orderedIds)||orderedIds.length>250)throw new Error('教師排序資料格式錯誤');
+ const ids=orderedIds.map(id=>ftvId_(id));
+ if(new Set(ids).size!==ids.length)throw new Error('教師排序有重複 ID');
+ return ftvLock_(()=>{
+  let table=ftvTable_(FTV.teachers);
+  ftvCheckColumns_(table,FTV.teacherColumns);
+  const current=table.items.map(t=>String(t.teacher_id));
+  if(ids.length!==current.length||ids.some(id=>!current.includes(id)))
+   throw new Error('教師名單已異動，請重新整理後再排序');
+  for(let i=0;i<ids.length;i++){
+   const pos=table.items.findIndex(t=>String(t.teacher_id)===ids[i]);
+   if(pos<i)throw new Error('教師排序狀態不一致');
+   if(pos===i)continue;
+   table.sheet.moveRows(table.sheet.getRange(table.items[pos]._row,1),table.items[i]._row);
+   table=ftvTable_(FTV.teachers);
+  }
+  SpreadsheetApp.flush();
+  return ftvGetBootstrap(token);
+ });
+}
 function ftvFindTeacher_(id){
   const t=ftvTable_(FTV.teachers);ftvCheckColumns_(t,FTV.teacherColumns);
   const row=t.items.find(r=>String(r.teacher_id)===String(id));
