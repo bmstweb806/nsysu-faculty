@@ -135,6 +135,7 @@ body.auth-locked #login-screen{display:flex}
 .login-panel input{width:100%;padding:11px 12px;border:1px solid #bfd1dd;border-radius:7px}
 .login-panel button{width:100%;padding:10px;margin-top:8px}
 .login-panel .login-error{min-height:20px;margin-top:12px;color:#ac3142;font-size:12px}
+.login-panel .resend-hint{font-size:12px;color:#647786;margin:7px 0 0}
 #logout{background:transparent;color:#e7f2f7;border:1px solid #61849c}
 #account-name{font-size:12px;color:#b9d7e6}
 </style>
@@ -144,7 +145,8 @@ body.auth-locked #login-screen{display:flex}
 <h2>教師資料管理</h2><p>Faculty Management · Email 驗證碼登入</p>
 <form id="otp-request-form">
 <label>電子郵件<input id="login-email" type="email" autocomplete="email" required placeholder="name@mail.nsysu.edu.tw"></label>
-<button class="primary" type="submit">寄送驗證碼</button>
+<button id="otp-send-btn" class="primary" type="submit">寄送驗證碼</button>
+<p id="otp-resend-hint" class="resend-hint">驗證碼有效 5 分鐘，寄送後 90 秒可重新寄送。</p>
 </form>
 <form id="otp-verify-form" hidden>
 <label>6 位數驗證碼<input id="login-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label>
@@ -166,6 +168,20 @@ const $=id=>document.getElementById(id);
 let boot=null,model=null,originalId='',active='basic',dirty=false,busy=false;
 let resizing=null,dragged=null;
 let authToken='',authAccount=null,loginBusy=false;
+let resendUntil=0,resendTimer=null;
+function refreshResendButton(){
+ const seconds=Math.max(0,Math.ceil((resendUntil-Date.now())/1000));
+ $('otp-send-btn').disabled=loginBusy||seconds>0;
+ $('otp-send-btn').textContent=seconds>0?'重新寄送（'+seconds+' 秒）':resendUntil?'重新寄送驗證碼':'寄送驗證碼';
+ $('otp-resend-hint').textContent=seconds>0?'請在 '+seconds+' 秒後重新寄送。驗證碼有效 5 分鐘。':'驗證碼有效 5 分鐘。若未收到，可重新寄送。';
+ if(!seconds&&resendTimer){clearInterval(resendTimer);resendTimer=null;}
+}
+function startResendCooldown(seconds){
+ resendUntil=Date.now()+Math.max(0,Number(seconds)||90)*1000;
+ if(resendTimer)clearInterval(resendTimer);
+ resendTimer=setInterval(refreshResendButton,250);
+ refreshResendButton();
+}
 function loginMessage(text,error=false){
  const el=$('login-error');el.textContent=text;el.style.color=error?'#ac3142':'#42778d';
 }
@@ -174,10 +190,10 @@ function loginCall(name,args,success){
  document.querySelectorAll('#login-screen button').forEach(b=>b.disabled=true);
  google.script.run.withSuccessHandler(result=>{
   loginBusy=false;document.querySelectorAll('#login-screen button').forEach(b=>b.disabled=false);
-  success(result);
+  success(result);refreshResendButton();
  }).withFailureHandler(err=>{
   loginBusy=false;document.querySelectorAll('#login-screen button').forEach(b=>b.disabled=false);
-  loginMessage(err?.message||String(err),true);
+  loginMessage(err?.message||String(err),true);refreshResendButton();
  })[name](...args);
 }
 $('otp-request-form').addEventListener('submit',e=>{
@@ -186,6 +202,7 @@ $('otp-request-form').addEventListener('submit',e=>{
  loginCall('ftaRequestCode',[$('login-email').value.trim()],result=>{
   $('otp-verify-form').hidden=false;
   loginMessage(result.message||'請檢查電子郵件');
+  startResendCooldown(result.retryAfterSeconds);
   $('login-code').focus();
  });
 });
