@@ -1,14 +1,32 @@
 {
   "schema_version": 3,
-  "generated_at": "2026-11-13T18:02:10.049Z",
+  "generated_at": "2026-11-14T10:09:01.743Z",
   "preview": true,
+  "categories": [
+    {
+      "key": "full_time",
+      "zh": "專任教師",
+      "en": "Full-time Faculty",
+      "is_active": true
+    },
+    {
+      "key": "adjunct",
+      "zh": "合聘教師",
+      "en": "Adjunct Faculty",
+      "is_active": true
+    },
+    {
+      "key": "retired",
+      "zh": "榮退教師",
+      "en": "Retired Faculty",
+      "is_active": true
+    }
+  ],
   "tabs": [
     {
       "key": "education",
       "zh": "學歷",
       "en": "Education",
-      "order": 10,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
     },
@@ -16,8 +34,6 @@
       "key": "experience",
       "zh": "經歷",
       "en": "Experience",
-      "order": 20,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
     },
@@ -25,8 +41,6 @@
       "key": "courses",
       "zh": "授課課程",
       "en": "Courses Taught",
-      "order": 30,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
     },
@@ -34,8 +48,6 @@
       "key": "projects",
       "zh": "研究計畫",
       "en": "Research Projects",
-      "order": 40,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
     },
@@ -43,8 +55,6 @@
       "key": "journal",
       "zh": "學術著作－期刊",
       "en": "Journal Publications",
-      "order": 50,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
     },
@@ -52,8 +62,6 @@
       "key": "conference",
       "zh": "學術著作－研討會",
       "en": "Conference Publications",
-      "order": 60,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
     },
@@ -61,8 +69,6 @@
       "key": "honors",
       "zh": "榮譽與獎項",
       "en": "Honors and Awards",
-      "order": 70,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
     },
@@ -70,34 +76,8 @@
       "key": "service",
       "zh": "學術服務",
       "en": "Academic Service",
-      "order": 80,
-      "locked": true,
       "is_active": true,
       "entry_layout": "list"
-    }
-  ],
-  "teachers": [],
-  "categories": [
-    {
-      "key": "full_time",
-      "zh": "專任教師",
-      "en": "Full-time Faculty",
-      "order": 10,
-      "is_active": true
-    },
-    {
-      "key": "adjunct",
-      "zh": "合聘教師",
-      "en": "Adjunct Faculty",
-      "order": 20,
-      "is_active": true
-    },
-    {
-      "key": "retired",
-      "zh": "榮退教師",
-      "en": "Retired Faculty",
-      "order": 30,
-      "is_active": true
     }
   ],
   "fields": [
@@ -107,7 +87,6 @@
       "zh": "學位",
       "en": "Degree",
       "type": "text",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -118,7 +97,6 @@
       "zh": "學校",
       "en": "Institution",
       "type": "text",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -129,7 +107,6 @@
       "zh": "系所",
       "en": "Department",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -140,7 +117,6 @@
       "zh": "畢業年度",
       "en": "Graduation Year",
       "type": "text",
-      "order": 40,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -151,7 +127,6 @@
       "zh": "職務",
       "en": "Position",
       "type": "text",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -162,7 +137,6 @@
       "zh": "任職單位",
       "en": "Organization",
       "type": "text",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -173,7 +147,6 @@
       "zh": "開始日期",
       "en": "Start Date",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -184,7 +157,6 @@
       "zh": "結束日期",
       "en": "End Date",
       "type": "text",
-      "order": 40,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -195,7 +167,6 @@
       "zh": "學年度",
       "en": "Academic Year",
       "type": "text",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -206,7 +177,6 @@
       "zh": "學期",
       "en": "Semester",
       "type": "text",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -217,7 +187,6 @@
       "zh": "課程名稱",
       "en": "Course Name",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -228,7 +197,6 @@
       "zh": "課程代碼",
       "en": "Course Code",
       "type": "text",
-      "order": 40,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -239,7 +207,6 @@
       "zh": "學分數",
       "en": "Credits",
       "type": "text",
-      "order": 50,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -250,7 +217,6 @@
       "zh": "計畫名稱",
       "en": "Project Title",
       "type": "textarea",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -261,7 +227,6 @@
       "zh": "補助／委託單位",
       "en": "Funding Agency",
       "type": "text",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -272,7 +237,6 @@
       "zh": "計畫編號",
       "en": "Project Number",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -283,7 +247,6 @@
       "zh": "執行期間",
       "en": "Project Period",
       "type": "text",
-      "order": 40,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -294,7 +257,6 @@
       "zh": "擔任角色",
       "en": "Role",
       "type": "text",
-      "order": 50,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -305,7 +267,6 @@
       "zh": "作者",
       "en": "Authors",
       "type": "textarea",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -316,7 +277,6 @@
       "zh": "論文名稱",
       "en": "Article Title",
       "type": "textarea",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -327,7 +287,6 @@
       "zh": "期刊名稱",
       "en": "Journal",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -338,7 +297,6 @@
       "zh": "出版年度",
       "en": "Publication Year",
       "type": "text",
-      "order": 40,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -349,7 +307,6 @@
       "zh": "卷期",
       "en": "Volume / Issue",
       "type": "text",
-      "order": 50,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -360,7 +317,6 @@
       "zh": "頁碼",
       "en": "Pages",
       "type": "text",
-      "order": 60,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -371,7 +327,6 @@
       "zh": "DOI",
       "en": "DOI",
       "type": "url",
-      "order": 70,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -382,7 +337,6 @@
       "zh": "作者",
       "en": "Authors",
       "type": "textarea",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -393,7 +347,6 @@
       "zh": "論文名稱",
       "en": "Paper Title",
       "type": "textarea",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -404,7 +357,6 @@
       "zh": "研討會名稱",
       "en": "Conference Name",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -415,7 +367,6 @@
       "zh": "會議日期",
       "en": "Conference Date",
       "type": "text",
-      "order": 40,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -426,7 +377,6 @@
       "zh": "會議地點",
       "en": "Venue",
       "type": "text",
-      "order": 50,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -437,7 +387,6 @@
       "zh": "獎項",
       "en": "Award",
       "type": "text",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -448,7 +397,6 @@
       "zh": "頒獎單位",
       "en": "Awarding Organization",
       "type": "text",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -459,7 +407,6 @@
       "zh": "獲獎日期",
       "en": "Award Date",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -470,7 +417,6 @@
       "zh": "服務職務",
       "en": "Service Role",
       "type": "text",
-      "order": 10,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -481,7 +427,6 @@
       "zh": "服務單位",
       "en": "Organization",
       "type": "text",
-      "order": 20,
       "required": false,
       "is_active": true,
       "show_public": true
@@ -492,10 +437,652 @@
       "zh": "服務期間",
       "en": "Service Period",
       "type": "text",
-      "order": 30,
       "required": false,
       "is_active": true,
       "show_public": true
+    }
+  ],
+  "teachers": [
+    {
+      "id": "mjlee",
+      "category_key": "full_time",
+      "name": {
+        "zh": "李孟娟",
+        "en": "Lee, Mon-Juan"
+      },
+      "title": {
+        "zh": "副教授",
+        "en": "Associate Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3006",
+        "en": "IL3006"
+      },
+      "expertise": {
+        "zh": "生物感測技術、藥物篩選平台、奈米生醫材料、幹細胞與再生醫學",
+        "en": "Biosensing technologies; Drug-screening platforms; Nanobiomaterials; Stem cells and regenerative medicine"
+      },
+      "email": "mjlee@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358593,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/458/m/mczh-tw200x200_small358593_463032235939.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立清華大學生命科學系博士",
+                "en": "PhD, Department of Life Science, National Tsing Hua University"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": true
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "test",
+                "en": "test"
+              },
+              "content": {
+                "zh": "test",
+                "en": "test"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": false
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            },
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "test",
+                "en": "test"
+              },
+              "content": {
+                "zh": "test",
+                "en": "test"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": false
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "jxwu",
+      "category_key": "full_time",
+      "name": {
+        "zh": "巫建興",
+        "en": "Wu, Jian-Xing"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3007",
+        "en": "IL3007"
+      },
+      "expertise": {
+        "zh": "生醫電子系統設計、機器學習與深度學習輔助診斷、無線感測網路技術與應用研發、三維光聲造影系統、醫用超音波",
+        "en": "Biomedical electronic systems design; Machine learning and deep learning-assisted diagnosis; Research and development of wireless sensor network technologies and applications; 3D photoacoustic imaging system; Medical ultrasound"
+      },
+      "email": "jxwu@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358529,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/369/m/mczh-tw200x200_small358529_855637415193.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立成功大學生物醫學工程學系博士",
+                "en": "Ph.D., Department of Biomedical Engineering, National Cheng Kung University"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": true
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "ihyang",
+      "category_key": "full_time",
+      "name": {
+        "zh": "楊易軒",
+        "en": "Yang, I-Hsuan"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3009",
+        "en": "IL3009"
+      },
+      "expertise": {
+        "zh": "生醫高分子的修飾及應用、醫用陶瓷及複合材料、組織工程與再生醫學、藥物傳遞系統",
+        "en": "Modification and application of biomedical polymers; Medical ceramics and composite materials; Tissue engineering and regenerative medicine; Drug delivery system"
+      },
+      "email": "ihyang@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358530,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/279/m/mczh-tw200x200_small358530_518165415427.png",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立臺灣大學醫學工程學系博士",
+                "en": "Ph.D., Department of Biomedical Engineering, National Taiwan University"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": true
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "hsuanwenlin",
+      "category_key": "full_time",
+      "name": {
+        "zh": "林萱文",
+        "en": "Lin, Hsuan-Wen"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3006",
+        "en": "IL3006"
+      },
+      "expertise": {
+        "zh": "生醫影像、分子生物學、神經科學",
+        "en": "Biomedical imaging; Molecular biology; Neuroscience"
+      },
+      "email": "hsuanwenlin@g-mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-358531,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/596/m/mczh-tw200x200_small358531_631820115579.png",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立清華大學生物科技所博士",
+                "en": "Ph.D., Institute of Biotechnology, National Tsing Hua University"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": true
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "wklee",
+      "category_key": "full_time",
+      "name": {
+        "zh": "李唯愷",
+        "en": "Lee, Wei-Kai"
+      },
+      "title": {
+        "zh": "助理教授",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系",
+        "en": "Department of Biomedical Science and Technology"
+      },
+      "office": {
+        "zh": "IL3008",
+        "en": "IL3008"
+      },
+      "expertise": {
+        "zh": "醫學影像分析、人工智慧生醫應用、神經影像處理",
+        "en": "Medical image analysis; AI in biomedical application; Neuroimage"
+      },
+      "email": "wklee@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-369434,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/330/m/mczh-tw200x200_small369434_556842759490.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": true
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立陽明交通大學生物醫學影像暨放射科學系博士",
+                "en": "Ph.D., Department of Biomedical Imaging and Radiological Science, National Yang Ming Chiao Tung University"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": true
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "cyko",
+      "category_key": "adjunct",
+      "name": {
+        "zh": "柯瓊媛",
+        "en": "Chiung-Yuan Ko"
+      },
+      "title": {
+        "zh": "副教授（合聘學士後醫學系）",
+        "en": "Associate Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系（合聘學士後醫學系）",
+        "en": "School of Medicine (Joint Appointment)"
+      },
+      "office": {
+        "zh": "",
+        "en": ""
+      },
+      "expertise": {
+        "zh": "神經退化性疾病、神經分子生物學、腦癌抗藥性機轉",
+        "en": "Neurodegenerative diseases; Neuromolecular biology; Mechanisms of drug resistance in brain cancer"
+      },
+      "email": "cyko@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-370513,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/74/m/mczh-tw400x400_small370513_661645354369.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": false
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "國立成功大學基礎醫學研究所博士",
+                "en": "Ph.D., Institute of Basic Medical Sciences, National Cheng Kung University"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": false
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
+    },
+    {
+      "id": "yc2023",
+      "category_key": "adjunct",
+      "name": {
+        "zh": "陳彥樺",
+        "en": "Chen, Yen-Hua"
+      },
+      "title": {
+        "zh": "助理教授（合聘學士後醫學系）",
+        "en": "Assistant Professor"
+      },
+      "unit": {
+        "zh": "生物醫學科技學系（合聘學士後醫學系）",
+        "en": "School of Medicine (Joint Appointment)"
+      },
+      "office": {
+        "zh": "",
+        "en": ""
+      },
+      "expertise": {
+        "zh": "免疫學、微生物學、免疫代謝、氣喘、粒線體、基因調控",
+        "en": "Immunology; Microbiology; Immunometabolism; Asthma; Mitochondria; Gene regulation"
+      },
+      "email": "yc2023@mail.nsysu.edu.tw",
+      "profile_url": "https://bmst.nsysu.edu.tw/p/405-1351-370512,c26926.php?Lang=zh-tw",
+      "photo_url": "https://bmst.nsysu.edu.tw/static/file/351/1351/pictures/903/m/mczh-tw400x400_small370512_518710554400.jpg",
+      "publish_status": "PUBLISHED",
+      "visible": {
+        "zh": true,
+        "en": false
+      },
+      "sections": [
+        {
+          "key": "education",
+          "entries": [
+            {
+              "type": "list_item",
+              "title": {
+                "zh": "最高學歷",
+                "en": "Highest Degree"
+              },
+              "content": {
+                "zh": "美國哥倫比亞大學微生物學與免疫學博士",
+                "en": "Ph.D. in Microbiology & Immunology, Columbia University (New York, USA)"
+              },
+              "url": "",
+              "visible": {
+                "zh": true,
+                "en": false
+              },
+              "fields": {},
+              "card_width": null,
+              "card_height": null
+            }
+          ]
+        },
+        {
+          "key": "experience",
+          "entries": []
+        },
+        {
+          "key": "courses",
+          "entries": []
+        },
+        {
+          "key": "projects",
+          "entries": []
+        },
+        {
+          "key": "journal",
+          "entries": []
+        },
+        {
+          "key": "conference",
+          "entries": []
+        },
+        {
+          "key": "honors",
+          "entries": []
+        },
+        {
+          "key": "service",
+          "entries": []
+        }
+      ]
     }
   ]
 }
