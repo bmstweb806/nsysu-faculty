@@ -194,6 +194,35 @@ body.auth-locked>.workspace-bar,body.auth-locked>.workspace-notice{display:none!
 @media(max-width:750px){#layout{grid-template-columns:1fr}#tabs{padding:12px;border-right:0;border-bottom:1px solid #e1e9ef}#tabs .side-heading{display:flex;padding:4px 6px 11px}#tabs button[data-tab]{display:inline-block;width:auto;padding:9px 12px;margin-right:4px}#editor{padding:17px 14px}}
 @media(max-width:520px){.app-header{padding:11px 14px}.app-mark{min-width:48px;height:36px;font-size:10px}.app-account{flex-direction:column;align-items:flex-end;gap:3px}.app-account #account-name{font-size:10px}.app-kicker{font-size:10px}.workspace-bar{padding:14px}.teacher-chooser #teacher-select{min-width:0;width:100%}.action-buttons{width:100%;display:grid;grid-template-columns:1fr 1fr}.action-buttons button{white-space:normal;padding:9px}}
 
+
+/* Select a teacher first; the editor only shows one person at a time. */
+.teacher-picker{max-width:1080px;margin:0 auto;padding:28px 25px 42px}
+.teacher-picker[hidden],.workspace-bar[hidden],#layout[hidden]{display:none!important}
+body.auth-locked>.teacher-picker{display:none!important}
+.picker-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px}
+.picker-kicker{display:block;font-size:11px;font-weight:800;letter-spacing:.09em;color:#537c94;margin-bottom:7px}
+.picker-head h2{color:#173e59;font-size:24px;margin:0 0 6px}
+.picker-head p{font-size:13px;color:#728593;margin:0}
+.picker-head #new-teacher{background:#145d87;color:white;border-color:#145d87;border-radius:4px;padding:10px 16px;font-weight:700;white-space:nowrap}
+.drag-guide{font-size:12px;color:#5f7687;background:#f5f9fb;border:1px solid #dfebf1;border-radius:4px;padding:10px 13px;margin:0 0 14px}
+.teacher-pick-list{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.pick-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;align-items:center;gap:13px;padding:13px 16px;border:1px solid #d8e3eb;border-left:3px solid #a8c4d4;background:white;border-radius:4px;min-height:76px}
+.pick-row.dragging{opacity:.5}
+.pick-row.drop-target{border:2px solid #17618c;background:#f1f7fa}
+.pick-handle{font-size:23px;color:#7893a4;cursor:grab;user-select:none;text-align:center}
+.pick-name{font-size:16px;font-weight:800;color:#153f5d}
+.pick-id{font-size:12px;color:#748894;margin-top:2px}
+.pick-state{padding:4px 8px;font-size:11px;font-weight:750;border:1px solid #c9e1d2;background:#edf6f0;color:#2a6947;border-radius:4px;white-space:nowrap}
+.pick-state[data-state="draft"]{border-color:#efd7a7;background:#fff6e6;color:#986c20}
+.pick-tools{display:flex;align-items:center;gap:6px}
+.pick-tools button{border-radius:4px;font-size:12px;padding:7px 9px}
+.pick-tools button[data-edit]{background:#eaf3f8;color:#155478;font-weight:750;padding:9px 13px;white-space:nowrap}
+.drag-hint{font-size:12px;color:#758b9a;margin:16px 0 0;line-height:1.65}
+.back-picker{font-weight:750;color:#195678;border-radius:4px;background:#fff;padding:6px 10px;font-size:12px;margin-bottom:4px}
+.workspace-teacher .teacher-chooser #selected-teacher{font-size:18px;color:#194661}
+@media(max-width:720px){.teacher-picker{padding:20px 13px 28px}.pick-row{grid-template-columns:22px minmax(0,1fr) auto;gap:8px;padding:12px}.pick-tools{grid-column:2/4;justify-content:flex-end}.pick-state{grid-column:3}.pick-handle{grid-row:1/3}.picker-head{align-items:flex-start}}
+@media(max-width:460px){.picker-head{flex-direction:column;align-items:stretch}.picker-head #new-teacher{align-self:flex-start}.picker-head h2{font-size:21px}}
+
 </style>
 <meta name="robots" content="noindex,nofollow">
 </head>
@@ -216,11 +245,16 @@ body.auth-locked>.workspace-bar,body.auth-locked>.workspace-notice{display:none!
   <div class="app-brand"><span class="app-mark" aria-hidden="true">NSYSU</span><div><span class="app-kicker">生物醫學科技學系 · FACULTY CMS</span><h1>教師管理</h1></div></div>
   <div class="app-account"><span id="account-name"></span><button id="logout" type="button">登出</button></div>
 </header>
-<section class="workspace-bar" aria-label="選取教師與發布">
+<section id="teacher-picker" class="teacher-picker" hidden>
+  <div class="picker-head"><div><span class="picker-kicker">教師資料庫 / STEP 01</span><h2>選擇要編輯的教師</h2><p>一次只能編輯一位老師，點選老師即可進入資料頁面。</p></div><button id="new-teacher" type="button">＋ 新增教師</button></div>
+  <p id="drag-guide" class="drag-guide">⠿ 拖曳老師卡片調整順序；也可以按 ↑ ↓ 來排序。</p>
+  <ol id="teacher-list" class="teacher-pick-list" aria-label="教師排列清單"></ol>
+  <p id="drag-hint" class="drag-hint">排列會寫回 Teachers 工作表。公開網站的順序需由系辦重新發布 JSON 後才會更新。</p>
+</section>
+<section class="workspace-bar" aria-label="編輯目前選取的教師" hidden>
   <div class="workspace-teacher">
-    <div class="step-title"><b>01</b> 選擇教師</div>
-    <div class="teacher-chooser"><select id="teacher-select" aria-label="選擇要編輯的教師"></select><strong id="selected-teacher" hidden></strong><span id="teacher-state" class="teacher-state">讀取中</span></div>
-    <div id="admin-teacher-tools" class="admin-teacher-tools"><button id="move-teacher-up" type="button" hidden title="調整此教師的列表位置">↑ 上移</button><button id="move-teacher-down" type="button" hidden title="調整此教師的列表位置">↓ 下移</button><button id="new-teacher" type="button">＋ 新增教師</button></div>
+    <button id="back-to-teachers" type="button" class="back-picker">← 返回教師列表</button>
+    <div class="teacher-chooser"><strong id="selected-teacher"></strong><span id="teacher-state" class="teacher-state">載入中</span></div>
   </div>
   <div class="workspace-actions">
     <div class="step-title"><b>03</b> 儲存與發布</div>
@@ -380,6 +414,14 @@ body.auth-locked>.workspace-bar,body.auth-locked>.workspace-notice{display:none!
     if(pick(id).teacher.publish_status!=='PUBLISHED')throw Error('此教師仍是草稿');
     return {ok:true,id,preview:true};
   };
+  handlers.ftvReorderTeachers=(ids,token)=>{
+    auth(token,null,true);
+    if(!Array.isArray(ids)||ids.length!==state.length||new Set(ids).size!==state.length||
+       ids.some(id=>!state.some(row=>row.teacher.teacher_id===id)))throw Error('教師名單已異動');
+    const old=new Map(state.map(x=>[x.teacher.teacher_id,x]));
+    state.splice(0,state.length,...ids.map(id=>old.get(id)));
+    return handlers.ftvGetBootstrap(token);
+  };
   const getTeacherHandler=handlers.ftvGetTeacher;
   handlers.ftvGetTeacher=(id,token)=>{auth(token,id);return getTeacherHandler(id);};
   const createTeacherHandler=handlers.ftvCreateTeacher;
@@ -465,7 +507,6 @@ $('otp-verify-form').addEventListener('submit',e=>{
   document.body.classList.remove('auth-locked');
   $('account-name').textContent=authAccount.email;
   $('new-teacher').hidden=authAccount.role!=='ADMIN';
-  $('teacher-select').hidden=authAccount.role!=='ADMIN';
   $('publish-own').textContent=authAccount.role==='ADMIN'?'儲存並發布此教師':'儲存並發布我的資料';
   loadBootstrap();
  });
@@ -474,6 +515,9 @@ $('logout').addEventListener('click',()=>{
  const token=authToken;
  authToken='';authAccount=null;boot=null;model=null;dirty=false;
  document.body.classList.add('auth-locked');
+ $('teacher-picker').hidden=true;
+ document.querySelector('.workspace-bar').hidden=true;$('layout').hidden=true;
+ $('editor').replaceChildren();$('tabs').replaceChildren();$('teacher-list').replaceChildren();
  $('login-code').value='';$('otp-verify-form').hidden=true;
  loginMessage('已登出');
  if(token)google.script.run.ftaLogout(token);
@@ -487,12 +531,12 @@ function status(message,error=false){
 }
 function invoke(name,args,callback){
  if(busy)return;
- busy=true;document.querySelectorAll('.workspace-bar button, .app-header button').forEach(b=>b.disabled=true);status('處理中…');
+ busy=true;document.querySelectorAll('.workspace-bar button, .app-header button, .teacher-picker button').forEach(b=>b.disabled=true);status('處理中…');
  google.script.run.withSuccessHandler(result=>{
-  busy=false;document.querySelectorAll('.workspace-bar button, .app-header button').forEach(b=>b.disabled=false);
+  busy=false;document.querySelectorAll('.workspace-bar button, .app-header button, .teacher-picker button').forEach(b=>b.disabled=false);
   status('就緒');if(callback)callback(result);
  }).withFailureHandler(e=>{
-  busy=false;document.querySelectorAll('.workspace-bar button, .app-header button').forEach(b=>b.disabled=false);
+  busy=false;document.querySelectorAll('.workspace-bar button, .app-header button, .teacher-picker button').forEach(b=>b.disabled=false);
   status(e?.message||String(e),true);
  })[name](...(args||[]),authToken);
 }
@@ -503,27 +547,80 @@ function field(label,name,value,type='text',cls=''){
  if(type==='textarea')return '<label class="field '+cls+'">'+esc(label)+'<textarea data-profile="'+esc(name)+'">'+esc(value)+'</textarea></label>';
  return '<label class="field '+cls+'">'+esc(label)+'<input data-profile="'+esc(name)+'" type="'+type+'" value="'+esc(value)+'"></label>';
 }
-function chooser(){
- $('teacher-select').innerHTML=boot.teachers.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+' ('+esc(t.id)+')</option>').join('');
- $('teacher-select').value=originalId;
- const admin=authAccount?.role==='ADMIN';
- const selected=boot.teachers.find(t=>t.id===originalId);
- $('teacher-select').hidden=!admin;
- $('selected-teacher').hidden=admin;
- $('selected-teacher').textContent=selected?selected.name+' ('+selected.id+')':'未選擇教師';
- $('teacher-state').textContent=selected?(selected.status==='PUBLISHED'?'已公開':'草稿'):'尚未選擇';
- $('teacher-state').dataset.state=selected&&selected.status==='PUBLISHED'?'published':'draft';
- $('admin-teacher-tools').hidden=!admin;
- updateTeacherOrderButtons();
+function renderPicker(){
+ const admin=authAccount?.role==='ADMIN',list=$('teacher-list');
+ $('new-teacher').hidden=!admin;$('drag-guide').hidden=!admin;$('drag-hint').hidden=!admin;
+ if(!boot||!boot.teachers.length){list.innerHTML='<li class="empty">目前尚無教師資料</li>';return;}
+ list.innerHTML=boot.teachers.map((t,i)=>'<li class="pick-row" data-id="'+esc(t.id)+'" draggable="'+(admin?'true':'false')+'">'+
+ '<span class="pick-handle" aria-hidden="true">'+(admin?'⠿':'•')+'</span>'+
+ '<div><div class="pick-name">'+esc(t.name)+'</div><div class="pick-id">'+esc(t.id)+'</div></div>'+
+ '<span class="pick-state" data-state="'+(t.status==='PUBLISHED'?'published':'draft')+'">'+(t.status==='PUBLISHED'?'已公開':'草稿')+'</span>'+
+ '<div class="pick-tools">'+(admin?
+ '<button type="button" data-shift="up" data-id="'+esc(t.id)+'" aria-label="上移 '+esc(t.name)+'" '+(i===0?'disabled':'')+'>↑</button>'+
+ '<button type="button" data-shift="down" data-id="'+esc(t.id)+'" aria-label="下移 '+esc(t.name)+'" '+(i===boot.teachers.length-1?'disabled':'')+'>↓</button>':'')+
+ '<button type="button" data-edit="'+esc(t.id)+'" aria-label="編輯 '+esc(t.name)+'">編輯資料 →</button></div></li>').join('');
 }
-function updateTeacherOrderButtons(){
- const admin=authAccount?.role==='ADMIN';
- const idx=boot?.teachers?.findIndex(t=>t.id===originalId)??-1;
- $('move-teacher-up').hidden=!admin;
- $('move-teacher-down').hidden=!admin;
- $('move-teacher-up').disabled=busy||idx<=0;
- $('move-teacher-down').disabled=busy||idx<0||idx>=(boot?.teachers?.length||0)-1;
+function showPicker(){
+ if(busy)return;
+ model=null;originalId='';active='basic';dirty=false;
+ $('teacher-picker').hidden=false;
+ document.querySelector('.workspace-bar').hidden=true;
+ $('layout').hidden=true;
+ renderPicker();status('請選擇一位教師');
 }
+function showEditor(t){
+ $('teacher-picker').hidden=true;
+ document.querySelector('.workspace-bar').hidden=false;$('layout').hidden=false;
+ const item=boot?.teachers.find(x=>x.id===t.teacher_id);
+ $('selected-teacher').textContent=(item?.name||t.name_zh||t.teacher_id)+' ('+t.teacher_id+')';
+ $('teacher-state').textContent=t.publish_status==='PUBLISHED'?'已公開':'草稿';
+ $('teacher-state').dataset.state=t.publish_status==='PUBLISHED'?'published':'draft';
+}
+function commitOrder(ids){
+ if(busy||authAccount?.role!=='ADMIN'||!boot)return;
+ if(ids.join('|')===boot.teachers.map(x=>x.id).join('|'))return;
+ invoke('ftvReorderTeachers',[ids],result=>{
+  boot=result;renderPicker();status('已更新 Sheets 排序；請由管理員重新發布 JSON 才會更新公開網站');
+ });
+}
+function reorderItem(id,delta){
+ if(busy||authAccount?.role!=='ADMIN'||!boot)return;
+ const ids=boot.teachers.map(x=>x.id),i=ids.indexOf(id),j=i+delta;
+ if(i<0||j<0||j>=ids.length)return;
+ const moved=ids.splice(i,1)[0];ids.splice(j,0,moved);commitOrder(ids);
+}
+let draggedId='';
+$('teacher-list').addEventListener('click',e=>{
+ const edit=e.target.closest('[data-edit]'),move=e.target.closest('[data-shift]');
+ if(edit){if(!busy&&canLeave())loadTeacher(edit.dataset.edit);}
+ else if(move)reorderItem(move.dataset.id,move.dataset.shift==='up'?-1:1);
+});
+$('teacher-list').addEventListener('dragstart',e=>{
+ const row=e.target.closest('.pick-row');
+ if(!row||busy||authAccount?.role!=='ADMIN'){e.preventDefault();return;}
+ draggedId=row.dataset.id;row.classList.add('dragging');
+ if(e.dataTransfer){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',draggedId);}
+});
+$('teacher-list').addEventListener('dragover',e=>{
+ const row=e.target.closest('.pick-row');if(!row||!draggedId||busy)return;
+ e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect='move';
+ $('teacher-list').querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));
+ if(row.dataset.id!==draggedId)row.classList.add('drop-target');
+});
+$('teacher-list').addEventListener('drop',e=>{
+ const row=e.target.closest('.pick-row');
+ if(!row||!draggedId||busy)return;
+ e.preventDefault();
+ const ids=boot.teachers.map(x=>x.id),from=ids.indexOf(draggedId),to=ids.indexOf(row.dataset.id);
+ draggedId='';
+ $('teacher-list').querySelectorAll('.drop-target,.dragging').forEach(x=>x.classList.remove('drop-target','dragging'));
+ if(from<0||to<0||from===to)return;
+ const moved=ids.splice(from,1)[0];ids.splice(to,0,moved);commitOrder(ids);
+});
+$('teacher-list').addEventListener('dragend',()=>{
+ draggedId='';$('teacher-list').querySelectorAll('.drop-target,.dragging').forEach(x=>x.classList.remove('drop-target','dragging'));
+});
+$('back-to-teachers').onclick=()=>{if(!busy&&canLeave())showPicker();};
 function renderTabs(){
  const items=[{key:'basic',zh:'基本資料',en:'Profile'},...boot.tabs];
  $('tabs').innerHTML='<div class="side-heading"><span class="step-index">02</span> 編輯內容 <small>選擇區塊</small></div>'+
@@ -793,46 +890,32 @@ document.addEventListener('pointerup',()=>{
 });
 function render(){if(!model){$('editor').textContent='請選擇教師';return;}if(active==='basic')renderProfile();else renderEntries();}
 function loadTeacher(id){
+ if(busy||!boot?.teachers.some(t=>t.id===id))return;
  invoke('ftvGetTeacher',[id],result=>{
   model=result;originalId=String(model.teacher.teacher_id);active='basic';dirty=false;
-  chooser();renderTabs();render();status('已載入');
+  showEditor(model.teacher);renderTabs();render();status('正在編輯 '+(model.teacher.name_zh||id));
  });
 }
-function loadBootstrap(selectId){
+function loadBootstrap(selectId,reopen=false){
  invoke('ftvGetBootstrap',[],result=>{
-  boot=result;originalId=selectId||boot.teachers[0]?.id||'';
-  chooser();
-  if(originalId)loadTeacher(originalId);
-  else{status('尚未建立教師');renderTabs();render();}
+  boot=result;
+  if(reopen&&selectId&&boot.teachers.some(t=>t.id===selectId))loadTeacher(selectId);
+  else showPicker();
  });
 }
-$('teacher-select').addEventListener('change',e=>{
- if(!canLeave()){e.target.value=originalId;return;}
- loadTeacher(e.target.value);
-});
-function moveSelectedTeacher(direction){
- if(busy||authAccount?.role!=='ADMIN'||!originalId||!boot||!canLeave())return;
- const id=originalId;
- invoke('ftvMoveTeacher',[id,direction],result=>{
-  boot=result;dirty=false;loadTeacher(id);
-  status('已調整示範順序（未更新 Google Sheets）');
- });
-}
-$('move-teacher-up').addEventListener('click',()=>moveSelectedTeacher('up'));
-$('move-teacher-down').addEventListener('click',()=>moveSelectedTeacher('down'));
 $('new-teacher').onclick=()=>{
  if(!canLeave())return;
  const id=prompt('請輸入新教師 ID（例如 BMST008）。只有教師需要 ID：');
  if(id===null)return;
  if(!id.trim()){status('教師 ID 不可空白',true);return;}
- invoke('ftvCreateTeacher',[id.trim()],result=>{dirty=false;loadBootstrap(result.id);});
+ invoke('ftvCreateTeacher',[id.trim()],result=>{dirty=false;loadBootstrap(result.id,true);});
 };
 $('save').onclick=()=>{
  if(!model||busy)return;
  const payload={originalTeacherId:originalId,teacher:model.teacher,entries:model.entries,revision:model.revision};
  invoke('ftvSaveTeacher',[payload],result=>{
   dirty=false;model=result;originalId=String(result.teacher.teacher_id);
-  loadBootstrap(originalId);status('預覽已儲存');
+  loadBootstrap(originalId,true);status('預覽已儲存');
  });
 };
 $('publish-own').onclick=()=>{
