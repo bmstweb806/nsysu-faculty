@@ -19,6 +19,8 @@
 .bmst-faculty-embed .bmst-alt{font-size:13px;color:var(--bmst-muted);margin:0 0 7px}
 .bmst-faculty-embed .bmst-role{font-size:15px;color:#364e60;font-weight:600;margin:0 0 5px}
 .bmst-faculty-embed .bmst-unit,.bmst-faculty-embed .bmst-meta{font-size:14px;color:#51677a;margin:4px 0}
+.bmst-faculty-embed .bmst-degree{font-size:14px;color:#405b6d;margin:7px 0 6px;line-height:1.55;overflow-wrap:anywhere}
+.bmst-faculty-embed .bmst-degree strong{color:#244f6b;font-weight:700}
 .bmst-faculty-embed .bmst-expertise{font-size:14px;color:#4b5e70;margin:9px 0;white-space:pre-line}
 .bmst-faculty-embed .bmst-linkrow{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;margin-top:12px;padding-top:8px;border-top:1px solid #edf1f4}
 .bmst-faculty-embed .bmst-back{display:inline-block;font-size:14px;margin:0 0 17px}
@@ -72,6 +74,7 @@ function detailsUrl(id){var custom=root.getAttribute('data-profile-page');var u=
 function basic(t,isProfile){var info=node('div','bmst-info');var h=node(isProfile?'h2':'h3','bmst-name');if(isProfile)h.textContent=loc(t.name);else{var a=node('a','',loc(t.name));a.href=detailsUrl(t.id);h.appendChild(a);}info.appendChild(h);
 if(loc(t.name&&{zh:t.name[other],en:t.name[other]}))line(info,'bmst-alt',t.name[other]);
 line(info,'bmst-role',loc(t.title));line(info,'bmst-unit',loc(t.unit));
+if(!isProfile&&loc(t.highest_degree)){var degree=node('p','bmst-degree');degree.appendChild(node('strong','',lang==='en'?'Highest degree: ':'最高學歷：'));degree.appendChild(document.createTextNode(loc(t.highest_degree)));info.appendChild(degree);}
 if(isProfile)line(info,'bmst-meta',(words.office+': ')+(loc(t.office)||''));line(info,'bmst-expertise',loc(t.expertise));email(info,t);
 var actions=node('div','bmst-linkrow');
 if(!isProfile){var more=node('a','',words.profile);more.href=detailsUrl(t.id);actions.appendChild(more);}
