@@ -135,6 +135,87 @@ function ftvReorderTeachers(orderedIds,token){
   return ftvGetBootstrap(token);
  });
 }
+
+/**
+ * ADMIN-only remove: archive source sheet and row snapshot, revoke TEACHER OTP
+ * access, remove from Teachers, then publish both production and public preview.
+ * The archived information remains recoverable by the spreadsheet owner.
+ */
+function ftvDeleteTeacher(teacherId,confirmation,token){
+ ftaAdmin_(token);
+ const id=ftvId_(teacherId);
+ if(String(confirmation||'')!==id)throw new Error('請輸入正確的教師 ID 才能刪除');
+ const removed=ftvLock_(()=>{
+  ftaAdmin_(token);
+  const found=ftvFindTeacher_(id),row=found.teacher;
+  ftvCheckColumns_(found.table,FTV.teacherColumns);
+  const ss=ftvSS_(),teacherSheet=ss.getSheetByName(String(row.teacher_sheet));
+  if(!teacherSheet)throw new Error('找不到教師資料工作表，已取消刪除');
+  const permission=ftvTable_(FTA.permissions);
+  ftvCheckColumns_(permission,['email','role','teacher_id','is_active']);
+  const auditName='DeletedFaculty';
+  let audit=ss.getSheetByName(auditName);
+  if(!audit){
+   audit=ss.insertSheet(auditName);
+   audit.getRange(1,1,1,6).setValues([[
+    'deleted_at','teacher_id','name_zh','original_sheet','archived_sheet','teacher_row_json'
+   ]]);
+   audit.setFrozenRows(1);
+  }
+  const archiveName='ARCHIVE_'+id+'_'+
+    Utilities.formatDate(new Date(),'Etc/UTC','yyyyMMddHHmmss')+'_'+
+    Utilities.getUuid().replace(/-/g,'').slice(0,5);
+  if(ss.getSheetByName(archiveName))throw new Error('封存名稱衝突，已取消刪除');
+  const snapshot={};
+  found.table.cols.forEach(k=>{snapshot[k]=row[k]===undefined?'':row[k];});
+  // Create an audit record BEFORE removing the live teacher.
+  audit.appendRow([
+   new Date(),id,String(row.name_zh||''),String(row.teacher_sheet),
+   archiveName,JSON.stringify(snapshot)
+  ]);
+  // Keep original content recoverable in a hidden sheet, never delete it outright.
+  teacherSheet.setName(archiveName);
+  teacherSheet.hideSheet();
+  const col=permission.cols.indexOf('is_active')+1;
+  const linked=permission.items.filter(p=>
+   String(p.teacher_id)===id&&String(p.role||'').trim().toUpperCase()==='TEACHER'
+  );
+  linked.forEach(p=>permission.sheet.getRange(p._row,col).setValue(false));
+  found.table.sheet.deleteRow(row._row);
+  SpreadsheetApp.flush();
+  return {id,name:String(row.name_zh||id),archiveName,revoked:linked.length};
+ });
+ // The Sheets removal is already effective. Publish the public index and both
+ // profile directories; a failed GitHub operation is reported rather than
+ // misrepresenting the entire deletion as rolled back.
+ let productionPublished=false,previewPublished=false;
+ const warnings=[];
+ try{fcfgPublish_(false);productionPublished=true;}
+ catch(e){warnings.push('正式公開 JSON 發布失敗：'+String(e.message||e).slice(0,160));}
+ try{fcfgPublish_(true);previewPublished=true;}
+ catch(e){warnings.push('公開預覽 JSON 發布失敗：'+String(e.message||e).slice(0,160));}
+ return {...removed,deleted:true,productionPublished,previewPublished,warnings};
+}
+/** ADMIN-only: full, single-category HTML snippets for direct RPage paste. */
+function ftvGetRpageEmbed(category,language,token){
+ ftaAdmin_(token);
+ const cat=String(category||''),lang=String(language||'');
+ if(!['full_time','adjunct','retired'].includes(cat)||!['zh','en'].includes(lang))
+  throw new Error('RPage 嵌入分類或語系無效');
+ const props=PropertiesService.getScriptProperties();
+ const repo=props.getProperty('GITHUB_REPO')||'bmstweb806/nsysu-faculty';
+ if(!/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(repo))throw new Error('GITHUB_REPO 設定無效');
+ const path='rpage/faculty-'+cat+'-'+lang+'.html';
+ const url='https://raw.githubusercontent.com/'+repo+'/main/'+path;
+ const response=UrlFetchApp.fetch(url,{muteHttpExceptions:true,followRedirects:true});
+ if(response.getResponseCode()!==200)throw new Error('無法讀取 RPage 範本，請確認 GitHub 已更新：'+path);
+ const html=response.getContentText('UTF-8');
+ if(html.length>60000||html.indexOf('data-category="'+cat+'"')<0||
+    html.indexOf('data-lang="'+lang+'"')<0||html.indexOf('<script>')<0||
+    html.indexOf('<style>')<0)throw new Error('RPage 範本內容未通過檢查');
+ return html;
+}
+
 function ftvFindTeacher_(id){
   const t=ftvTable_(FTV.teachers);ftvCheckColumns_(t,FTV.teacherColumns);
   const row=t.items.find(r=>String(r.teacher_id)===String(id));
