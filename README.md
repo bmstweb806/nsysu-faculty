@@ -1,3 +1,15 @@
+## V7.3：刪除教師＋三類 RPage 嵌入碼複製（2026-11-15）
+
+- 管理員教師列表每列新增 **刪除** 按鈕。需要兩次確認，其中第二次必須逐字輸入完整的教師 ID；伺服器 `ftvDeleteTeacher` 重新檢查 ADMIN 權限與確認碼。
+- **安全刪除與可救回封存**：移除 `Teachers` 中的該教師列，將原教師資料工作表改名 `ARCHIVE_...` 並隱藏，將教師摘要備份在 `DeletedFaculty` 工作表，停用 `UserPermissions` 中關聯的 TEACHER 登入權限。系辦可根據封存與紀錄手動恢復；沒有直接永久銷毀教師原始資料。
+- 刪除後自動嘗試重新發布**正式**及**公開預覽** JSON，讓公開索引與教師檔案同步移除。若 GitHub 發布失敗，畫面會顯示明確警告；Sheets 的移除已生效，需要系辦重新發布。GitHub commit 歷史可能仍保留舊公開資料。
+- 管理首頁新增 RPage 嵌入碼區塊：專任 `full_time`、合聘 `adjunct`、榮退 `retired`，各有中文、英文兩種版本（總共六份完整的 HTML／CSS／JS）。每份只載入自己類別且不加標題，前端仍 fetch `data/faculty-index.json`。不使用 iframe。
+- 按「複製中文 HTML」／「Copy English HTML」會從 GitHub raw 讀取對應範本並開啟可複製文字區；若瀏覽器不允許剪貼簿存取，可使用全選和 Ctrl+C／Cmd+C。範本固定從 Repo 的 `main` 讀取最新版本。
+- 本次新增 `gas/Code.gs` 的 `ftvGetRpageEmbed`（僅 ADMIN），以及 `gas/FacultyManager.html` 管理首頁。互動預覽 `admin-preview.html` 只模擬刪除，不會動真正的資料；取得 RPage 範本使用公開 GitHub raw。
+- **部署**：同步 `gas/Code.gs`、`gas/FacultyManager.html` 到正式 Apps Script；儲存後刷新 Google Sheet 選單。公共 Web App `/exec` 需更新部署。既有憑證不變。
+
+---
+
 ## V7.2：先選教師、一次編輯一位、拖曳教師排序（2026-11-15）
 
 - **登入後先看教師選擇列表**，不再自動進入第一位教師。每列顯示姓名、ID、發布狀態及「編輯資料」；點選後進入單一教師編輯器，使用「返回教師列表」切換其他老師。

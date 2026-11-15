@@ -231,6 +231,34 @@ body.auth-locked>.teacher-picker{display:none!important}
 .grab{display:inline-flex;align-items:center;justify-content:center;min-width:29px;min-height:30px}
 .pick-row[draggable="true"] .pick-handle:hover,.grab:hover{color:#175d87}
 
+
+/* RPage snippet panel and explicitly admin-only teacher removal. No animations. */
+.pick-tools .pick-delete{background:#fff;color:#a13d46;border:1px solid #e3c0c3;font-weight:700}
+.pick-tools .pick-delete:hover{background:#fff2f3}
+.rpage-embeds{margin-top:35px;border-top:1px solid #e1e9ef;padding-top:29px}
+.rpage-embeds[hidden],.embed-modal[hidden]{display:none!important}
+.embed-heading h3{font-size:21px;color:#18405d;margin:4px 0 6px}
+.embed-heading p{font-size:13px;color:#697f8f;margin:0 0 16px}
+.embed-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.embed-card{border:1px solid #dce6ed;border-top:3px solid #175d87;border-radius:4px;background:#fff;padding:16px;min-width:0}
+.embed-card-title{font-size:16px;font-weight:800;color:#173e59}
+.embed-card-title small{display:block;font-size:11px;font-weight:400;color:#6d8392;margin-top:3px}
+.embed-card p{font-size:12px;color:#698090;line-height:1.65;margin:10px 0 17px}
+.embed-actions{display:flex;flex-wrap:wrap;gap:7px}
+.embed-actions button{font-size:12px;flex:1 0 auto;border-radius:4px;padding:8px 9px;background:#f7fafc;border-color:#c9dae5;font-weight:700}
+.embed-actions button:hover{background:#e9f2f7}
+.embed-hint{font-size:12px;color:#768a97;margin:15px 0 0;line-height:1.7}
+.embed-modal{position:fixed;inset:0;z-index:1000;background:rgba(12,34,48,.7);display:flex;align-items:center;justify-content:center;padding:18px}
+.embed-dialog{width:min(100%,860px);max-height:calc(100vh - 35px);overflow:auto;background:white;border-radius:6px;padding:22px 24px;box-shadow:0 20px 55px #102f4255}
+.embed-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.embed-dialog-head h2{font-size:20px;color:#183f5b;margin:0}
+.embed-dialog-head button{background:transparent;border-color:transparent;font-size:20px}
+.embed-dialog p{font-size:13px;color:#647c8b;line-height:1.6}
+#embed-code{font:12px/1.55 Consolas,Monaco,monospace;min-height:250px;height:min(44vh,420px);width:100%;white-space:pre;resize:vertical;border-radius:4px;background:#f8fafb;color:#294659}
+.embed-dialog-actions{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:10px;margin-top:12px}
+#embed-copy-feedback{margin-right:auto;font-size:12px;color:#235a77}
+@media(max-width:800px){.embed-grid{grid-template-columns:1fr}.embed-card{padding:15px}}
+
 </style>
 <meta name="robots" content="noindex,nofollow">
 </head>
@@ -258,7 +286,27 @@ body.auth-locked>.teacher-picker{display:none!important}
   <p id="drag-guide" class="drag-guide"><span class="drag-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span> <span>拖曳六點把手調整教師順序；也可以按 ↑ ↓ 來排序。</span></p>
   <ol id="teacher-list" class="teacher-pick-list" aria-label="教師排列清單"></ol>
   <p id="drag-hint" class="drag-hint">排列會寫回 Teachers 工作表。公開網站的順序需由系辦重新發布 JSON 後才會更新。</p>
+  <section id="rpage-embeds" class="rpage-embeds" aria-label="RPage 教師列表嵌入碼" hidden>
+    <div class="embed-heading">
+      <div><span class="picker-kicker">RPage EMBED</span><h3>教師列表嵌入碼</h3><p>選擇分類與語言，複製完整 HTML 至 RPage 的原始碼編輯器。</p></div>
+    </div>
+    <div class="embed-grid">
+      <article class="embed-card"><div class="embed-card-title">專任教師 <small>Full-time Faculty</small></div><p>僅顯示專任教師，不另外顯示標題。</p><div class="embed-actions"><button type="button" data-embed="full_time" data-lang="zh">複製中文 HTML</button><button type="button" data-embed="full_time" data-lang="en">Copy English HTML</button></div></article>
+      <article class="embed-card"><div class="embed-card-title">合聘教師 <small>Joint-appointment Faculty</small></div><p>僅顯示合聘教師，不另外顯示標題。</p><div class="embed-actions"><button type="button" data-embed="adjunct" data-lang="zh">複製中文 HTML</button><button type="button" data-embed="adjunct" data-lang="en">Copy English HTML</button></div></article>
+      <article class="embed-card"><div class="embed-card-title">榮退教師 <small>Retired Faculty</small></div><p>僅顯示榮退教師，不另外顯示標題。</p><div class="embed-actions"><button type="button" data-embed="retired" data-lang="zh">複製中文 HTML</button><button type="button" data-embed="retired" data-lang="en">Copy English HTML</button></div></article>
+    </div>
+    <p class="embed-hint">不使用 iframe，直接包含 HTML、CSS 與 JavaScript；教師資料仍自動讀取已發布的 GitHub JSON。</p>
+  </section>
 </section>
+<section id="embed-modal" class="embed-modal" hidden>
+  <div class="embed-dialog" role="dialog" aria-modal="true" aria-labelledby="embed-modal-title">
+    <div class="embed-dialog-head"><h2 id="embed-modal-title">RPage HTML 嵌入碼</h2><button id="embed-close" type="button" aria-label="關閉">✕</button></div>
+    <p>已準備好完整嵌入碼。可以複製後直接貼到 RPage 的 HTML 原始碼編輯區。</p>
+    <textarea id="embed-code" readonly spellcheck="false" aria-label="完整 RPage HTML 嵌入碼"></textarea>
+    <div class="embed-dialog-actions"><span id="embed-copy-feedback" role="status" aria-live="polite"></span><button id="embed-select-all" type="button">全選原始碼</button><button id="embed-copy" class="primary" type="button">複製完整 HTML</button></div>
+  </div>
+</section>
+
 <section class="workspace-bar" aria-label="編輯目前選取的教師" hidden>
   <div class="workspace-teacher">
     <button id="back-to-teachers" type="button" class="back-picker">← 返回教師列表</button>
@@ -430,6 +478,24 @@ body.auth-locked>.teacher-picker{display:none!important}
     state.splice(0,state.length,...ids.map(id=>old.get(id)));
     return handlers.ftvGetBootstrap(token);
   };
+  handlers.ftvDeleteTeacher=(id,confirmation,token)=>{
+    auth(token,null,true);
+    if(confirmation!==id)throw Error('教師 ID 不符合，已取消刪除');
+    const index=state.findIndex(r=>r.teacher.teacher_id===id);
+    if(index<0)throw Error('找不到教師');
+    const [row]=state.splice(index,1);
+    return {deleted:true,id,name:row.teacher.name_zh,productionPublished:true,
+      previewPublished:true,warnings:[],previewOnly:true};
+  };
+  handlers.ftvGetRpageEmbed=async (category,language,token)=>{
+    auth(token,null,true);
+    if(!['full_time','adjunct','retired'].includes(category)||!['zh','en'].includes(language))
+      throw Error('RPage 分類或語言無效');
+    const url='https://raw.githubusercontent.com/bmstweb806/nsysu-faculty/main/rpage/faculty-'+category+'-'+language+'.html';
+    const response=await fetch(url,{cache:'no-store'});
+    if(!response.ok)throw Error('無法讀取範本，請使用 GitHub 中的 HTML 檔案');
+    return response.text();
+  };
   const getTeacherHandler=handlers.ftvGetTeacher;
   handlers.ftvGetTeacher=(id,token)=>{auth(token,id);return getTeacherHandler(id);};
   const createTeacherHandler=handlers.ftvCreateTeacher;
@@ -456,11 +522,11 @@ body.auth-locked>.teacher-picker{display:none!important}
             withFailureHandler(failure) {
               return new Proxy({}, {
                 get(_target, method) {
-                  return (...args) => Promise.resolve().then(() => {
+                  return (...args) => Promise.resolve().then(async () => {
                     try {
                       if (typeof handlers[method] !== 'function')
                         throw Error('示範版未提供功能：' + String(method));
-                      success(handlers[method](...args));
+                      success(await handlers[method](...args));
                     } catch (e) { failure(e); }
                   });
                 }
@@ -524,6 +590,7 @@ $('logout').addEventListener('click',()=>{
  authToken='';authAccount=null;boot=null;model=null;dirty=false;
  document.body.classList.add('auth-locked');
  $('teacher-picker').hidden=true;
+ $('embed-modal').hidden=true;$('embed-code').value='';
  document.querySelector('.workspace-bar').hidden=true;$('layout').hidden=true;
  $('editor').replaceChildren();$('tabs').replaceChildren();$('teacher-list').replaceChildren();
  $('login-code').value='';$('otp-verify-form').hidden=true;
@@ -558,6 +625,7 @@ function field(label,name,value,type='text',cls=''){
 function renderPicker(){
  const admin=authAccount?.role==='ADMIN',list=$('teacher-list');
  $('new-teacher').hidden=!admin;$('drag-guide').hidden=!admin;$('drag-hint').hidden=!admin;
+ $('rpage-embeds').hidden=!admin;
  if(!boot||!boot.teachers.length){list.innerHTML='<li class="empty">目前尚無教師資料</li>';return;}
  list.innerHTML=boot.teachers.map((t,i)=>'<li class="pick-row" data-id="'+esc(t.id)+'" draggable="'+(admin?'true':'false')+'">'+
  '<span class="pick-handle" aria-hidden="true">'+(admin?"<span class=\"drag-dots\" aria-hidden=\"true\"><i></i><i></i><i></i><i></i><i></i><i></i></span>":'')+'</span>'+
@@ -566,8 +634,50 @@ function renderPicker(){
  '<div class="pick-tools">'+(admin?
  '<button type="button" data-shift="up" data-id="'+esc(t.id)+'" aria-label="上移 '+esc(t.name)+'" '+(i===0?'disabled':'')+'>↑</button>'+
  '<button type="button" data-shift="down" data-id="'+esc(t.id)+'" aria-label="下移 '+esc(t.name)+'" '+(i===boot.teachers.length-1?'disabled':'')+'>↓</button>':'')+
- '<button type="button" data-edit="'+esc(t.id)+'" aria-label="編輯 '+esc(t.name)+'">編輯資料 →</button></div></li>').join('');
+ '<button type="button" data-edit="'+esc(t.id)+'" aria-label="編輯 '+esc(t.name)+'">編輯資料 →</button>'+
+ (admin?'<button type="button" class="pick-delete" data-delete="'+esc(t.id)+'" aria-label="刪除 '+esc(t.name)+'">刪除</button>':'')+
+ '</div></li>').join('');
 }
+function closeEmbedModal(){
+ $('embed-modal').hidden=true;$('embed-copy-feedback').textContent='';
+}
+function selectEmbedCode(){
+ const el=$('embed-code');el.focus();el.select();el.setSelectionRange(0,el.value.length);
+}
+function openEmbedCode(category,lang,html){
+ $('embed-modal-title').textContent=
+  ({full_time:'專任教師',adjunct:'合聘教師',retired:'榮退教師'}[category]||'教師')+
+  (lang==='zh'?' · 中文':' · English')+' RPage HTML';
+ $('embed-code').value=html;
+ $('embed-modal').hidden=false;selectEmbedCode();
+ $('embed-copy-feedback').textContent='程式碼已全選，可直接複製';
+}
+async function copyEmbedCode(){
+ const el=$('embed-code');
+ if(!el.value)return;
+ try{
+  if(navigator.clipboard&&window.isSecureContext){
+   await navigator.clipboard.writeText(el.value);
+  }else{
+   selectEmbedCode();
+   if(!document.execCommand('copy'))throw new Error('COPY_UNAVAILABLE');
+  }
+  $('embed-copy-feedback').textContent='已複製完整 HTML';
+ }catch(e){
+  selectEmbedCode();$('embed-copy-feedback').textContent='無法自動複製，請按 Ctrl+C 或 Cmd+C';
+ }
+}
+$('rpage-embeds').addEventListener('click',e=>{
+ const button=e.target.closest('[data-embed]');
+ if(!button||busy||authAccount?.role!=='ADMIN')return;
+ const cat=button.dataset.embed,lang=button.dataset.lang;
+ invoke('ftvGetRpageEmbed',[cat,lang],html=>openEmbedCode(cat,lang,html));
+});
+$('embed-close').onclick=closeEmbedModal;
+$('embed-select-all').onclick=selectEmbedCode;
+$('embed-copy').onclick=copyEmbedCode;
+$('embed-modal').addEventListener('click',e=>{if(e.target===$('embed-modal'))closeEmbedModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('embed-modal').hidden)closeEmbedModal();});
 function showPicker(){
  if(busy)return;
  model=null;originalId='';active='basic';dirty=false;
@@ -599,10 +709,28 @@ function reorderItem(id,delta){
 }
 let draggedId='';
 $('teacher-list').addEventListener('click',e=>{
- const edit=e.target.closest('[data-edit]'),move=e.target.closest('[data-shift]');
+ const edit=e.target.closest('[data-edit]'),move=e.target.closest('[data-shift]'),del=e.target.closest('[data-delete]');
  if(edit){if(!busy&&canLeave())loadTeacher(edit.dataset.edit);}
  else if(move)reorderItem(move.dataset.id,move.dataset.shift==='up'?-1:1);
+ else if(del)deleteTeacherFromPicker(del.dataset.delete);
 });
+function deleteTeacherFromPicker(id){
+ if(busy||authAccount?.role!=='ADMIN'||!boot)return;
+ const teacher=boot.teachers.find(t=>t.id===id);
+ if(!teacher)return;
+ if(!confirm('確定移除「'+teacher.name+'」？\n會從教師名單移除、停用此教師的登入權限、更新 GitHub 公開資料。原始資料會封存供系辦救回。'))return;
+ const typed=prompt('請輸入教師 ID「'+id+'」進行最終確認：');
+ if(typed===null)return;
+ if(typed!==id){status('教師 ID 不符合，刪除已取消',true);return;}
+ invoke('ftvDeleteTeacher',[id,typed],result=>{
+  invoke('ftvGetBootstrap',[],fresh=>{
+   boot=fresh;showPicker();
+   if(result.productionPublished&&result.previewPublished)
+    status('已移除 '+result.name+'，正式與預覽 JSON 均已更新');
+   else status('已移除 '+result.name+'，但 JSON 未完全發布：'+(result.warnings||[]).join('；'),true);
+  });
+ });
+}
 $('teacher-list').addEventListener('dragstart',e=>{
  const row=e.target.closest('.pick-row');
  if(!row||busy||authAccount?.role!=='ADMIN'){e.preventDefault();return;}
