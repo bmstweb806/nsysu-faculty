@@ -9,15 +9,15 @@ button{font:inherit}
 a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3px}
 #app{max-width:1060px;margin:0 auto;padding:14px 16px 30px}
 .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px}
-.language-switch{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.language-switch{display:inline-flex;border:1px solid var(--line);border-radius:0;overflow:hidden}
 .language-switch a{padding:5px 13px;font-size:14px;color:var(--marine)}
 .language-switch a[aria-current="page"]{background:var(--marine);color:#fff;font-weight:700;text-decoration:none}
 .preview-notice{background:#fff4d9;color:#785100;text-align:center;font-weight:700;padding:10px 16px;border-bottom:1px solid #f0d9a1}
-.info-notice{border:1px solid var(--line);border-radius:9px;background:var(--soft);padding:20px;color:var(--muted)}
+.info-notice{border:1px solid var(--line);border-radius:0;background:var(--soft);padding:20px;color:var(--muted)}
 .faculty-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.faculty-card{display:flex;min-width:0;align-items:flex-start;gap:17px;padding:18px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 2px 9px rgba(13,65,95,.045)}
+.faculty-card{display:flex;min-width:0;align-items:flex-start;gap:17px;padding:18px;border:1px solid var(--line);border-radius:0;background:#fff;box-shadow:none}
 .faculty-card:hover{border-color:#a9c5d6;box-shadow:none}
-.faculty-photo{display:block;width:113px;height:141px;flex:0 0 113px;object-fit:cover;object-position:center top;border-radius:6px;background:var(--soft)}
+.faculty-photo{display:block;width:113px;height:141px;flex:0 0 113px;object-fit:cover;object-position:center top;border-radius:0;background:var(--soft)}
 .faculty-photo-fallback{display:flex;align-items:center;justify-content:center;color:#8a9baa;font-size:12px;text-align:center}
 .faculty-card-info{min-width:0;flex:1}
 .faculty-name{font-size:21px;font-weight:700;color:var(--navy);line-height:1.35;margin:1px 0 5px}
@@ -28,14 +28,14 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 .faculty-expertise{font-size:14px;margin:5px 0;color:#4b5b66;white-space:pre-line}
 .faculty-contact{font-size:14px;margin:4px 0}
 .faculty-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;font-size:14px}
-.profile{display:flex;align-items:flex-start;gap:25px;padding:24px 25px;background:var(--soft);border-left:4px solid var(--marine);border-radius:0 10px 10px 0;margin-bottom:25px}
+.profile{display:flex;align-items:flex-start;gap:25px;padding:24px 25px;background:var(--soft);border-left:4px solid var(--marine);border-radius:0;margin-bottom:25px}
 .profile .faculty-photo{width:132px;height:166px;flex-basis:132px}
 .profile-info{flex:1;min-width:0}
 .profile-name{font-size:28px;line-height:1.35;margin:0 0 5px;color:var(--navy)}
 .profile-back{display:inline-block;margin:0 0 14px;font-size:14px}
 .profile-expertise{font-size:15px;white-space:pre-line;margin:8px 0}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:0 0 9px;margin-bottom:20px}
-.tab-button{cursor:pointer;border:1px solid #d5e0e8;border-radius:7px;background:#f5f8fa;padding:9px 14px;color:var(--navy);font-weight:600;font-size:15px}
+.tab-button{cursor:pointer;border:1px solid #d5e0e8;border-radius:0;background:#f5f8fa;padding:9px 14px;color:var(--navy);font-weight:600;font-size:15px}
 .tab-button:hover{background:#e8f0f5}
 .tab-button[aria-selected="true"]{color:#fff;background:var(--marine);border-color:var(--marine)}
 .tab-panel{padding:0 5px 4px;min-height:60px}
@@ -51,7 +51,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 /* Sheet-configured teacher groups */
 .faculty-category{margin:4px 0 30px}
 .faculty-category-heading{font-size:21px;font-weight:700;color:var(--navy);margin:0 0 14px;border-bottom:2px solid var(--marine);padding:0 0 8px}
-.structured-entry{display:grid;grid-template-columns:minmax(112px,170px) minmax(0,1fr);column-gap:15px;row-gap:9px;padding:15px 18px;margin:0 0 16px;background:var(--soft);border-left:3px solid var(--marine);border-radius:0 7px 7px 0}
+.structured-entry{display:grid;grid-template-columns:minmax(112px,170px) minmax(0,1fr);column-gap:15px;row-gap:9px;padding:15px 18px;margin:0 0 16px;background:var(--soft);border-left:3px solid var(--marine);border-radius:0}
 .structured-label{font-weight:700;color:var(--navy);margin:0}
 .structured-value{white-space:pre-line;margin:0}
 @media(max-width:520px){.structured-entry{grid-template-columns:1fr;gap:2px 0}.structured-label:not(:first-child){margin-top:8px}}
@@ -86,7 +86,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 body {background:#fff;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;line-height:1.75;}
 #app {max-width:1140px;padding:24px 20px 48px;}
 .toolbar {border-bottom:1px solid var(--line);padding:0 0 14px;margin-bottom:26px;}
-.language-switch {border-radius:3px;background:#fff;}
+.language-switch {border-radius:0;background:#fff;}
 .language-switch a {font-size:13px;padding:6px 13px;}
 .language-switch a[aria-current="page"] {background:var(--navy);}
 .faculty-category {margin:0 0 42px;}
@@ -97,12 +97,12 @@ body {background:#fff;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans
 }
 .faculty-list {grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;}
 .faculty-card {
-  border:1px solid var(--line);border-radius:2px;box-shadow:none;
+  border:1px solid var(--line);border-radius:0;box-shadow:none;
   border-top:3px solid var(--marine);background:#fff;padding:19px 20px;
   gap:20px;
 }
 .faculty-card:hover {border-color:#b4c9d8;box-shadow:none;transform:none;}
-.faculty-photo {border-radius:2px;background:#e9eff3;width:116px;height:146px;flex-basis:116px;}
+.faculty-photo {border-radius:0;background:#e9eff3;width:116px;height:146px;flex-basis:116px;}
 .faculty-name {font-size:21px;letter-spacing:.025em;color:var(--navy);margin-bottom:3px;}
 .faculty-name a:hover {color:var(--marine);}
 .faculty-altname {font-size:13px;}
@@ -111,9 +111,9 @@ body {background:#fff;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans
 .faculty-expertise {font-size:13px;line-height:1.65;margin:10px 0;color:#506477;}
 .faculty-links {padding-top:7px;margin-top:12px;border-top:1px solid #edf1f4;}
 .profile {
-  background:linear-gradient(100deg,#f4f8fb 0%,#fff 100%);
+  background:#f7f9fb;
   border:1px solid var(--line);border-top:4px solid var(--marine);border-left:1px solid var(--line);
-  border-radius:2px;padding:28px 30px;gap:27px;margin-bottom:28px;
+  border-radius:0;padding:28px 30px;gap:27px;margin-bottom:28px;
 }
 .profile .faculty-photo {width:140px;height:174px;flex-basis:140px;}
 .profile-name {font-size:30px;letter-spacing:.035em;}
@@ -130,7 +130,7 @@ body {background:#fff;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans
 .faculty-entry-list-item {line-height:1.8;margin-bottom:13px;}
 .faculty-entry-list-item::marker {color:var(--bmst-gold);}
 .faculty-entry-list-item .structured-entry {line-height:1.65;}
-.info-notice {border-radius:2px;background:#f7f9fb;}
+.info-notice {border-radius:0;background:#f7f9fb;}
 @media(max-width:760px){
   .faculty-list {grid-template-columns:1fr;}
   .faculty-card {gap:16px;}

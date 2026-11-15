@@ -8,7 +8,7 @@ header{background:#123f5c;color:white;padding:15px 20px}
 header h1{font-size:18px;margin:0}header p{font-size:12px;margin:3px 0 0;color:#d6e6ef}
 nav{display:flex;gap:7px;flex-wrap:wrap;padding:10px 15px;background:var(--soft);border-bottom:1px solid var(--line)}
 button,input,textarea,select{font:inherit}
-button{cursor:pointer;color:var(--blue);background:#fff;border:1px solid #b5cbdb;border-radius:7px;padding:7px 11px}
+button{cursor:pointer;color:var(--blue);background:#fff;border:1px solid #b5cbdb;border-radius:0;padding:7px 11px}
 button.primary,nav button.selected{color:white;background:var(--blue);border-color:var(--blue)}
 button:disabled{opacity:.5}
 #status{padding:8px 15px;color:var(--blue);min-height:38px;border-bottom:1px solid var(--line)}
@@ -16,13 +16,13 @@ button:disabled{opacity:.5}
 main{padding:17px;max-height:calc(100vh - 150px);overflow:auto}
 h2{font-size:19px;margin:0 0 9px}p.hint{font-size:12px;color:#687b87}
 .board{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;margin:10px 0 18px}
-.config-card{width:228px;min-height:85px;padding:12px;background:var(--soft);border:1px solid var(--line);border-radius:9px}
+.config-card{width:228px;min-height:85px;padding:12px;background:var(--soft);border:1px solid var(--line);border-radius:0}
 .config-card strong{display:block;font-size:15px}.config-card small{display:block;color:#748693;margin:4px 0}
 .config-card button{padding:4px 9px;margin-top:7px}
-.panel{padding:15px;border:1px solid var(--line);border-radius:9px;background:white;max-width:850px}
+.panel{padding:15px;border:1px solid var(--line);border-radius:0;background:white;max-width:850px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
 .field{display:flex;flex-direction:column;gap:4px;font-weight:600;color:#526778;font-size:12px}
-input,select,textarea{width:100%;min-width:0;background:#fff;border-radius:6px;border:1px solid #b3c6d4;padding:8px;color:var(--ink)}
+input,select,textarea{width:100%;min-width:0;background:#fff;border-radius:0;border:1px solid #b3c6d4;padding:8px;color:var(--ink)}
 .check{display:inline-flex;align-items:center;gap:5px;font-size:13px;margin:8px 12px 8px 0}
 .check input{width:auto}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:7px 0}
@@ -31,11 +31,11 @@ table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:9px;bord
 body.auth-locked>header,body.auth-locked>nav,body.auth-locked>#status,body.auth-locked>#app{display:none!important}
 #login-screen{display:none;min-height:100vh;align-items:center;justify-content:center;background:#f3f7fa;padding:20px}
 body.auth-locked #login-screen{display:flex}
-.login-panel{width:100%;max-width:390px;background:#fff;border:1px solid #dce6ed;border-radius:13px;box-shadow:0 12px 40px #123e5b14;padding:30px}
+.login-panel{width:100%;max-width:390px;background:#fff;border:1px solid #dce6ed;border-radius:0;box-shadow:none;padding:30px}
 .login-panel h2{margin:0 0 6px;font-size:22px;color:#123e5b}
 .login-panel p{margin:0 0 20px;font-size:13px;color:#728596}
 .login-panel label{display:grid;gap:6px;font-size:13px;font-weight:600;margin:12px 0}
-.login-panel input{width:100%;padding:11px 12px;border:1px solid #bfd1dd;border-radius:7px}
+.login-panel input{width:100%;padding:11px 12px;border:1px solid #bfd1dd;border-radius:0}
 .login-panel button{width:100%;padding:10px;margin-top:8px}
 .login-panel .login-error{min-height:20px;margin-top:12px;color:#ac3142;font-size:12px}
 .login-panel .resend-hint{font-size:12px;color:#647786;margin:7px 0 0}
@@ -46,7 +46,7 @@ nav .nav-settings{display:flex;align-items:center;flex-wrap:wrap;gap:2px}
 nav button{border:0;border-radius:0;padding:15px 13px 12px;border-bottom:3px solid transparent;background:transparent;color:#506a7d;font-weight:650}
 nav button:hover{background:#edf3f7}
 nav button.selected{background:transparent;color:#185378;border-color:#c49b50}
-nav button.nav-publish{padding:9px 14px;margin:6px 0;border:1px solid #145b85;border-radius:5px;background:#145b85;color:#fff;font-weight:750}
+nav button.nav-publish{padding:9px 14px;margin:6px 0;border:1px solid #145b85;border-radius:0;background:#145b85;color:#fff;font-weight:750}
 nav button.nav-publish:hover,nav button.nav-publish.selected{background:#114868;color:#fff;border-color:#114868}
 @media(max-width:800px){nav{flex-wrap:wrap;padding:6px 13px}nav .nav-settings{width:100%}nav button{padding:10px}nav button.nav-publish{margin:0 0 6px}}
 
