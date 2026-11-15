@@ -25,6 +25,8 @@ a:focus-visible,button:focus-visible{outline:3px solid #edac34;outline-offset:3p
 .faculty-altname{color:var(--muted);font-size:14px;margin:0 0 7px}
 .faculty-title{font-weight:600;margin:0 0 3px;font-size:15px}
 .faculty-unit{color:var(--muted);font-size:14px;margin:0 0 8px}
+.faculty-degree{color:#405a6b;font-size:14px;line-height:1.55;margin:7px 0 6px;overflow-wrap:anywhere}
+.faculty-degree strong{color:#244f6b;font-weight:700}
 .faculty-expertise{font-size:14px;margin:5px 0;color:#4b5b66;white-space:pre-line}
 .faculty-contact{font-size:14px;margin:4px 0}
 .faculty-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;font-size:14px}

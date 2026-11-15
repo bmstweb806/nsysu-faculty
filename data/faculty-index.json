@@ -48,6 +48,10 @@
       "visible": {
         "zh": true,
         "en": true
+      },
+      "highest_degree": {
+        "zh": "國立清華大學生命科學系博士",
+        "en": "PhD, Department of Life Science, National Tsing Hua University"
       }
     },
     {
@@ -76,6 +80,10 @@
       "visible": {
         "zh": true,
         "en": true
+      },
+      "highest_degree": {
+        "zh": "國立成功大學生物醫學工程學系博士",
+        "en": "Ph.D., Department of Biomedical Engineering, National Cheng Kung University"
       }
     },
     {
@@ -104,6 +112,10 @@
       "visible": {
         "zh": true,
         "en": true
+      },
+      "highest_degree": {
+        "zh": "國立臺灣大學醫學工程學系博士",
+        "en": "Ph.D., Department of Biomedical Engineering, National Taiwan University"
       }
     },
     {
@@ -132,6 +144,10 @@
       "visible": {
         "zh": true,
         "en": true
+      },
+      "highest_degree": {
+        "zh": "國立清華大學生物科技所博士",
+        "en": "Ph.D., Institute of Biotechnology, National Tsing Hua University"
       }
     },
     {
@@ -160,6 +176,10 @@
       "visible": {
         "zh": true,
         "en": true
+      },
+      "highest_degree": {
+        "zh": "國立陽明交通大學生物醫學影像暨放射科學系博士",
+        "en": "Ph.D., Department of Biomedical Imaging and Radiological Science, National Yang Ming Chiao Tung University"
       }
     },
     {
@@ -188,6 +208,10 @@
       "visible": {
         "zh": true,
         "en": false
+      },
+      "highest_degree": {
+        "zh": "國立成功大學基礎醫學研究所博士",
+        "en": ""
       }
     },
     {
@@ -216,6 +240,10 @@
       "visible": {
         "zh": true,
         "en": false
+      },
+      "highest_degree": {
+        "zh": "美國哥倫比亞大學微生物學與免疫學博士",
+        "en": ""
       }
     }
   ]

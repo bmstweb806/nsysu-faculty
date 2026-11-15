@@ -11,14 +11,14 @@
     loading: 'Loading faculty information…', empty: 'No published faculty information is available yet.',
     notFound: 'This faculty profile is not available.', error: 'Unable to load faculty information.',
     details: 'View profile', website: 'Official profile', email: 'Email', office: 'Office',
-    expertise: 'Research interests', back: 'Faculty directory', link: 'Related link', photo: 'Faculty photograph',
+    expertise: 'Research interests', degree: 'Highest degree', back: 'Faculty directory', link: 'Related link', photo: 'Faculty photograph',
     none: 'No further information is available.', preview: 'Preview — not the official published page',
     photoMissing: 'No photo', langTitle: 'Choose language', draft: 'Draft'
   } : {
     loading: '教師資料載入中…', empty: '目前尚無已發布的教師資料。',
     notFound: '找不到此教師，或此語言版本尚未公開。', error: '教師資料載入失敗。',
     details: '查看個人資料', website: '官方教師頁面', email: '電子郵件', office: '研究室',
-    expertise: '研究專長', back: '教師列表', link: '相關連結', photo: '教師照片',
+    expertise: '研究專長', degree: '最高學歷', back: '教師列表', link: '相關連結', photo: '教師照片',
     none: '目前尚無其他資料。', preview: '測試預覽｜非正式教師頁面',
     photoMissing: '暫無照片', langTitle: '切換語言', draft: '草稿'
   };
@@ -144,6 +144,12 @@
       }
       if (local(t.title)) info.append(make('p', 'faculty-title', local(t.title)));
       if (local(t.unit)) info.append(make('p', 'faculty-unit', local(t.unit)));
+      if (local(t.highest_degree)) {
+        const degree = make('p', 'faculty-degree');
+        degree.append(make('strong', '', text.degree + (lang === 'en' ? ': ' : '：')));
+        degree.append(document.createTextNode(local(t.highest_degree)));
+        info.append(degree);
+      }
       if (local(t.expertise)) info.append(make('p', 'faculty-expertise', local(t.expertise)));
       teacherEmail(info, t.email);
       const links = make('div', 'faculty-links');

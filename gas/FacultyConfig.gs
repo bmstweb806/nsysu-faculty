@@ -102,6 +102,24 @@ function fcfgSetTeacherCategory(id,categoryKey,token){
  });
 }
 function fcfgLocale_(zh,en){return {zh:String(zh||''),en:String(en||'')};}
+
+/** FIRST education entry only; never display a hidden language or graduation year. */
+function fcfgHighestDegree_(sections){
+ const edu=sections.find(s=>s.key==='education');
+ const first=edu&&Array.isArray(edu.entries)?edu.entries[0]:null;
+ const out={zh:'',en:''};
+ if(!first)return out;
+ ['zh','en'].forEach(lang=>{
+  if(!first.visible||first.visible[lang]!==true)return;
+  const content=String((first.content&&first.content[lang])||'').trim();
+  if(content){out[lang]=content;return;}
+  const fields=first.fields||{};
+  const keys=lang==='zh'?['institution','department','degree']:['degree','department','institution'];
+  out[lang]=keys.map(k=>String((fields[k]&&fields[k][lang])||'').trim()).filter(Boolean).join(lang==='zh'?'':' · ');
+ });
+ return out;
+}
+
 /**
  * Serialize one teacher, without scanning or touching other teacher sheets.
  * Shared with full publishing and teacher self-service publishing.
@@ -136,6 +154,7 @@ function fcfgSerializeTeacher_(t,tabs){
    unit:fcfgLocale_(t.unit_zh,t.unit_en),
    office:fcfgLocale_(t.office_zh,t.office_en),
    expertise:fcfgLocale_(t.expertise_zh,t.expertise_en),
+   highest_degree:fcfgHighestDegree_(sections),
    email:String(t.email||''),profile_url:String(t.profile_url||''),
    photo_url:String(t.photo_url||''),publish_status:status,
    visible:{zh:ftvBool_(t.visible_zh),en:ftvBool_(t.visible_en)},
@@ -183,7 +202,7 @@ function fcfgPublish_(preview){
  const headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json',
    'X-GitHub-Api-Version':'2022-11-28','User-Agent':'NSYSU-Faculty-V6'};
  const full=fcfgBuildJson_(preview),root=preview?'data/preview/':'data/';
- const listFields=['id','category_key','name','title','unit','expertise','email',
+ const listFields=['id','category_key','name','title','unit','expertise','highest_degree','email',
                    'profile_url','photo_url','publish_status','visible'];
  const files=[];
  const file=(path,data)=>files.push({path,mode:'100644',type:'blob',
@@ -285,7 +304,7 @@ function fcfgPublishOwnTeacher(teacherId,token){
    if(String(old.category_key)!==teacher.category_key||
       old.visible.zh!==teacher.visible.zh||old.visible.en!==teacher.visible.en)
      throw new Error('教師分類或公開設定有異動，請系辦先發布全站設定');
-   const fields=['name','title','unit','expertise','email','profile_url','photo_url'];
+   const fields=['name','title','unit','expertise','highest_degree','email','profile_url','photo_url'];
    const summary={...old};
    fields.forEach(k=>{summary[k]=teacher[k];});
    index.teachers[position]=summary;
