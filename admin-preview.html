@@ -725,7 +725,9 @@ function deleteTeacherFromPicker(id){
  invoke('ftvDeleteTeacher',[id,typed],result=>{
   invoke('ftvGetBootstrap',[],fresh=>{
    boot=fresh;showPicker();
-   if(result.productionPublished&&result.previewPublished)
+   if(result.previewOnly)
+    status('預覽：已模擬移除 '+result.name+'，未修改 Google Sheets 或 GitHub');
+   else if(result.productionPublished&&result.previewPublished)
     status('已移除 '+result.name+'，正式與預覽 JSON 均已更新');
    else status('已移除 '+result.name+'，但 JSON 未完全發布：'+(result.warnings||[]).join('；'),true);
   });

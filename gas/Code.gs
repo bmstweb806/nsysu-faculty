@@ -149,6 +149,9 @@ function ftvDeleteTeacher(teacherId,confirmation,token){
   ftaAdmin_(token);
   const found=ftvFindTeacher_(id),row=found.teacher;
   ftvCheckColumns_(found.table,FTV.teacherColumns);
+  if(found.table.items.some(other=>
+   String(other.teacher_id)!==id&&String(other.teacher_sheet)===String(row.teacher_sheet)))
+   throw new Error('教師資料工作表被其他教師共用，請先修正關聯，已取消刪除');
   const ss=ftvSS_(),teacherSheet=ss.getSheetByName(String(row.teacher_sheet));
   if(!teacherSheet)throw new Error('找不到教師資料工作表，已取消刪除');
   const permission=ftvTable_(FTA.permissions);
