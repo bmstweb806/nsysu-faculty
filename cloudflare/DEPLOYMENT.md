@@ -42,3 +42,7 @@ The local tests cover administrator enrollment, login, rate limiting, CSRF, role
 The admin UI groups editing into teacher selection, section tabs, and a persistent save/publish action bar. Website definitions use separate category/tab/field panels. The account screen lists pending grants with a direct password setup action and existing accounts with reset controls. Account dialogs prefill the email, role, and assigned teacher for imported grants, require password confirmation, and never display stored passwords. Administrator resets revoke existing sessions and require a password change at next login.
 
 The single-page operating guide is served at `/guide`, linked from the login screen, header, and sidebar. It describes teacher password enrollment, draft/publish behavior, ordering, settings, embeds, and recovery, and includes print styles.
+
+## Teacher page preview
+
+The teacher editor provides Preview Draft (saves current edits before opening) and View Published Page links. `/preview?teacher=ID&lang=zh|en` requires an authenticated assigned teacher or administrator and reads the saved draft with no-store headers. `/faculty?teacher=ID&lang=zh|en` reads only the published snapshot and returns 404 for unpublished profiles or hidden languages. The preview has a draft banner and language controls; the published view offers only published languages.
