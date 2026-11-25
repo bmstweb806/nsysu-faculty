@@ -91,8 +91,8 @@ async function setup(request, env) {
   const input = await body(request);
   const username = String(input.username || '').trim().toLowerCase();
   const password = String(input.password || '');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) || password.length < 14 || password.length > 200)
-    return fail('請使用有效電子郵件與至少 14 字元密碼');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) || password.length < 8 || password.length > 200)
+    return fail('請使用有效電子郵件與至少 8 字元密碼');
   const grant = await first(env, "SELECT role FROM pending_account_grants WHERE email=? AND role='ADMIN' AND is_active=1", username);
   if (!grant) return fail('此帳號不在已匯入的管理員授權名單', 403);
   const id = crypto.randomUUID();
@@ -297,6 +297,10 @@ async function handle(request, env) {
     const profile = await publicProfile(env, profileMatch[1]);
     return profile ? publicJson(profile) : fail('找不到公開教師', 404);
   }
+  if (path === '/api/setup/status' && method === 'GET') {
+    const exists = (await first(env, 'SELECT count(*) AS n FROM users')).n > 0;
+    return json({ setup_required: !exists && !!env.SETUP_TOKEN });
+  }
   if (path === '/api/setup' && method === 'POST') return setup(request, env);
   if (path === '/api/login' && method === 'POST') return login(request, env);
   const user = await identity(request, env);
@@ -307,7 +311,7 @@ async function handle(request, env) {
     const input = await body(request);
     if (!await checkPassword(String(input.current_password||''), (await first(env,'SELECT password_hash FROM users WHERE user_id=?',user.user_id)).password_hash))
       return fail('目前密碼錯誤', 401);
-    if (String(input.new_password||'').length < 14) return fail('新密碼至少 14 字元');
+    if (String(input.new_password||'').length < 8) return fail('新密碼至少 8 字元');
     await env.DB.batch([
       q(env,'UPDATE users SET password_hash=?,must_change_password=0 WHERE user_id=?',await passwordHash(input.new_password),user.user_id),
       q(env,'DELETE FROM sessions WHERE user_id=?',user.user_id),
@@ -441,7 +445,7 @@ async function handle(request, env) {
   if (path === '/api/users' && method === 'POST') {
     if (!user.roles.includes('ADMIN')) return fail('僅管理員可管理帳號', 403);
     const x = await body(request), username = String(x.username || '').trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) || String(x.password||'').length < 14) return fail('帳號或密碼格式無效');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) || String(x.password||'').length < 8) return fail('帳號或密碼格式無效');
     if (!['ADMIN','TEACHER'].includes(x.role)) return fail('角色無效');
     if (x.role === 'TEACHER' && !await first(env, 'SELECT 1 AS x FROM teachers WHERE teacher_id=? AND archived_at IS NULL', x.teacher_id)) return fail('教師無效');
     const grant = await first(env, 'SELECT role,teacher_id,is_active FROM pending_account_grants WHERE email=?', username);
@@ -475,7 +479,7 @@ async function handle(request, env) {
   if (pw && method === 'POST') {
     if (!user.roles.includes('ADMIN') && user.user_id !== pw[1]) return fail('無權修改密碼', 403);
     const { password } = await body(request);
-    if (String(password || '').length < 14) return fail('密碼至少 14 字元');
+    if (String(password || '').length < 8) return fail('密碼至少 8 字元');
     await env.DB.batch([
       q(env, 'UPDATE users SET password_hash=?,must_change_password=0 WHERE user_id=?', await passwordHash(password), pw[1]),
       q(env, 'DELETE FROM sessions WHERE user_id=?', pw[1]),
