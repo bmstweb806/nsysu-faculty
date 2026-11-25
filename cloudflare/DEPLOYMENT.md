@@ -46,3 +46,7 @@ The single-page operating guide is served at `/guide`, linked from the login scr
 ## Teacher page preview
 
 The teacher editor provides Preview Draft (saves current edits before opening) and View Published Page links. `/preview?teacher=ID&lang=zh|en` requires an authenticated assigned teacher or administrator and reads the saved draft with no-store headers. `/faculty?teacher=ID&lang=zh|en` reads only the published snapshot and returns 404 for unpublished profiles or hidden languages. The preview has a draft banner and language controls; the published view offers only published languages.
+
+## Per-teacher Rpage HTML
+
+The Rpage panel generates a complete div and external script block for each teacher and language, and supports category lists in a separate tab. The teacher editor links directly to the selected teacher. `/rpage-preview` renders the generated div with the actual embed script and only the published data API. Both the complete block and div-only variant are available. The external renderer safely appends profile links and renders configured public field values.
