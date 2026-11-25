@@ -4,6 +4,14 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import worker from './dist/worker.js';
 
+// Match the deployed Workers Web Crypto limit, which Node does not enforce.
+const deriveBits = crypto.subtle.deriveBits.bind(crypto.subtle);
+crypto.subtle.deriveBits = (algorithm, key, length) => {
+  if (algorithm.name === 'PBKDF2' && algorithm.iterations > 100000)
+    throw new Error('Workers PBKDF2 iteration limit exceeded');
+  return deriveBits(algorithm, key, length);
+};
+
 const db = new DatabaseSync(':memory:');
 db.exec('PRAGMA foreign_keys=ON');
 for (const name of ['0001_initial.sql','0002_seed_definitions.sql','0003_runtime.sql','0004_pending_grants.sql'])
