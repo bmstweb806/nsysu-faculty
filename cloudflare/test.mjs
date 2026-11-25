@@ -32,11 +32,14 @@ async function call(path,method='GET',data,headers={}){
 }
 test('setup, authentication, authorization, draft isolation, and publication',async()=>{
   assert.equal((await call('/api/bootstrap')).status,401);
-  assert.equal((await call('/api/setup','POST',{username:'admin@example.com',password:'a-strong-test-password'},{'x-setup-token':'wrong'})).status,403);
-  assert.equal((await call('/api/setup','POST',{username:'admin@example.com',password:'a-strong-test-password'},{'x-setup-token':env.SETUP_TOKEN})).status,200);
-  assert.equal((await call('/api/setup','POST',{username:'other@example.com',password:'a-strong-test-password'},{'x-setup-token':env.SETUP_TOKEN})).status,409);
+  assert.equal((await call('/api/setup/status')).data.setup_required,true);
+  assert.equal((await call('/api/setup','POST',{username:'admin@example.com',password:'Short7!'},{'x-setup-token':env.SETUP_TOKEN})).status,400);
+  assert.equal((await call('/api/setup','POST',{username:'admin@example.com',password:'Test123!'},{'x-setup-token':'wrong'})).status,403);
+  assert.equal((await call('/api/setup','POST',{username:'admin@example.com',password:'Test123!'},{'x-setup-token':env.SETUP_TOKEN})).status,200);
+  assert.equal((await call('/api/setup/status')).data.setup_required,false);
+  assert.equal((await call('/api/setup','POST',{username:'other@example.com',password:'Test123!'},{'x-setup-token':env.SETUP_TOKEN})).status,409);
   assert.equal((await call('/api/login','POST',{username:'admin@example.com',password:'wrong'})).status,401);
-  const login=await call('/api/login','POST',{username:'admin@example.com',password:'a-strong-test-password'});
+  const login=await call('/api/login','POST',{username:'admin@example.com',password:'Test123!'});
   assert.equal(login.status,200);cookie=login.headers.get('set-cookie').split(';')[0];csrf=login.data.csrf;
   assert.equal((await call('/api/config/publish','POST',{})).status,200);
   const cfg=(await call('/api/config')).data;
