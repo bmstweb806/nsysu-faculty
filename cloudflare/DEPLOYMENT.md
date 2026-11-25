@@ -14,7 +14,7 @@ This directory implements the Cloudflare staging service. The existing GitHub Pa
 
 No password is stored in source or prefilled in D1. An operator with Cloudflare account access creates a random `SETUP_TOKEN` Worker secret. At `/admin`, open **首次建立管理員**, enter that token and an administrator email, and choose a password of at least 8 characters. The setup endpoint refuses further use after the first user exists. Delete or rotate the `SETUP_TOKEN` secret after enrollment.
 
-Teacher accounts are created by an administrator and must change their temporary password on first login. Their authorization comes from `user_roles` and `user_teachers`; a teacher can access only assigned records. Password hashes use PBKDF2-SHA256 with 310,000 iterations and random 16-byte salts. Sessions store SHA-256 token hashes, expire after eight hours, and use HttpOnly, Secure, SameSite=Strict cookies. Mutations require a same-origin CSRF token. Login is blocked for 15 minutes after five failures from the same IP and username.
+Teacher accounts are created by an administrator and must change their temporary password on first login. Their authorization comes from `user_roles` and `user_teachers`; a teacher can access only assigned records. Password hashes use PBKDF2-SHA256 with 100,000 iterations and random 16-byte salts. Sessions store SHA-256 token hashes, expire after eight hours, and use HttpOnly, Secure, SameSite=Strict cookies. Mutations require a same-origin CSRF token. Login is blocked for 15 minutes after five failures from the same IP and username.
 
 ## Data migration
 
