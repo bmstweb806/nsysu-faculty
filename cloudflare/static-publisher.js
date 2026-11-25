@@ -1,4 +1,5 @@
 import { blake3 } from '@noble/hashes/blake3.js';
+import { directoryPage } from './directory-page.js';
 
 export const STATIC_ROUTES = { version:1, include:['/api/*','/preview','/health'], exclude:[] };
 export const STATIC_HEADERS = `/*
@@ -51,13 +52,16 @@ export function publicIndexFromProfiles(profiles, config) {
 }
 export async function buildPublicFiles(snapshot, templates, renderProfile, includeData=true) {
   const files={...templates.files};
-  files['/index.html']=files['/admin.html'];
+  if(files['/admin.html'])files['/index.html']=files['/admin.html'];
   if(includeData) {
     const config={schema_version:4,preview:false,categories:snapshot.config.categories||[],
       tabs:snapshot.config.tabs.filter(t=>t.is_active),fields:snapshot.config.fields.filter(f=>f.is_active&&f.show_public)};
     const profiles=snapshot.rows.map(row=>sanitizePublicProfile(JSON.parse(row.payload_json),config));
     files['/data/faculty-config.json']=JSON.stringify(config);
-    files['/data/faculty-index.json']=JSON.stringify(publicIndexFromProfiles(profiles,config));
+    const index=publicIndexFromProfiles(profiles,config);
+    files['/data/faculty-index.json']=JSON.stringify(index);
+    for(const loc of locales)files['/directory/'+loc+'.html']=directoryPage(index,loc);
+    files['/index.html']=files['/directory/zh.html'];
     for(const profile of profiles) {
       const t=profile.teacher;
       if(!/^[A-Za-z0-9_-]{2,40}$/.test(t.id))throw Error('無效的公開教師 ID');

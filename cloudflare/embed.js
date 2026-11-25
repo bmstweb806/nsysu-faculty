@@ -1,3 +1,4 @@
+import { initTabs } from './tabs.js';
 (function(){
   'use strict';
   const script=document.currentScript;
@@ -5,7 +6,7 @@
   const roots=[...document.querySelectorAll('[data-nsysu-faculty],[data-nsysu-faculty-profile]')].filter(root=>!root.dataset.nsysuLoaded);
   roots.forEach(root=>{root.dataset.nsysuLoaded='1'});
   const style=document.createElement('style');
-  style.textContent='.nsysu-faculty-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}.nsysu-faculty-card{border:1px solid #d8e2e9;padding:16px;background:#fff;color:#263847}.nsysu-faculty-card img{width:96px;height:120px;object-fit:cover;float:left;margin:0 14px 10px 0}.nsysu-faculty-card h3{margin:0 0 6px;color:#17618c}.nsysu-faculty-card p{margin:4px 0}.nsysu-faculty-card a{color:#17618c}.nsysu-faculty-profile{border-top:3px solid #17618c;padding-top:18px}.nsysu-faculty-section{clear:both;border-top:1px solid #d8e2e9;padding:15px 0}.nsysu-faculty-section h3{color:#17618c}.nsysu-faculty-entry{margin:9px 0}.nsysu-faculty-card:after{content:"";display:block;clear:both}';
+  style.textContent='.nsysu-faculty-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}.nsysu-faculty-card{border:1px solid #d8e2e9;padding:16px;background:#fff;color:#263847}.nsysu-faculty-card img{width:96px;height:120px;object-fit:cover;float:left;margin:0 14px 10px 0}.nsysu-faculty-card h3{margin:0 0 6px;color:#17618c}.nsysu-faculty-card p{margin:4px 0}.nsysu-faculty-card a{color:#17618c}.nsysu-faculty-profile{border-top:3px solid #17618c;padding-top:18px}.nsysu-faculty-section{clear:both;border-top:1px solid #d8e2e9;padding:15px 0}.nsysu-faculty-section h3{color:#17618c}.nsysu-faculty-entry{margin:9px 0}.nsysu-faculty-profile [hidden]{display:none!important}.nsysu-faculty-tabs{display:flex;gap:8px;overflow-x:auto;clear:both;padding:22px 0 10px;border-bottom:3px solid #17618c}.nsysu-faculty-tabs button{font:inherit;white-space:nowrap;cursor:pointer;border:1px solid #d5e2ea;border-radius:4px 4px 0 0;background:#eef4f8;color:#426278;padding:12px 20px;font-weight:600}.nsysu-faculty-tabs button[aria-selected=true]{background:#17618c;color:#fff;border-color:#17618c}.nsysu-faculty-tabs button:focus-visible{outline:3px solid #e8aa3a;outline-offset:2px}.nsysu-faculty-section{border-top:0;min-height:180px}.nsysu-faculty-card:after{content:"";display:block;clear:both}';
   document.head.append(style);
   const make=(tag,text)=>{const el=document.createElement(tag);if(text!=null)el.textContent=String(text);return el};
   const validUrl=x=>{try{const u=new URL(x);return /^https?:$/.test(u.protocol)?u.href:''}catch{return''}};
@@ -29,16 +30,19 @@
         if(!/^[A-Za-z0-9_-]{2,40}$/.test(id||''))throw Error('教師 ID 無效');
         const [data,cfg]=await Promise.all([get('/data/teachers/'+encodeURIComponent(id)+'.json'),get('/data/faculty-config.json')]);
         const t=data.teacher;if(!t?.visible?.[lang])throw Error('此語言版本尚未公開');
-        const profile=card(t,lang,true);
-        for(const section of t.sections||[]){
-          const tab=cfg.tabs.find(x=>x.key===section.key&&x.is_active);
-          const entries=section.entries.filter(x=>x.visible?.[lang]);
+        const profile=card(t,lang,true),panels=make('div'),tabs=make('div');
+        tabs.className='nsysu-faculty-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label',lang==='en'?'Faculty information':'教師資料分頁');panels.append(tabs);
+        for(const tab of cfg.tabs.filter(x=>x.is_active)){
+          const section=(t.sections||[]).find(s=>s.key===tab.key);
+          const entries=(section?.entries||[]).filter(x=>x.visible?.[lang]);
           if(!tab||!entries.length)continue;
-          const box=make('section');box.className='nsysu-faculty-section';box.append(make('h3',tab[lang]));
+          const key='nsysu-'+id+'-'+roots.indexOf(root)+'-'+tab.key,button=make('button',tab[lang]+' · '+entries.length);
+          button.type='button';button.id=key+'-tab';button.setAttribute('role','tab');button.setAttribute('aria-controls',key);tabs.append(button);
+          const box=make('section');box.id=key;box.className='nsysu-faculty-section';box.setAttribute('role','tabpanel');box.setAttribute('aria-labelledby',button.id);box.tabIndex=0;box.hidden=true;box.append(make('h3',tab[lang]));
           for(const e of entries){const row=make('div');row.className='nsysu-faculty-entry';if(e.title?.[lang])row.append(make('strong',e.title[lang]),make('br'));if(e.content?.[lang]){const content=make('div',e.content[lang]);content.style.whiteSpace='pre-wrap';row.append(content)}for(const f of cfg.fields.filter(f=>f.section_key===section.key&&f.is_active&&f.show_public)){const value=e.fields?.[f.key]?.[lang];if(value)row.append(make('div',(f[lang]||f.key)+'：'+value))}if(validUrl(e.url)){const a=make('a',lang==='en'?'Link':'連結');a.href=e.url;a.target='_blank';a.rel='noopener noreferrer';row.append(make('span',' '),a)}box.append(row)}
-          profile.append(box)
+          panels.append(box)
         }
-        root.replaceChildren(profile)
+        profile.append(panels);root.replaceChildren(profile);initTabs(panels)
       }else{
         const category=root.dataset.category||'full_time',data=await get('/data/faculty-index.json');
         const list=make('div');list.className='nsysu-faculty-list';

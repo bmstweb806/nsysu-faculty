@@ -55,12 +55,21 @@ The Rpage panel generates a complete div and external script block for each teac
 
 ## Static publication and quota control
 
-Use https://nsysu-faculty-staging.pages.dev/admin for management and the same Pages origin for embeds. Pages serves the HTML, external JavaScript, published JSON, and pre-rendered teacher pages as static assets. `_routes.json` includes only `/api/*`, `/preview`, and `/health`; public visits to the Pages origin do not invoke Functions or D1. The original workers.dev public endpoints remain dynamic compatibility endpoints.
+Use https://nsysu-bmst-faculty.pages.dev/admin for management and the same Pages origin for embeds. Pages serves the HTML, external JavaScript, published JSON, and pre-rendered teacher pages as static assets. `_routes.json` includes only `/api/*`, `/preview`, and `/health`; public visits to the Pages origin do not invoke Functions or D1. The original workers.dev public endpoints remain dynamic compatibility endpoints.
 
-`0005_static_publication.sql` tracks the publication generation and a D1 lease. Bind `CF_ACCOUNT_ID`, `PAGES_PROJECT=nsysu-faculty-staging`, `STATIC_PUBLISHING=1`, and the secret `PAGES_API_TOKEN`. The token needs Cloudflare Pages Edit scoped to this account; never put its value in source. Preserve secret bindings when uploading the Worker. The Pages project uses production branch `cloudflare-migration` and a `FACULTY` service binding to the staging Worker.
+`0005_static_publication.sql` tracks the publication generation and a D1 lease. Bind `CF_ACCOUNT_ID`, `PAGES_PROJECT=nsysu-bmst-faculty`, `STATIC_PUBLISHING=1`, and the secret `PAGES_API_TOKEN`. The token needs Cloudflare Pages Edit scoped to this account; never put its value in source. Preserve secret bindings when uploading the Worker. The Pages project uses production branch `cloudflare-migration` and a `FACULTY` service binding to the staging Worker.
 
 Teacher publication, archive, public ordering, and configuration publication upload a complete allowlisted release and promote it only after Pages succeeds. Saving drafts does not deploy. Upload/deployment failure keeps the previous successful static release; the management UI reports unsynchronized data and offers **重新同步網站**. A submitted deployment with an unavailable status remains pending and is reconciled by the authenticated publication status endpoint. Concurrent publication is serialized by a lease. A status or retry request is operational traffic; it does invoke the Worker.
 
 Initial activation: sign in as an administrator, open Website Settings and click **重新同步網站**. Verify `/release.json` and the D1 published generation match, `/data/faculty-index.json` and `/embed.js` return `X-Faculty-Delivery: static`, and `/health` returns `worker`. Verify a known hidden language returns 404. Public cache lifetimes are 60 seconds for JSON/HTML and 300 seconds for the embed script. Publishing consumes a Pages deployment, so deployment allowance still applies even though visits no longer invoke Functions. A full D1 restore must be followed by a static resynchronization after validation.
 
 Local tests include secret absence before mutation, public allowlisting, failed upload preserving the prior generation, and pending deployment reconciliation. A real authenticated resynchronization is required to validate the account token and live Pages promotion.
+
+
+## Public directory and profile tabs
+
+The canonical Pages project is `nsysu-bmst-faculty`. `/` is the Chinese faculty directory; `/directory/zh` and `/directory/en` contain all published teachers visible in that language, with category filters and local search. Cards link to the pre-rendered profile. The administration interface remains at `/admin`; moving to a different origin requires signing in again with the existing account.
+
+Profile pages show one section panel at a time with selected tab styling, entry counts, ARIA tab/tabpanel relationships, and keyboard Left/Right/Home/End navigation. `tabs.js` is bundled into both the standalone profile controller and the Rpage renderer. Public profiles no longer show the publication/admin banner. Authenticated draft previews retain their private preview warning.
+
+The former `nsysu-faculty-staging` Pages project serves static redirects for public HTML and data paths. Its `embed.js` is a compatibility loader for the canonical renderer, so old embed snippets continue to obtain current data from the new origin. Existing authenticated API/preview routes keep their service binding for active sessions. Use the canonical origin for new embed snippets. See `legacy-redirects.txt` and `legacy-embed.js` for the alias deployment. The staging Worker and D1 names and GitHub main remain unchanged.

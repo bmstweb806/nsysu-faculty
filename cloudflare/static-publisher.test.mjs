@@ -20,6 +20,10 @@ test('static snapshots allowlist locales, fields and entries and omit drafts',as
   assert.ok(!files['/data/teachers/PRIVATE_DRAFT.json']);
   assert.equal(JSON.parse(files['/release.json']).generation,2);
   assert.equal(JSON.parse(files['/data/faculty-index.json']).teachers[0].highest_degree.en,'');
+  assert.ok(files['/directory/zh.html'].includes('公開名字'));
+  assert.ok(!files['/directory/en.html'].includes('公開名字'));
+  assert.ok(!Object.values(files).join('').includes('HIDDEN NAME'));
+  assert.equal(files['/index.html'],files['/directory/zh.html']);
 });
 test('only private and operational endpoints invoke Functions',()=>{
   const {routes,records}=deploymentForm({'/embed.js':'// static','/data/test.json':'{}'},

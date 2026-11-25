@@ -1,6 +1,6 @@
 # Cloudflare 遷移：staging 實作
 
-目前 Worker API、密碼認證、管理介面、公開嵌入程式及資料匯入已建立於 staging。部署與驗收進度請見 [DEPLOYMENT.md](DEPLOYMENT.md)。正式站切換仍需完成公開網址、實際登入及 Rpage 驗收。
+目前 Worker API、密碼認證、管理介面、公開嵌入程式及資料匯入已建立於 staging。部署與驗收進度請見 [DEPLOYMENT.md](DEPLOYMENT.md)。新版教師總覽位於 https://nsysu-bmst-faculty.pages.dev/ ，管理後台為 /admin。正式 Rpage 切換與備份還原演練仍需另外驗收。
 
 ## Canonical model
 - faculty_categories / section_definitions / field_definitions：分類、頁籤、欄位字典；穩定 key，停用代替刪除。

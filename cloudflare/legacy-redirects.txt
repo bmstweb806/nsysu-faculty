@@ -1,0 +1,15 @@
+/ https://nsysu-bmst-faculty.pages.dev/ 302
+/index.html https://nsysu-bmst-faculty.pages.dev/ 302
+/admin https://nsysu-bmst-faculty.pages.dev/admin 302
+/admin.html https://nsysu-bmst-faculty.pages.dev/admin 302
+/faculty https://nsysu-bmst-faculty.pages.dev/faculty 302
+/faculty.html https://nsysu-bmst-faculty.pages.dev/faculty 302
+/teachers/* https://nsysu-bmst-faculty.pages.dev/teachers/:splat 302
+/directory/* https://nsysu-bmst-faculty.pages.dev/directory/:splat 302
+/guide https://nsysu-bmst-faculty.pages.dev/guide 302
+/guide.html https://nsysu-bmst-faculty.pages.dev/guide 302
+/rpage-preview https://nsysu-bmst-faculty.pages.dev/rpage-preview 302
+/rpage-preview.html https://nsysu-bmst-faculty.pages.dev/rpage-preview 302
+/data/* https://nsysu-bmst-faculty.pages.dev/data/:splat 302
+/release.json https://nsysu-bmst-faculty.pages.dev/release.json 302
+/profile-tabs.js https://nsysu-bmst-faculty.pages.dev/profile-tabs.js 302
