@@ -278,6 +278,28 @@ async function publicIndex(env) {
   const categories = config.categories || (await definitions(env)).categories;
   return { schema_version: 4, preview: false, categories, teachers };
 }
+function profilePage(teacher, config, locale, isDraft = false) {
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const local = pair => pair?.[locale] || '';
+  const link = (url, label) => { try { const u = new URL(url); return ['http:','https:'].includes(u.protocol) ? '<a href="'+escape(u.href)+'" target="_blank" rel="noopener noreferrer">'+escape(label)+'</a>' : ''; } catch { return ''; } };
+  const sections = (teacher.sections || []).filter(s => config.tabs.some(t => t.key === s.key && t.is_active));
+  const visibleSections = sections.map(s => ({...s, entries:s.entries.filter(e => e.visible?.[locale])})).filter(s=>s.entries.length);
+  const route = isDraft ? '/preview' : '/faculty';
+  const query = '?teacher='+encodeURIComponent(teacher.id);
+  const photo = link(teacher.photo_url, '');
+  return new Response('<!doctype html><html lang="'+(locale==='en'?'en':'zh-Hant')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+    (isDraft?'<meta name="robots" content="noindex,nofollow">':'')+'<title>'+escape(local(teacher.name))+'｜教師資料</title><style>'+
+    '*{box-sizing:border-box}body{margin:0;background:#f2f5f7;color:#263847;font:16px/1.8 Arial,"Noto Sans TC",sans-serif}main{max-width:1060px;margin:36px auto;padding:40px;background:#fff}.bar{padding:12px 24px;background:'+(isDraft?'#fff2d9':'#123e5b')+';color:'+(isDraft?'#805b19':'white')+';font-size:14px}.bar a{color:inherit;float:right}a{color:#17618c}h1{font-size:32px;margin:0}h2{font-size:22px;margin:0 0 18px;color:#17618c}h3{font-size:17px;margin:0 0 6px}.hero{display:flex;gap:30px;padding-bottom:30px;border-bottom:3px solid #17618c}.hero img{width:150px;height:188px;object-fit:cover}.hero p{margin:5px 0}.intro{margin:22px 0;white-space:pre-wrap}.tabs{display:flex;flex-wrap:wrap;gap:20px;border-bottom:1px solid #d8e2e9;padding:18px 0}.tabs a{text-decoration:none}section{padding:28px 0;border-bottom:1px solid #d8e2e9}.entry{margin:14px 0;padding:14px 0}.content{white-space:pre-wrap}dl{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:14px}dt{color:#647786}dd{margin:0;white-space:pre-wrap}.language{text-align:right;margin-bottom:24px;font-size:14px}.notice{background:#fff5e5;padding:12px 18px;color:#805b19}@media(max-width:650px){main{padding:24px;margin:0}.hero{gap:18px}.hero img{width:90px;height:113px}h1{font-size:26px}dl{grid-template-columns:1fr}dt{font-weight:bold}}</style></head><body>'+
+    '<div class="bar">'+(isDraft?'草稿預覽 · 尚未發布，只限授權帳號查看':'已發布的教師頁面')+'<a href="/admin">回管理後台</a></div><main><div class="language">'+['zh','en'].filter(loc=>isDraft||teacher.visible?.[loc]).map(loc=>'<a href="'+route+query+'&lang='+loc+'">'+(loc==='zh'?'中文':'English')+'</a>').join('　｜　')+'</div>'+
+    (isDraft&&!teacher.visible?.[locale]?'<p class="notice">此語言目前設為不公開。以下僅供編輯者檢查。</p>':'')+
+    '<div class="hero">'+(photo?'<img src="'+escape(teacher.photo_url)+'" alt="'+escape(local(teacher.name))+'">':'')+'<div><h1>'+escape(local(teacher.name))+'</h1><p>'+escape(local(teacher.title))+'</p><p>'+escape(local(teacher.unit))+'</p><p>'+escape(local(teacher.office))+'</p>'+
+    (teacher.email?'<p><a href="mailto:'+escape(teacher.email)+'">'+escape(teacher.email)+'</a></p>':'')+'<p>'+link(teacher.profile_url,locale==='en'?'Official profile':'官方教師頁面')+'</p></div></div>'+
+    '<div class="intro">'+escape(local(teacher.expertise))+'</div><nav class="tabs">'+visibleSections.map(s=>'<a href="#section-'+escape(s.key)+'">'+escape(local(config.tabs.find(t=>t.key===s.key)))+'</a>').join('')+'</nav>'+
+    visibleSections.map(s=>'<section id="section-'+escape(s.key)+'"><h2>'+escape(local(config.tabs.find(t=>t.key===s.key)))+'</h2>'+s.entries.map(e=>'<article class="entry"><h3>'+escape(local(e.title))+'</h3><div class="content">'+escape(local(e.content))+'</div><dl>'+
+      Object.entries(e.fields||{}).map(([key,pair])=>{const def=config.fields.find(f=>f.section_key===s.key&&f.key===key&&f.is_active&&(isDraft||f.show_public));return def&&local(pair)?'<dt>'+escape(local(def))+'</dt><dd>'+escape(local(pair))+'</dd>':''}).join('')+'</dl>'+link(e.url,locale==='en'?'Related link':'相關連結')+'</article>').join('')+'</section>').join('')+'</main></body></html>',
+    {headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'same-origin',
+      'content-security-policy':"default-src 'none'; style-src 'unsafe-inline'; img-src https: http:; base-uri 'none'; frame-ancestors 'none'"}});
+}
 async function handle(request, env) {
   const url = new URL(request.url), path = url.pathname, method = request.method;
   if (method === 'GET' && path === '/guide') return new Response(GUIDE_HTML,
@@ -291,6 +313,13 @@ async function handle(request, env) {
     { headers: { 'content-type':'application/javascript; charset=utf-8', 'cache-control':'public, max-age=300',
       'access-control-allow-origin':'*', 'x-content-type-options':'nosniff' } });
   if (method === 'GET' && path === '/health') return json({ ok: true });
+  if (method === 'GET' && path === '/faculty') {
+    const id = url.searchParams.get('teacher') || '', locale = url.searchParams.get('lang') === 'en' ? 'en' : 'zh';
+    const profile = await publicProfile(env, id);
+    if (!profile || !profile.teacher.visible?.[locale]) return fail('找不到此語言的公開教師頁面',404);
+    const config = JSON.parse((await first(env,'SELECT payload_json FROM public_config_snapshot WHERE singleton=1')).payload_json);
+    return profilePage(profile.teacher,config,locale);
+  }
   if (method === 'GET' && path === '/data/faculty-index.json') return publicJson(await publicIndex(env));
   if (method === 'GET' && path === '/data/faculty-config.json') {
     const r = await first(env, 'SELECT payload_json FROM public_config_snapshot WHERE singleton=1');
@@ -324,6 +353,21 @@ async function handle(request, env) {
     return json({ok:true},200,{'set-cookie':'faculty_session=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'});
   }
   if (user.must_change_password && path !== '/api/logout') return fail('請先變更密碼', 403);
+  if (method === 'GET' && path === '/preview') {
+    const id=url.searchParams.get('teacher')||'', locale=url.searchParams.get('lang')==='en'?'en':'zh';
+    if (!authorized(user,id)) return fail('沒有此教師的預覽權限',403);
+    const record=await draft(env,id);
+    if (!record) return fail('找不到教師',404);
+    const config=await definitions(env), t=record.teacher;
+    const pair=key=>({zh:t[key+'_zh'],en:t[key+'_en']});
+    const teacher={id,name:pair('name'),title:pair('title'),unit:pair('unit'),office:pair('office'),expertise:pair('expertise'),
+      email:t.email,profile_url:t.profile_url,photo_url:t.photo_url,visible:{zh:t.visible_zh,en:t.visible_en},
+      sections:config.tabs.map(tab=>({key:tab.key,entries:record.entries.filter(e=>e.section_key===tab.key).map(e=>({
+        title:{zh:e.title_zh,en:e.title_en},content:{zh:e.content_zh,en:e.content_en},url:e.link_url,
+        visible:{zh:!!e.visible_zh,en:!!e.visible_en},fields:e.fields
+      }))}))};
+    return profilePage(teacher,config,locale,true);
+  }
   if (path === '/api/logout' && method === 'POST') {
     await run(env, 'DELETE FROM sessions WHERE token_hash=?', await sha(cookie(request)));
     return json({ ok:true }, 200, { 'set-cookie':'faculty_session=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0' });
