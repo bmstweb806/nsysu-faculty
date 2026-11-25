@@ -36,3 +36,9 @@ node --test cloudflare/test.mjs
 ```
 
 The local tests cover administrator enrollment, login, rate limiting, CSRF, role isolation, optimistic conflict, draft isolation, publication, password change, and logout. Before accepting staging, also verify the public URL, both languages, the three category embeds, drag sorting, setting publication, password reset, and a browser login with an operator-selected password. Do not switch the production Rpage embed until those checks pass.
+
+## Verified staging ingress (2026-11-25)
+
+Use https://nsysu-faculty-staging.pages.dev/admin for the admin UI. A Direct Upload Pages project of the same name runs `pages-ingress.js` as `_worker.js`, with all paths included in `_routes.json` and a `FACULTY` service binding to the existing `nsysu-faculty-staging` Worker. This adds no database copy and preserves request origin, cookies, and CSRF validation.
+
+The original workers.dev hostname resolved only IPv6 through the tested local resolver and IPv6 connections failed with no route to host. Connecting to its public IPv4 address verified the Worker itself returned HTTP 200. The Pages hostname was verified without IP overrides and opened in Chrome. `/health`, `/admin`, `/embed.js`, and the public index returned 200; the index contained seven published profiles; unauthenticated `/api/bootstrap` returned 401 and the private-only profile returned 404. Administrator enrollment and authenticated editing remain separate acceptance steps.
