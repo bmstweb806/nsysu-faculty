@@ -313,6 +313,16 @@ async function handle(request, env) {
     { headers: { 'content-type':'application/javascript; charset=utf-8', 'cache-control':'public, max-age=300',
       'access-control-allow-origin':'*', 'x-content-type-options':'nosniff' } });
   if (method === 'GET' && path === '/health') return json({ ok: true });
+  if (method === 'GET' && path === '/rpage-preview') {
+    const teacher=url.searchParams.get('teacher'),category=url.searchParams.get('category');
+    const lang=url.searchParams.get('lang')==='en'?'en':'zh';
+    if (teacher ? !/^[A-Za-z0-9_-]{2,40}$/.test(teacher) : !/^[A-Za-z0-9_-]{1,40}$/.test(category||''))
+      return fail('請選擇教師或分類',400);
+    const div=teacher?'<div data-nsysu-faculty-profile data-teacher="'+teacher+'" data-lang="'+lang+'"></div>':
+      '<div data-nsysu-faculty data-category="'+category+'" data-lang="'+lang+'"></div>';
+    return new Response('<!doctype html><html lang="'+(lang==='zh'?'zh-Hant':'en')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Rpage 嵌入預覽</title><style>body{margin:24px;color:#263847;background:white;font:15px/1.7 Arial,sans-serif}</style></head><body>'+div+'<script src="/embed.js" defer></script></body></html>',
+      {headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'}});
+  }
   if (method === 'GET' && path === '/faculty') {
     const id = url.searchParams.get('teacher') || '', locale = url.searchParams.get('lang') === 'en' ? 'en' : 'zh';
     const profile = await publicProfile(env, id);
