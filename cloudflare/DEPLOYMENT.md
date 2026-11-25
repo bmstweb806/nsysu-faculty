@@ -12,7 +12,7 @@ This directory implements the Cloudflare staging service. The existing GitHub Pa
 
 ## First administrator
 
-No password is stored in source or prefilled in D1. An operator with Cloudflare account access creates a random `SETUP_TOKEN` Worker secret. At `/admin`, open **首次建立管理員**, enter that token and an administrator email, and choose a password of at least 14 characters. The setup endpoint refuses further use after the first user exists. Delete or rotate the `SETUP_TOKEN` secret after enrollment.
+No password is stored in source or prefilled in D1. An operator with Cloudflare account access creates a random `SETUP_TOKEN` Worker secret. At `/admin`, open **首次建立管理員**, enter that token and an administrator email, and choose a password of at least 8 characters. The setup endpoint refuses further use after the first user exists. Delete or rotate the `SETUP_TOKEN` secret after enrollment.
 
 Teacher accounts are created by an administrator and must change their temporary password on first login. Their authorization comes from `user_roles` and `user_teachers`; a teacher can access only assigned records. Password hashes use PBKDF2-SHA256 with 310,000 iterations and random 16-byte salts. Sessions store SHA-256 token hashes, expire after eight hours, and use HttpOnly, Secure, SameSite=Strict cookies. Mutations require a same-origin CSRF token. Login is blocked for 15 minutes after five failures from the same IP and username.
 
@@ -36,9 +36,3 @@ node --test cloudflare/test.mjs
 ```
 
 The local tests cover administrator enrollment, login, rate limiting, CSRF, role isolation, optimistic conflict, draft isolation, publication, password change, and logout. Before accepting staging, also verify the public URL, both languages, the three category embeds, drag sorting, setting publication, password reset, and a browser login with an operator-selected password. Do not switch the production Rpage embed until those checks pass.
-
-## Verified staging ingress (2026-11-25)
-
-Use https://nsysu-faculty-staging.pages.dev/admin for the admin UI. A Direct Upload Pages project of the same name runs `pages-ingress.js` as `_worker.js`, with all paths included in `_routes.json` and a `FACULTY` service binding to the existing `nsysu-faculty-staging` Worker. This adds no database copy and preserves request origin, cookies, and CSRF validation.
-
-The original workers.dev hostname resolved only IPv6 through the tested local resolver and IPv6 connections failed with no route to host. Connecting to its public IPv4 address verified the Worker itself returned HTTP 200. The Pages hostname was verified without IP overrides and opened in Chrome. `/health`, `/admin`, `/embed.js`, and the public index returned 200; the index contained seven published profiles; unauthenticated `/api/bootstrap` returned 401 and the private-only profile returned 404. Administrator enrollment and authenticated editing remain separate acceptance steps.
