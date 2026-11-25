@@ -7,7 +7,7 @@ This directory implements the Cloudflare staging service. The existing GitHub Pa
 - `0001_initial.sql` and `0002_seed_definitions.sql` are the original D1 schema and definitions.
 - `0003_runtime.sql` adds CSRF session state, login throttling, edit compare tokens, and recoverable teacher/config revisions. `0004_pending_grants.sql` preserves imported permissions until passwords are set.
 - `worker.js` contains the API. `admin.html` is the square blue teacher management interface. `embed.js` reads only published data from the public endpoints.
-- `build.mjs` embeds the two static files into a single Worker module under `dist/`. Do not commit `dist/`; rebuild it for each deployment.
+- `build.mjs` bundles the API, renderer, and static templates into a single Worker module under `dist/`. Do not commit `dist/`; rebuild it for each deployment.
 - The staging Worker binds only `nsysu-faculty-staging` (D1 ID `1c187979-3e84-44ba-93b9-741eba9aba1c`).
 
 ## First administrator
@@ -31,8 +31,9 @@ Run new migrations once in numbered order and record them in `schema_migrations`
 ## Checks
 
 ```sh
-node cloudflare/build.mjs
-node --test cloudflare/test.mjs
+cd cloudflare
+npm ci
+npm test
 ```
 
 The local tests cover administrator enrollment, login, rate limiting, CSRF, role isolation, optimistic conflict, draft isolation, publication, password change, and logout. Before accepting staging, also verify the public URL, both languages, the three category embeds, drag sorting, setting publication, password reset, and a browser login with an operator-selected password. Do not switch the production Rpage embed until those checks pass.
@@ -50,3 +51,16 @@ The teacher editor provides Preview Draft (saves current edits before opening) a
 ## Per-teacher Rpage HTML
 
 The Rpage panel generates a complete div and external script block for each teacher and language, and supports category lists in a separate tab. The teacher editor links directly to the selected teacher. `/rpage-preview` renders the generated div with the actual embed script and only the published data API. Both the complete block and div-only variant are available. The external renderer safely appends profile links and renders configured public field values.
+
+
+## Static publication and quota control
+
+Use https://nsysu-faculty-staging.pages.dev/admin for management and the same Pages origin for embeds. Pages serves the HTML, external JavaScript, published JSON, and pre-rendered teacher pages as static assets. `_routes.json` includes only `/api/*`, `/preview`, and `/health`; public visits to the Pages origin do not invoke Functions or D1. The original workers.dev public endpoints remain dynamic compatibility endpoints.
+
+`0005_static_publication.sql` tracks the publication generation and a D1 lease. Bind `CF_ACCOUNT_ID`, `PAGES_PROJECT=nsysu-faculty-staging`, `STATIC_PUBLISHING=1`, and the secret `PAGES_API_TOKEN`. The token needs Cloudflare Pages Edit scoped to this account; never put its value in source. Preserve secret bindings when uploading the Worker. The Pages project uses production branch `cloudflare-migration` and a `FACULTY` service binding to the staging Worker.
+
+Teacher publication, archive, public ordering, and configuration publication upload a complete allowlisted release and promote it only after Pages succeeds. Saving drafts does not deploy. Upload/deployment failure keeps the previous successful static release; the management UI reports unsynchronized data and offers **重新同步網站**. A submitted deployment with an unavailable status remains pending and is reconciled by the authenticated publication status endpoint. Concurrent publication is serialized by a lease. A status or retry request is operational traffic; it does invoke the Worker.
+
+Initial activation: sign in as an administrator, open Website Settings and click **重新同步網站**. Verify `/release.json` and the D1 published generation match, `/data/faculty-index.json` and `/embed.js` return `X-Faculty-Delivery: static`, and `/health` returns `worker`. Verify a known hidden language returns 404. Public cache lifetimes are 60 seconds for JSON/HTML and 300 seconds for the embed script. Publishing consumes a Pages deployment, so deployment allowance still applies even though visits no longer invoke Functions. A full D1 restore must be followed by a static resynchronization after validation.
+
+Local tests include secret absence before mutation, public allowlisting, failed upload preserving the prior generation, and pending deployment reconciliation. A real authenticated resynchronization is required to validate the account token and live Pages promotion.

@@ -14,7 +14,7 @@ crypto.subtle.deriveBits = (algorithm, key, length) => {
 
 const db = new DatabaseSync(':memory:');
 db.exec('PRAGMA foreign_keys=ON');
-for (const name of ['0001_initial.sql','0002_seed_definitions.sql','0003_runtime.sql','0004_pending_grants.sql'])
+for (const name of ['0001_initial.sql','0002_seed_definitions.sql','0003_runtime.sql','0004_pending_grants.sql','0005_static_publication.sql'])
   db.exec(readFileSync(new URL('./migrations/'+name, import.meta.url), 'utf8'));
 db.exec("INSERT INTO public_config_snapshot(singleton,payload_json) VALUES(1,'{}')");
 db.exec("INSERT INTO pending_account_grants(email,role,is_active) VALUES('admin@example.com','ADMIN',1)");
@@ -26,7 +26,7 @@ class D1Statement {
   run(){return {meta:db.prepare(this.sql).run(...this.params)}}
 }
 const env={DB:{prepare:sql=>new D1Statement(sql),batch:async statements=>{
-  db.exec('BEGIN');try{const result=statements.map(s=>s.run());db.exec('COMMIT');return result}
+  db.exec('BEGIN');try{const result=statements.map(s=>/^SELECT/i.test(s.sql.trim())?s.all():s.run());db.exec('COMMIT');return result}
   catch(e){db.exec('ROLLBACK');throw e}
 }},SETUP_TOKEN:'test-setup-token'};
 const origin='https://staging.example';
@@ -107,4 +107,52 @@ test('setup, authentication, authorization, draft isolation, and publication',as
 test('login limit blocks repeated failures',async()=>{
   for(let i=0;i<5;i++)assert.equal((await call('/api/login','POST',{username:'missing@example.com',password:'wrong'})).status,401);
   assert.equal((await call('/api/login','POST',{username:'missing@example.com',password:'wrong'})).status,429);
+});
+test('static publication uploads snapshots and preserves the last release on failure',async()=>{
+  const login=await call('/api/login','POST',{username:'admin@example.com',password:'Test123!'});
+  cookie=login.headers.get('set-cookie').split(';')[0];csrf=login.data.csrf;
+  env.STATIC_PUBLISHING='1';env.PAGES_API_TOKEN='mock-token';env.CF_ACCOUNT_ID='test-account';env.PAGES_PROJECT='test-project';
+  const originalFetch=globalThis.fetch;
+  let deployments=0,failUpload=false,failStatus=false,lastManifest;
+  globalThis.fetch=async(url,options={})=>{
+    let result={};
+    if(url.endsWith('/upload-token'))result={jwt:'mock-upload'};
+    else if(url.endsWith('/assets/upload')){
+      if(failUpload)return Response.json({success:false,errors:[{code:123}]},{status:503});
+      assert.ok(Array.isArray(JSON.parse(options.body)));
+    }else if(url.endsWith('/deployments')&&options.method==='POST'){
+      lastManifest=JSON.parse(options.body.get('manifest'));deployments++;
+      result={id:'deployment-'+deployments,url:'https://release.example'};
+    }else if(url.includes('/deployments/')){
+      if(failStatus)throw Error('temporary status outage');
+      result={id:'deployment-'+deployments,url:'https://release.example',latest_stage:{status:'success'}};
+    }
+    else throw Error('Unexpected network request '+url);
+    return Response.json({success:true,result});
+  };
+  try{
+    assert.equal((await call('/api/teachers/TEST001/publish','POST',{})).status,200);
+    assert.ok(lastManifest['/data/teachers/TEST001.json']);
+    assert.ok(!lastManifest['/data/teachers/TEST002.json']);
+    let state=(await call('/api/publication')).data;
+    assert.equal(state.published_generation,1);assert.equal(state.state,'idle');
+    failUpload=true;
+    assert.equal((await call('/api/teachers/TEST001/publish','POST',{})).status,502);
+    assert.equal(deployments,1,'failed upload must not create a replacement deployment');
+    state=(await call('/api/publication')).data;
+    assert.equal(state.published_generation,1);assert.equal(state.state,'failed');
+    assert.equal(db.prepare('SELECT lock_token FROM static_publication').get().lock_token,'');
+    failUpload=false;failStatus=true;
+    assert.equal((await call('/api/publication/retry','POST',{})).status,202);
+    assert.equal(db.prepare('SELECT state FROM static_publication').get().state,'publishing');
+    assert.ok(db.prepare('SELECT lock_token FROM static_publication').get().lock_token);
+    failStatus=false;
+    state=(await call('/api/publication')).data;
+    assert.equal(state.state,'idle');assert.equal(state.published_generation,3);
+    assert.equal(db.prepare('SELECT lock_token FROM static_publication').get().lock_token,'');
+    const count=db.prepare("SELECT count(*) AS n FROM audit_logs WHERE action='PUBLISH'").get().n;
+    delete env.PAGES_API_TOKEN;
+    assert.equal((await call('/api/teachers/TEST001/publish','POST',{})).status,503);
+    assert.equal(db.prepare("SELECT count(*) AS n FROM audit_logs WHERE action='PUBLISH'").get().n,count);
+  }finally{globalThis.fetch=originalFetch;delete env.STATIC_PUBLISHING}
 });

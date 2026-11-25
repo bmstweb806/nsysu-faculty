@@ -1,3 +1,4 @@
 dist/
 *.sqlite
 *.sql.dump
+node_modules/

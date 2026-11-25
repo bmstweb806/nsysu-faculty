@@ -1,0 +1,18 @@
+{
+  "name": "nsysu-faculty-cloudflare",
+  "version": "1.0.0",
+  "description": "NSYSU Faculty staging Worker and static publication pipeline",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node build.mjs && node --test test.mjs static-publisher.test.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@noble/hashes": "2.0.1",
+    "esbuild": "0.27.0"
+  },
+  "private": true
+}

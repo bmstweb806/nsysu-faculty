@@ -1,6 +1,9 @@
+import { profilePage } from './profile-page.js';
+import { buildPublicFiles, deployPages, requiresPublication, checkPagesDeployment } from './static-publisher.js';
 const ADMIN_HTML = "__ADMIN_HTML__";
 const EMBED_JS = "__EMBED_JS__";
 const GUIDE_HTML = "__GUIDE_HTML__";
+const STATIC_TEMPLATES = "__STATIC_TEMPLATES__";
 const json = (value, status = 200, headers = {}) => new Response(JSON.stringify(value), {
   status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store',
     'x-content-type-options':'nosniff', ...headers }
@@ -278,28 +281,6 @@ async function publicIndex(env) {
   const categories = config.categories || (await definitions(env)).categories;
   return { schema_version: 4, preview: false, categories, teachers };
 }
-function profilePage(teacher, config, locale, isDraft = false) {
-  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const local = pair => pair?.[locale] || '';
-  const link = (url, label) => { try { const u = new URL(url); return ['http:','https:'].includes(u.protocol) ? '<a href="'+escape(u.href)+'" target="_blank" rel="noopener noreferrer">'+escape(label)+'</a>' : ''; } catch { return ''; } };
-  const sections = (teacher.sections || []).filter(s => config.tabs.some(t => t.key === s.key && t.is_active));
-  const visibleSections = sections.map(s => ({...s, entries:s.entries.filter(e => e.visible?.[locale])})).filter(s=>s.entries.length);
-  const route = isDraft ? '/preview' : '/faculty';
-  const query = '?teacher='+encodeURIComponent(teacher.id);
-  const photo = link(teacher.photo_url, '');
-  return new Response('<!doctype html><html lang="'+(locale==='en'?'en':'zh-Hant')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
-    (isDraft?'<meta name="robots" content="noindex,nofollow">':'')+'<title>'+escape(local(teacher.name))+'｜教師資料</title><style>'+
-    '*{box-sizing:border-box}body{margin:0;background:#f2f5f7;color:#263847;font:16px/1.8 Arial,"Noto Sans TC",sans-serif}main{max-width:1060px;margin:36px auto;padding:40px;background:#fff}.bar{padding:12px 24px;background:'+(isDraft?'#fff2d9':'#123e5b')+';color:'+(isDraft?'#805b19':'white')+';font-size:14px}.bar a{color:inherit;float:right}a{color:#17618c}h1{font-size:32px;margin:0}h2{font-size:22px;margin:0 0 18px;color:#17618c}h3{font-size:17px;margin:0 0 6px}.hero{display:flex;gap:30px;padding-bottom:30px;border-bottom:3px solid #17618c}.hero img{width:150px;height:188px;object-fit:cover}.hero p{margin:5px 0}.intro{margin:22px 0;white-space:pre-wrap}.tabs{display:flex;flex-wrap:wrap;gap:20px;border-bottom:1px solid #d8e2e9;padding:18px 0}.tabs a{text-decoration:none}section{padding:28px 0;border-bottom:1px solid #d8e2e9}.entry{margin:14px 0;padding:14px 0}.content{white-space:pre-wrap}dl{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:14px}dt{color:#647786}dd{margin:0;white-space:pre-wrap}.language{text-align:right;margin-bottom:24px;font-size:14px}.notice{background:#fff5e5;padding:12px 18px;color:#805b19}@media(max-width:650px){main{padding:24px;margin:0}.hero{gap:18px}.hero img{width:90px;height:113px}h1{font-size:26px}dl{grid-template-columns:1fr}dt{font-weight:bold}}</style></head><body>'+
-    '<div class="bar">'+(isDraft?'草稿預覽 · 尚未發布，只限授權帳號查看':'已發布的教師頁面')+'<a href="/admin">回管理後台</a></div><main><div class="language">'+['zh','en'].filter(loc=>isDraft||teacher.visible?.[loc]).map(loc=>'<a href="'+route+query+'&lang='+loc+'">'+(loc==='zh'?'中文':'English')+'</a>').join('　｜　')+'</div>'+
-    (isDraft&&!teacher.visible?.[locale]?'<p class="notice">此語言目前設為不公開。以下僅供編輯者檢查。</p>':'')+
-    '<div class="hero">'+(photo?'<img src="'+escape(teacher.photo_url)+'" alt="'+escape(local(teacher.name))+'">':'')+'<div><h1>'+escape(local(teacher.name))+'</h1><p>'+escape(local(teacher.title))+'</p><p>'+escape(local(teacher.unit))+'</p><p>'+escape(local(teacher.office))+'</p>'+
-    (teacher.email?'<p><a href="mailto:'+escape(teacher.email)+'">'+escape(teacher.email)+'</a></p>':'')+'<p>'+link(teacher.profile_url,locale==='en'?'Official profile':'官方教師頁面')+'</p></div></div>'+
-    '<div class="intro">'+escape(local(teacher.expertise))+'</div><nav class="tabs">'+visibleSections.map(s=>'<a href="#section-'+escape(s.key)+'">'+escape(local(config.tabs.find(t=>t.key===s.key)))+'</a>').join('')+'</nav>'+
-    visibleSections.map(s=>'<section id="section-'+escape(s.key)+'"><h2>'+escape(local(config.tabs.find(t=>t.key===s.key)))+'</h2>'+s.entries.map(e=>'<article class="entry"><h3>'+escape(local(e.title))+'</h3><div class="content">'+escape(local(e.content))+'</div><dl>'+
-      Object.entries(e.fields||{}).map(([key,pair])=>{const def=config.fields.find(f=>f.section_key===s.key&&f.key===key&&f.is_active&&(isDraft||f.show_public));return def&&local(pair)?'<dt>'+escape(local(def))+'</dt><dd>'+escape(local(pair))+'</dd>':''}).join('')+'</dl>'+link(e.url,locale==='en'?'Related link':'相關連結')+'</article>').join('')+'</section>').join('')+'</main></body></html>',
-    {headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'same-origin',
-      'content-security-policy':"default-src 'none'; style-src 'unsafe-inline'; img-src https: http:; base-uri 'none'; frame-ancestors 'none'"}});
-}
 async function handle(request, env) {
   const url = new URL(request.url), path = url.pathname, method = request.method;
   if (method === 'GET' && path === '/guide') return new Response(GUIDE_HTML,
@@ -383,6 +364,15 @@ async function handle(request, env) {
     return json({ ok:true }, 200, { 'set-cookie':'faculty_session=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0' });
   }
   if (path === '/api/bootstrap' && method === 'GET') return json(await bootstrap(env, user));
+  if (path === '/api/publication' && method === 'GET') {
+    if (env.STATIC_PUBLISHING !== '1') return json({mode:'dynamic',configured:!!env.PAGES_API_TOKEN});
+    return json({mode:'static',...(await refreshPublicationState(env))});
+  }
+  if (path === '/api/publication/retry' && method === 'POST') {
+    if (!user.roles.includes('ADMIN')) return fail('僅管理員可同步網站',403);
+    if (env.STATIC_PUBLISHING !== '1') return fail('靜態發布尚未啟用',503);
+    return json({ok:true});
+  }
   const match = /^\/api\/teachers\/([A-Za-z0-9_-]{2,40})(?:\/(publish|archive|revisions))?$/.exec(path);
   if (match) {
     const id = match[1], action = match[2];
@@ -549,8 +539,73 @@ async function handle(request, env) {
 }
 export default {
   async fetch(request, env) {
-    try { return await handle(request, env); }
+    try {
+      if (env.STATIC_PUBLISHING==='1' && requiresPublication(request)) return await publishWithStaticAssets(request,env);
+      return await handle(request, env);
+    }
     catch (e) { console.error(JSON.stringify({ error: e.message, path: new URL(request.url).pathname }));
       return fail('處理失敗，請稍後重試', 500); }
   }
 };
+
+async function publicationSnapshot(env,generation,releaseId) {
+  const result=await env.DB.batch([
+    q(env,'SELECT payload_json FROM public_config_snapshot WHERE singleton=1'),
+    q(env,'SELECT p.payload_json FROM public_teacher_snapshots p JOIN teachers t ON t.teacher_id=p.teacher_id WHERE t.archived_at IS NULL ORDER BY p.sort_order,p.teacher_id'),
+    q(env,'SELECT category_key AS key,label_zh AS zh,label_en AS en,is_active FROM faculty_categories ORDER BY sort_order,category_key')
+  ]);
+  const config=JSON.parse(result[0].results[0].payload_json);
+  config.categories ||= result[2].results.map(c=>({...c,is_active:!!c.is_active}));
+  return {config,rows:result[1].results,generation,release_id:releaseId};
+}
+async function publishWithStaticAssets(request,env) {
+  // Authorize before acquiring a lease. The handler rechecks role/teacher grants.
+  const actor=await identity(request,env);
+  if(!actor||actor.must_change_password||!await csrf(request,actor))return handle(request,env);
+  if(!env.PAGES_API_TOKEN)return fail('尚未設定靜態網站部署憑證，資料未變更',503);
+  const previous=await refreshPublicationState(env);
+  if(previous.state==='publishing'&&previous.deployment_id)return fail('上一版網站仍在部署中，請稍後重試',423);
+  const token=crypto.randomUUID();
+  const lock=await run(env,"UPDATE static_publication SET lock_token=?,lock_expires_at=? WHERE singleton=1 AND (lock_token='' OR lock_expires_at<?)",token,now()+600,now());
+  if(!lock.meta.changes)return fail('另一筆網站發布正在進行，請稍後重試',423);
+  let prepared=false,keepLease=false;
+  try {
+    const response=await handle(request,env);
+    if(!response.ok)return response;
+    await run(env,"UPDATE static_publication SET generation=generation+1,state='publishing',deployment_id=NULL,deployment_url=NULL,last_error='' WHERE singleton=1 AND lock_token=?",token);
+    prepared=true;
+    const state=await first(env,'SELECT generation FROM static_publication WHERE singleton=1');
+    const snapshot=await publicationSnapshot(env,state.generation,token);
+    const files=await buildPublicFiles(snapshot,STATIC_TEMPLATES,profilePage);
+    const deployment=await deployPages(env,files,STATIC_TEMPLATES,true,async d=>{
+      await run(env,'UPDATE static_publication SET deployment_id=?,deployment_url=? WHERE singleton=1 AND lock_token=?',d.id,d.url,token);
+    });
+    if(deployment.pending){
+      keepLease=true;
+      return json({...await response.json(),publication_pending:true},202);
+    }
+    await run(env,"UPDATE static_publication SET published_generation=?,deployment_id=?,deployment_url=?,state='idle',last_error='',published_at=CURRENT_TIMESTAMP WHERE singleton=1 AND lock_token=?",state.generation,deployment.id,deployment.url,token);
+    return json({...await response.json(),static_publication:{generation:state.generation,deployment_id:deployment.id}});
+  } catch(error) {
+    if(!prepared)throw error;
+    console.error(JSON.stringify({action:'STATIC_PUBLICATION_FAILED',message:error.message}));
+    await run(env,"UPDATE static_publication SET state='failed',last_error=? WHERE singleton=1 AND lock_token=?",error.message,token);
+    return fail('資料已儲存，但靜態網站尚未完成發布；上一版網站保留。請稍後按「重新同步網站」。',502);
+  } finally {
+    if(!keepLease)await run(env,"UPDATE static_publication SET lock_token='',lock_expires_at=0 WHERE singleton=1 AND lock_token=?",token);
+  }
+}
+async function refreshPublicationState(env) {
+  let state=await first(env,'SELECT * FROM static_publication WHERE singleton=1');
+  if(state.state==='publishing'&&state.deployment_id){
+    const d=await checkPagesDeployment(env,state.deployment_id);
+    if(d.latest_stage?.status==='success'){
+      await run(env,"UPDATE static_publication SET published_generation=generation,state='idle',last_error='',lock_token='',lock_expires_at=0,published_at=CURRENT_TIMESTAMP WHERE singleton=1 AND deployment_id=?",state.deployment_id);
+    }else if(['failure','canceled'].includes(d.latest_stage?.status)){
+      await run(env,"UPDATE static_publication SET state='failed',last_error='Pages 部署失敗；上一版網站保留',lock_token='',lock_expires_at=0 WHERE singleton=1 AND deployment_id=?",state.deployment_id);
+    }
+    state=await first(env,'SELECT * FROM static_publication WHERE singleton=1');
+  }
+  const {lock_token,lock_expires_at,...safe}=state;
+  return safe;
+}
