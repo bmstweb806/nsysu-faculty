@@ -84,6 +84,11 @@ test('setup, authentication, authorization, draft isolation, and publication',as
   assert.equal(changed.status,200);
   assert.equal((await call('/api/bootstrap')).status,401);
   cookie=adminCookie;csrf=adminCsrf;
+  const teacherId=(await call('/api/users')).data.find(u=>u.username==='teacher@example.com').user_id;
+  assert.equal((await call('/api/users/'+teacherId+'/password','POST',{password:'Reset123!'})).status,200);
+  const resetLogin=await call('/api/login','POST',{username:'teacher@example.com',password:'Reset123!'});
+  assert.equal(resetLogin.status,200);
+  assert.equal(resetLogin.data.must_change_password,true);
   assert.equal((await call('/api/logout','POST',{})).status,200);
   assert.equal((await call('/api/bootstrap')).status,401);
 });
