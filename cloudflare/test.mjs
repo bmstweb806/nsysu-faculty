@@ -41,6 +41,11 @@ async function call(path,method='GET',data,headers={}){
 test('setup, authentication, authorization, draft isolation, and publication',async()=>{
   assert.equal((await call('/api/bootstrap')).status,401);
   assert.equal((await call('/preview?teacher=TEST001')).status,401);
+  const embedPage=await call('/rpage-preview?teacher=TEST001&lang=en');
+  assert.equal(embedPage.status,200);
+  assert.match(embedPage.data,/data-teacher="TEST001" data-lang="en"/);
+  assert.match(embedPage.data,/src="\/embed.js"/);
+  assert.equal((await call('/rpage-preview?teacher=%22%3E%3Cscript%3E')).status,400);
   assert.equal((await call('/api/setup/status')).data.setup_required,true);
   assert.equal((await call('/api/setup','POST',{username:'admin@example.com',password:'Short7!'},{'x-setup-token':env.SETUP_TOKEN})).status,400);
   assert.equal((await call('/api/setup','POST',{username:'admin@example.com',password:'Test123!'},{'x-setup-token':'wrong'})).status,403);
