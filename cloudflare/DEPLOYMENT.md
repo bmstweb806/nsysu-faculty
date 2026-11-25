@@ -36,3 +36,9 @@ node --test cloudflare/test.mjs
 ```
 
 The local tests cover administrator enrollment, login, rate limiting, CSRF, role isolation, optimistic conflict, draft isolation, publication, password change, and logout. Before accepting staging, also verify the public URL, both languages, the three category embeds, drag sorting, setting publication, password reset, and a browser login with an operator-selected password. Do not switch the production Rpage embed until those checks pass.
+
+## Admin interface and help
+
+The admin UI groups editing into teacher selection, section tabs, and a persistent save/publish action bar. Website definitions use separate category/tab/field panels. The account screen lists pending grants with a direct password setup action and existing accounts with reset controls. Account dialogs prefill the email, role, and assigned teacher for imported grants, require password confirmation, and never display stored passwords. Administrator resets revoke existing sessions and require a password change at next login.
+
+The single-page operating guide is served at `/guide`, linked from the login screen, header, and sidebar. It describes teacher password enrollment, draft/publish behavior, ordering, settings, embeds, and recovery, and includes print styles.
