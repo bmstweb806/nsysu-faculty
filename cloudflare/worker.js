@@ -19,11 +19,11 @@ const equal = async (a, b) => {
 };
 async function passwordHash(password, salt = hex(bytes(16))) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: fromHex(salt), iterations: 310000 }, key, 256);
-  return 'pbkdf2-sha256:310000:' + salt + ':' + hex(bits);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: fromHex(salt), iterations: 100000 }, key, 256);
+  return 'pbkdf2-sha256:100000:' + salt + ':' + hex(bits);
 }
 async function checkPassword(password, stored) {
-  const m = /^pbkdf2-sha256:310000:([a-f0-9]{32}):([a-f0-9]{64})$/.exec(stored || '');
+  const m = /^pbkdf2-sha256:100000:([a-f0-9]{32}):([a-f0-9]{64})$/.exec(stored || '');
   if (!m) return false;
   return equal(await passwordHash(password, m[1]), stored);
 }
