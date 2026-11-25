@@ -1,5 +1,6 @@
 const ADMIN_HTML = "__ADMIN_HTML__";
 const EMBED_JS = "__EMBED_JS__";
+const GUIDE_HTML = "__GUIDE_HTML__";
 const json = (value, status = 200, headers = {}) => new Response(JSON.stringify(value), {
   status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store',
     'x-content-type-options':'nosniff', ...headers }
@@ -279,6 +280,9 @@ async function publicIndex(env) {
 }
 async function handle(request, env) {
   const url = new URL(request.url), path = url.pathname, method = request.method;
+  if (method === 'GET' && path === '/guide') return new Response(GUIDE_HTML,
+    { headers: { 'content-type':'text/html; charset=utf-8', 'cache-control':'no-store',
+      'x-content-type-options':'nosniff' } });
   if (method === 'GET' && (path === '/' || path === '/admin')) return new Response(ADMIN_HTML,
     { headers: { 'content-type':'text/html; charset=utf-8', 'cache-control':'no-store',
       'x-frame-options':'DENY', 'x-content-type-options':'nosniff',
@@ -481,7 +485,7 @@ async function handle(request, env) {
     const { password } = await body(request);
     if (String(password || '').length < 8) return fail('密碼至少 8 字元');
     await env.DB.batch([
-      q(env, 'UPDATE users SET password_hash=?,must_change_password=0 WHERE user_id=?', await passwordHash(password), pw[1]),
+      q(env, 'UPDATE users SET password_hash=?,must_change_password=1 WHERE user_id=?', await passwordHash(password), pw[1]),
       q(env, 'DELETE FROM sessions WHERE user_id=?', pw[1]),
       q(env, "INSERT INTO audit_logs(actor_id,action) VALUES(?,'RESET_PASSWORD')", user.user_id)
     ]);
