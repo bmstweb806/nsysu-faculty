@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>教師資料管理</title><style>
+<title>教師資料管理</title><script src="/rpage-export.js" defer></script><style>
 :root{--blue:#17618c;--ink:#263847;--muted:#647786;--line:#d8e2e9;--soft:#f4f8fa}
 *{box-sizing:border-box}body{margin:0;color:var(--ink);background:#f2f5f7;font:15px/1.6 Arial,"Noto Sans TC",sans-serif}a{color:var(--blue)}[hidden]{display:none!important}
 button,input,textarea,select{font:inherit}button,.button-link{cursor:pointer;background:#fff;border:1px solid #bccedb;border-radius:3px;padding:9px 16px;color:var(--blue);text-decoration:none;display:inline-block;line-height:1.5}button:hover,.button-link:hover{background:#eaf2f7}button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}button:disabled{opacity:.5;cursor:wait}button.danger{color:#a13b44;border-color:#e2c5c8}
@@ -141,26 +141,28 @@ function changeOwnPassword(){
 
 function showEmbed(selectedId){
  if(!askLeave())return;dirty=false;navActive('nav-embed');
- const base=location.origin, closeScript='<'+'/script>';
- $('main').innerHTML='<div class="eyebrow">網站整合</div><div class="toolbar"><h2>Rpage HTML 嵌入碼</h2><a class="button-link" href="/guide" target="_blank" rel="noopener">操作說明 ↗</a></div><p class="lead">選擇頁面內容，複製完整 HTML，貼到 Rpage 對應頁面的 HTML 區塊。</p><div class="tabs"><button id="embed-person-tab" class="selected">教師個人頁面</button><button id="embed-list-tab">教師分類列表</button></div><div class="section"><div class="grid"><label id="embed-person-choice">選擇教師<select id="embed-teacher">'+boot.teachers.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name||t.id)+(t.status==='PUBLISHED'?'':'（尚未發布）')+'</option>').join('')+'</select></label><label id="embed-category-choice" hidden>教師分類<select id="embed-category">'+boot.categories.map(c=>'<option value="'+esc(c.key)+'">'+esc(c.zh)+'</option>').join('')+'</select></label><label>Rpage 頁面語言<select id="embed-lang"><option value="zh">中文</option><option value="en">English</option></select></label></div><div id="embed-notice" class="info"></div></div><div class="section"><h3><span id="embed-code-title">完整 HTML</span><button class="primary" id="embed-copy">複製完整 HTML</button></h3><textarea id="embed-code" readonly spellcheck="false" aria-label="可貼入 Rpage 的完整 HTML" style="min-height:180px;font-family:monospace;font-size:13px"></textarea><p id="embed-feedback" role="status" class="hint"></p><details><summary>每個人的 div 是怎麼設定的？</summary><p class="hint">個人頁使用 data-nsysu-faculty-profile；data-teacher 是該教師的固定 ID；data-lang 指定 zh（中文）或 en（英文）。老師與語言切換後，下方會自動產生正確內容。</p><label>只複製 div（頁面已載入 embed.js 時）<textarea id="embed-div" readonly spellcheck="false" style="min-height:90px;font-family:monospace"></textarea></label></details></div><div class="section"><h3>嵌入效果預覽<a id="embed-open" class="button-link" target="_blank" rel="noopener">另開預覽 ↗</a></h3><p class="hint">以下使用同一支外部 JavaScript 載入已發布資料；Rpage 周圍的版面樣式可能略有不同。</p><iframe id="embed-render" title="Rpage 嵌入效果預覽" style="width:100%;height:600px;border:1px solid #d8e2e9;background:#fff"></iframe></div><div class="info"><b>貼入 Rpage 的位置</b>開啟該老師的中文或英文個人頁 → 編輯 HTML／原始碼 → 貼上完整 HTML → 儲存頁面。往後教師資料在後台發布後，這段 HTML 會自動讀取新版本。</div>';
- let mode='person';if(selectedId&&boot.teachers.some(t=>t.id===selectedId))$('embed-teacher').value=selectedId;
- function update(){
-  const id=$('embed-teacher').value,lang=$('embed-lang').value,category=$('embed-category').value;
-  const teacher=boot.teachers.find(t=>t.id===id);
-  const div=mode==='person'?'<div data-nsysu-faculty-profile data-teacher="'+esc(id)+'" data-lang="'+lang+'"></div>':'<div data-nsysu-faculty data-category="'+esc(category)+'" data-lang="'+lang+'"></div>';
-  $('embed-code').value=div+'\n<script src="'+base+'/embed.js" defer>'+closeScript;
-  $('embed-div').value=div;
-  $('embed-code-title').textContent=(mode==='person'?(teacher?.name||id):boot.categories.find(c=>c.key===category)?.zh)+' · '+(lang==='zh'?'中文':'English')+' HTML';
-  $('embed-person-choice').hidden=mode!=='person';$('embed-category-choice').hidden=mode==='person';
-  $('embed-person-tab').classList.toggle('selected',mode==='person');$('embed-list-tab').classList.toggle('selected',mode==='list');
-  $('embed-notice').textContent=mode==='person'&&teacher?.status!=='PUBLISHED'?'這位教師尚未發布。可先準備 HTML，發布後嵌入頁面才會顯示內容。':'嵌入頁面只顯示已發布且設定公開的語言與內容；未公開的語言不會顯示。';
-  const url='/rpage-preview?'+(mode==='person'?'teacher='+encodeURIComponent(id):'category='+encodeURIComponent(category))+'&lang='+lang;
-  $('embed-render').src=url;$('embed-open').href=url;$('embed-feedback').textContent='';
+ $('main').innerHTML='<div class="toolbar"><h2>Rpage 手動貼上</h2><span class="badge">純 HTML ＋ CSS</span></div><div class="tabs"><button id="embed-person-tab" class="selected">教師個人頁面</button><button id="embed-list-tab">教師分類列表</button></div><div class="section"><div class="grid"><label id="embed-person-choice">教師<select id="embed-teacher">'+boot.teachers.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name||t.id)+(t.status==='PUBLISHED'?'':'（尚未發布）')+'</option>').join('')+'</select></label><label id="embed-category-choice" hidden>教師分類<select id="embed-category"><option value="all">全部教師</option>'+boot.categories.map(c=>'<option value="'+esc(c.key)+'">'+esc(c.zh)+'</option>').join('')+'</select></label><label>語言<select id="embed-lang"><option value="zh">中文</option><option value="en">English</option></select></label></div><p id="embed-notice" class="hint" role="status"></p></div><div class="section"><h3><span id="embed-code-title">1. 內容 HTML</span><button class="primary" id="embed-copy" disabled>複製 HTML</button></h3><textarea id="embed-code" readonly spellcheck="false" aria-label="靜態教師 HTML" style="min-height:260px;font-family:monospace;font-size:13px"></textarea><div class="toolbar" style="margin:12px 0 0"><a id="embed-download" class="button-link" hidden>下載 HTML</a><span class="hint" style="margin:0">貼至 Rpage HTML 區塊</span></div></div><div class="section"><h3>2. 樣式 CSS<button id="embed-copy-css">複製 CSS</button></h3><div class="toolbar"><a class="button-link" href="/rpage-static.css" download="bmst-faculty.css">下載 CSS</a><a class="button-link" href="/rpage-template.html" download="bmst-faculty-template.html">空白 HTML 範本</a><span class="hint" style="margin:0">貼至 Rpage 自訂 CSS，全站共用一次</span></div><details><summary>查看 CSS</summary><textarea id="embed-css" readonly spellcheck="false" aria-label="Rpage 獨立 CSS" style="min-height:240px;font-family:monospace;font-size:13px"></textarea></details></div><p id="embed-feedback" role="status"></p><div class="section"><h3>貼上效果</h3><iframe id="embed-render" sandbox="" title="純 HTML 與 CSS 預覽" style="width:100%;height:700px;border:1px solid #d8e2e9;background:#fff"></iframe></div><p class="hint">手動版：資料更新後，需重新複製 HTML。照片可換成 Rpage 上傳的圖片網址。</p>';
+ const codeField=$('embed-code');let mode='person',serial=0,downloadUrl='';if(selectedId&&boot.teachers.some(t=>t.id===selectedId))$('embed-teacher').value=selectedId;
+ const read=async path=>{const response=await fetch(path,{credentials:'omit',cache:'no-store'});if(!response.ok)throw Error('此教師尚未公開這個語言，請先發布後再匯出。');return response.json()};
+ async function update(){
+  const ticket=++serial,id=$('embed-teacher').value,lang=$('embed-lang').value,category=$('embed-category').value;
+  $('embed-person-choice').hidden=mode!=='person';$('embed-category-choice').hidden=mode==='person';$('embed-person-tab').classList.toggle('selected',mode==='person');$('embed-list-tab').classList.toggle('selected',mode==='list');
+  $('embed-code').value='';$('embed-copy').disabled=true;$('embed-download').hidden=true;$('embed-render').hidden=true;$('embed-feedback').textContent='';$('embed-notice').textContent='準備 HTML…';
+  if(downloadUrl){URL.revokeObjectURL(downloadUrl);downloadUrl='';}
+  try{
+   const renderer=window.BmstRpageStatic;if(!renderer)throw Error('匯出工具尚未載入，請重新整理頁面。');$('embed-css').value=renderer.css;
+   let html,title;
+   if(mode==='person'){const [profile,config]=await Promise.all([read('/data/teachers/'+encodeURIComponent(id)+'.json'),read('/data/faculty-config.json')]);html=renderer.renderProfile(profile,config,lang);title=profile.teacher.name?.[lang]||id;}
+   else{const index=await read('/data/faculty-index.json');html=renderer.renderList(index,category,lang);title=category==='all'?'全部教師':(boot.categories.find(c=>c.key===category)?.zh||category);}
+   if(ticket!==serial||$('embed-code')!==codeField)return;
+   $('embed-code').value=html;$('embed-code-title').textContent='1. '+title+' · '+(lang==='zh'?'中文':'English')+' HTML';$('embed-copy').disabled=false;$('embed-notice').textContent='';
+   downloadUrl=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));$('embed-download').href=downloadUrl;$('embed-download').download='bmst-'+(mode==='person'?id:category)+'-'+lang+'.html';$('embed-download').hidden=false;
+   $('embed-render').srcdoc='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+renderer.css+'</style></head><body style="margin:24px">'+html+'</body></html>';$('embed-render').hidden=false;
+  }catch(error){if(ticket!==serial||$('embed-code')!==codeField)return;$('embed-notice').textContent=error.message;$('embed-render').srcdoc='';}
  }
- $('embed-person-tab').onclick=()=>{mode='person';update()};$('embed-list-tab').onclick=()=>{mode='list';update()};
- for(const id of ['embed-teacher','embed-lang','embed-category'])$(id).onchange=update;
- $('embed-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('embed-code').value);$('embed-feedback').textContent='已複製，可貼到 Rpage 的 HTML 區塊。'}catch{$('embed-code').focus();$('embed-code').select();$('embed-feedback').textContent='程式碼已選取，請按 Ctrl+C 或 ⌘C 複製。'}};
- update();
+ async function copy(id,label){const field=$(id);if(!field.value)return;try{await navigator.clipboard.writeText(field.value);$('embed-feedback').textContent=label+' 已複製';}catch{field.closest('details')?.setAttribute('open','');field.focus();field.select();$('embed-feedback').textContent='已選取 '+label+'，請按 Ctrl+C 或 ⌘C';}}
+ $('embed-person-tab').onclick=()=>{mode='person';update()};$('embed-list-tab').onclick=()=>{mode='list';update()};for(const id of ['embed-teacher','embed-lang','embed-category'])$(id).onchange=update;
+ $('embed-copy').onclick=()=>copy('embed-code','HTML');$('embed-copy-css').onclick=()=>copy('embed-css','CSS');update();
 }
 
 $('login-form').onsubmit=async e=>{e.preventDefault();try{const oldPassword=$('password').value;const r=await api('/api/login','POST',{username:$('username').value,password:oldPassword});csrfToken=r.csrf;sessionStorage.setItem('faculty_csrf',csrfToken);$('password').value='';

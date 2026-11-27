@@ -1,0 +1,49 @@
+/* 貼入 Rpage 自訂 CSS。所有樣式僅作用於 .bmst-faculty 內。 */
+.bmst-faculty{--bmst-blue:#17618c;--bmst-ink:#263e4e;--bmst-line:#d8e4ec;--bmst-soft:#f3f8fb;max-width:1080px;margin:24px auto;color:var(--bmst-ink);background:#fff;font:16px/1.8 Arial,"Noto Sans TC",sans-serif;text-align:left;overflow-wrap:anywhere}
+.bmst-faculty,.bmst-faculty *{box-sizing:border-box}
+.bmst-faculty a{color:var(--bmst-blue);text-decoration:none}
+.bmst-faculty a:hover{text-decoration:underline}
+.bmst-faculty a:focus-visible,.bmst-faculty .bmst-tab__input:focus-visible+.bmst-tab__label{outline:3px solid #d79a2c;outline-offset:3px}
+.bmst-faculty .bmst-profile__hero{display:grid;grid-template-columns:150px minmax(0,1fr);gap:30px;align-items:start;padding:8px 0 26px}
+.bmst-faculty .bmst-profile__photo,.bmst-faculty .bmst-profile__avatar{display:block;width:150px;height:188px;max-width:100%;margin:0;border:0;border-radius:5px;object-fit:cover;background:#eaf2f7}
+.bmst-faculty .bmst-profile__avatar{display:grid;place-items:center;font-size:48px;color:var(--bmst-blue)}
+.bmst-faculty .bmst-profile__identity{min-width:0}
+.bmst-faculty .bmst-profile__name{margin:0 0 12px;padding:0;border:0;color:var(--bmst-ink);font-size:32px;line-height:1.4;font-weight:700}
+.bmst-faculty .bmst-profile__identity p{margin:5px 0;padding:0}
+.bmst-faculty .bmst-profile__title{font-size:19px;font-weight:600}
+.bmst-faculty .bmst-profile__unit,.bmst-faculty .bmst-profile__office{color:#5b7384}
+.bmst-faculty .bmst-profile__link{display:inline-block;margin-top:6px;font-size:14px}
+.bmst-faculty .bmst-profile__expertise{margin:0 0 28px;padding:18px 22px;border-left:3px solid #69a2c3;background:var(--bmst-soft)}
+.bmst-faculty .bmst-profile__expertise>div{white-space:pre-wrap}
+.bmst-faculty .bmst-profile__expertise>strong{display:block;margin-bottom:7px;font-size:13px;color:#5d788a}
+/* 純 CSS 分頁：radio、label 與 panel 必須保留在同一個 .bmst-tab 裡。 */
+.bmst-faculty .bmst-tabs{display:flex;flex-wrap:wrap;gap:8px;position:relative;align-items:stretch}
+.bmst-faculty .bmst-tab{display:contents}
+.bmst-faculty .bmst-tab__input{position:absolute;left:0;top:0;width:1px;height:1px;padding:0;margin:0;border:0;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap}
+.bmst-faculty .bmst-tab__label{order:0;display:flex;align-items:center;gap:10px;cursor:pointer;margin:0;padding:12px 20px;border:1px solid #d1e1eb;border-radius:5px 5px 0 0;background:#eef5f9;color:#45677e;font-size:16px;font-weight:600;line-height:1.6;user-select:none}
+.bmst-faculty .bmst-tab__label:hover{background:#e2eef5}
+.bmst-faculty .bmst-tab__count{font-size:12px;opacity:.8}
+.bmst-faculty .bmst-tab__input:checked+.bmst-tab__label{background:var(--bmst-blue);border-color:var(--bmst-blue);color:#fff}
+.bmst-faculty .bmst-tab__panel{display:none;order:1;flex:0 0 100%;min-width:0;width:100%;margin:3px 0 0;padding:26px 0 0;border-top:3px solid var(--bmst-blue)}
+.bmst-faculty .bmst-tab__input:checked~.bmst-tab__panel{display:block}
+.bmst-faculty .bmst-tab__heading{margin:0 0 20px;padding:0;border:0;color:var(--bmst-blue);font-size:23px;line-height:1.5;font-weight:700}
+.bmst-faculty .bmst-entry{margin:0 0 16px;padding:22px;border:1px solid #e0e8ee;border-radius:5px;background:#f8fafb}
+.bmst-faculty .bmst-entry__title{margin:0 0 8px;padding:0;border:0;color:var(--bmst-ink);font-size:17px;line-height:1.6;font-weight:600}
+.bmst-faculty .bmst-entry__content{white-space:pre-wrap}
+.bmst-faculty .bmst-entry__fields{display:grid;grid-template-columns:140px minmax(0,1fr);gap:7px 14px;margin:14px 0;padding:0;font-size:14px}
+.bmst-faculty .bmst-entry__fields dt{margin:0;padding:0;color:#657f90;font-weight:400}
+.bmst-faculty .bmst-entry__fields dd{margin:0;padding:0;white-space:pre-wrap}
+.bmst-faculty .bmst-entry__link{display:inline-block;margin-top:10px;font-size:14px}
+/* 教師列表 */
+.bmst-faculty .bmst-directory{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.bmst-faculty .bmst-card{display:flex;flex-direction:column;min-width:0;padding:24px;border:1px solid var(--bmst-line);border-radius:5px;background:white}
+.bmst-faculty .bmst-card__header{display:flex;gap:18px;align-items:start;margin-bottom:18px}
+.bmst-faculty .bmst-card__photo{display:block;width:96px;height:120px;max-width:100%;margin:0;border:0;border-radius:3px;object-fit:cover;flex-shrink:0}
+.bmst-faculty .bmst-card__category{display:inline-block;padding:2px 8px;background:#edf4f8;border-radius:3px;color:#52728a;font-size:11px}
+.bmst-faculty .bmst-card__name{margin:8px 0 5px;padding:0;border:0;color:var(--bmst-ink);font-size:23px;line-height:1.4;font-weight:700}
+.bmst-faculty .bmst-card__title{margin:0;font-size:14px;color:#4f6a7c}
+.bmst-faculty .bmst-card__expertise{margin:0 0 15px;white-space:pre-wrap;font-size:14px;color:#617b8d;flex:1}
+.bmst-faculty .bmst-card__degree,.bmst-faculty .bmst-card__contact{margin:0 0 12px;font-size:13px}
+.bmst-faculty .bmst-card__link{display:block;padding-top:13px;margin-top:6px;border-top:1px solid var(--bmst-line);font-size:14px;font-weight:600}
+@media(max-width:650px){.bmst-faculty{margin:16px auto;font-size:15px}.bmst-faculty .bmst-profile__hero{grid-template-columns:96px minmax(0,1fr);gap:18px}.bmst-faculty .bmst-profile__photo,.bmst-faculty .bmst-profile__avatar{width:96px;height:120px}.bmst-faculty .bmst-profile__name{font-size:26px}.bmst-faculty .bmst-profile__title{font-size:16px}.bmst-faculty .bmst-tab__label{padding:10px 15px;font-size:15px}.bmst-faculty .bmst-entry{padding:18px}.bmst-faculty .bmst-entry__fields{grid-template-columns:1fr;gap:4px}.bmst-faculty .bmst-entry__fields dd{margin-bottom:8px}.bmst-faculty .bmst-directory{grid-template-columns:1fr}.bmst-faculty .bmst-card{padding:20px}}
+@media print{.bmst-faculty .bmst-tab__label{display:none}.bmst-faculty .bmst-tab__panel{display:block!important;break-inside:avoid}}

@@ -50,7 +50,7 @@ The teacher editor provides Preview Draft (saves current edits before opening) a
 
 ## Per-teacher Rpage HTML
 
-The Rpage panel generates a complete div and external script block for each teacher and language, and supports category lists in a separate tab. The teacher editor links directly to the selected teacher. `/rpage-preview` renders the generated div with the actual embed script and only the published data API. Both the complete block and div-only variant are available. The external renderer safely appends profile links and renders configured public field values.
+The Rpage panel generates static editable HTML and separate CSS for teachers and category lists. The teacher editor links directly to the selected teacher. The manual preview uses sandboxed srcdoc with scripts disabled. The older `/rpage-preview` and external embed script remain compatibility paths for existing installations.
 
 
 ## Static publication and quota control
@@ -73,3 +73,10 @@ The canonical Pages project is `nsysu-bmst-faculty`. `/` is the Chinese faculty 
 Profile pages show one section panel at a time with selected tab styling, entry counts, ARIA tab/tabpanel relationships, and keyboard Left/Right/Home/End navigation. `tabs.js` is bundled into both the standalone profile controller and the Rpage renderer. Public profiles no longer show the publication/admin banner. Authenticated draft previews retain their private preview warning.
 
 The former `nsysu-faculty-staging` Pages project serves static redirects for public HTML and data paths. Its `embed.js` is a compatibility loader for the canonical renderer, so old embed snippets continue to obtain current data from the new origin. Existing authenticated API/preview routes keep their service binding for active sessions. Use the canonical origin for new embed snippets. See `legacy-redirects.txt` and `legacy-embed.js` for the alias deployment. The staging Worker and D1 names and GitHub main remain unchanged.
+
+
+## Manual Rpage HTML and separate CSS
+
+The Rpage generator now defaults to static, editable HTML and separate scoped CSS. It exports actual published text and fields, without script tags, stylesheets, API fetches, iframe embeds or automatic data loading. CSS radio controls provide the section tabs without JavaScript. The export generator runs in the browser and reads only the published snapshots; it rejects drafts and hidden languages. Publishing updates the source snapshots but does not change HTML already pasted into Rpage. Repaste after an update. The previous external embed script remains available for existing installations.
+
+`rpage-static.css` contains only selectors scoped to `.bmst-faculty`. `rpage-static.js` generates the profile and category list HTML, while `rpage-template.html` is a blank, editable two-tab example. The administration interface offers separate copy/download actions and a sandboxed, script-disabled preview. Photo URLs are normal image resources; replace them with uploaded Rpage images when independent media hosting is required. Radio names and IDs use a teacher/language prefix; duplicate copies of the same teacher on one page need different prefixes (including matching label `for` values).

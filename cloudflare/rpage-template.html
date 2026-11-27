@@ -1,0 +1,46 @@
+<!-- 將此 div 貼到 Rpage HTML 區塊；rpage-static.css 另貼到自訂 CSS。
+修改姓名、文字、聯絡資料即可；同一頁重複放置同一位教師時，請同步更換 radio 的 name/id 與 label 的 for 前綴，避免分頁互相切換。 -->
+<div class="bmst-faculty bmst-faculty--profile" lang="zh-Hant">
+<div class="bmst-profile__hero">
+<div class="bmst-profile__avatar" aria-hidden="true">教</div>
+<div class="bmst-profile__identity">
+<h2 class="bmst-profile__name">教師姓名</h2>
+<p class="bmst-profile__title">職稱</p>
+<p class="bmst-profile__unit">生物醫學科技學系</p>
+<p class="bmst-profile__office">研究室位置</p>
+<p class="bmst-profile__contact">
+<a href="mailto:faculty@example.com">faculty@example.com</a>
+</p>
+</div>
+</div>
+<div class="bmst-profile__expertise">
+<strong>研究專長</strong>
+<div>研究領域一、研究領域二</div>
+</div>
+<div class="bmst-tabs" role="group" aria-label="教師資料分類">
+<div class="bmst-tab">
+<input class="bmst-tab__input" type="radio" name="bmst-teacher-demo-zh-tabs" id="bmst-teacher-demo-zh-education" checked>
+<label class="bmst-tab__label" for="bmst-teacher-demo-zh-education">學歷<span class="bmst-tab__count">1</span>
+</label>
+<div class="bmst-tab__panel">
+<h3 class="bmst-tab__heading">學歷</h3>
+<div class="bmst-entry">
+<h4 class="bmst-entry__title">最高學歷</h4>
+<div class="bmst-entry__content">請填入學校、學系與學位</div>
+</div>
+</div>
+</div>
+<div class="bmst-tab">
+<input class="bmst-tab__input" type="radio" name="bmst-teacher-demo-zh-tabs" id="bmst-teacher-demo-zh-projects">
+<label class="bmst-tab__label" for="bmst-teacher-demo-zh-projects">研究計畫<span class="bmst-tab__count">1</span>
+</label>
+<div class="bmst-tab__panel">
+<h3 class="bmst-tab__heading">研究計畫</h3>
+<div class="bmst-entry">
+<h4 class="bmst-entry__title">研究計畫名稱</h4>
+<div class="bmst-entry__content">請填入計畫內容</div>
+</div>
+</div>
+</div>
+</div>
+</div>

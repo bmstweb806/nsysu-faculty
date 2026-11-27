@@ -4,14 +4,16 @@ import { fileURLToPath } from 'node:url';
 import { assetRecord } from './static-publisher.js';
 const source = readFileSync(new URL('./worker.js', import.meta.url), 'utf8');
 const admin = readFileSync(new URL('./admin.html', import.meta.url), 'utf8');
-const bundle = async name => (await build({entryPoints:[fileURLToPath(new URL('./'+name,import.meta.url))],bundle:true,write:false,format:'iife',platform:'browser',target:'es2022',charset:'utf8',minify:true})).outputFiles[0].text;
+const bundle = async name => (await build({entryPoints:[fileURLToPath(new URL('./'+name,import.meta.url))],bundle:true,write:false,format:'iife',platform:'browser',target:'es2022',charset:'utf8',minify:true,loader:{'.css':'text'}})).outputFiles[0].text;
 const embed = await bundle('embed.js');
 const profileTabs = await bundle('profile-tabs.js');
+const rpageExport = await bundle('rpage-export-client.js');
 const guide = readFileSync(new URL('./guide.html', import.meta.url), 'utf8');
 const read = name => readFileSync(new URL('./'+name,import.meta.url),'utf8');
 const templates = {files:{'/index.html':admin,'/admin.html':admin,'/guide.html':guide,'/embed.js':embed,
   '/faculty.html':read('faculty.html'),'/faculty-router.js':read('faculty-router.js'),
   '/profile-tabs.js':profileTabs,'/directory.js':read('directory.js'),
+  '/rpage-export.js':rpageExport,'/rpage-static.css':read('rpage-static.css'),'/rpage-template.html':read('rpage-template.html'),
   '/rpage-preview.html':read('rpage-preview.html'),'/rpage-preview.js':read('rpage-preview.js'),'/404.html':read('404.html')},
   ingress:read('pages-ingress.js')};
 templates.hashes=Object.fromEntries(Object.entries(templates.files).filter(([path])=>path!=='/index.html').map(([path,content])=>[path,assetRecord(path,content).key]));

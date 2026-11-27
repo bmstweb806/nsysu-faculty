@@ -284,6 +284,7 @@ async function publicIndex(env) {
 }
 async function handle(request, env) {
   const url = new URL(request.url), path = url.pathname, method = request.method;
+  if(method==='GET'&&['/rpage-export.js','/rpage-static.css','/rpage-template.html'].includes(path))return new Response(STATIC_TEMPLATES.files[path],{headers:{'content-type':path.endsWith('.js')?'application/javascript; charset=utf-8':path.endsWith('.css')?'text/css; charset=utf-8':'text/html; charset=utf-8','cache-control':'public, max-age=300','x-content-type-options':'nosniff'}});
   if(method==='GET'&&path==='/profile-tabs.js')return new Response(PROFILE_TABS_JS,{headers:{'content-type':'application/javascript; charset=utf-8','cache-control':'public, max-age=300'}});
   if (method === 'GET' && path === '/guide') return new Response(GUIDE_HTML,
     { headers: { 'content-type':'text/html; charset=utf-8', 'cache-control':'no-store',

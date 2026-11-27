@@ -4,7 +4,7 @@
   "description": "NSYSU Faculty staging Worker and static publication pipeline",
   "scripts": {
     "build": "node build.mjs",
-    "test": "node build.mjs && node --test test.mjs static-publisher.test.mjs"
+    "test": "node build.mjs && node --test test.mjs static-publisher.test.mjs rpage-static.test.mjs"
   },
   "keywords": [],
   "author": "",
